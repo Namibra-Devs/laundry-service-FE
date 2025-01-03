@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
-import AppLayout from "./AppLayout";
 import Dashboard from "./pages/private/admin/pages/Dashboard";
 import Orders from "./pages/private/shared/pages/Orders";
 import Items from "./pages/private/shared/pages/Items";
@@ -20,41 +19,36 @@ const router = createBrowserRouter([
 
   {
     path: "dashboard",
-    element: <AppLayout />,
+    element: <RequireAuth />,
     errorElement: <ErrorPage />,
     children: [
       {
-        element: <RequireAuth />,
-        children: [
-          {
-            index: true,
-            element: <Dashboard />,
-          },
-          {
-            path: "orders",
-            element: <Orders />,
-          },
-          {
-            path: "items",
-            element: <Items />,
-          },
-          {
-            path: "customers",
-            element: <Customers />,
-          },
-          {
-            path: "services",
-            element: <Services />,
-          },
-          {
-            path: "manage-branch",
-            element: <BranchManagement />,
-          },
-          {
-            path: "manage-staff",
-            element: <StaffManagement />,
-          },
-        ],
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: "orders",
+        element: <Orders />,
+      },
+      {
+        path: "items",
+        element: <Items />,
+      },
+      {
+        path: "customers",
+        element: <Customers />,
+      },
+      {
+        path: "services",
+        element: <Services />,
+      },
+      {
+        path: "manage-branch",
+        element: <BranchManagement />,
+      },
+      {
+        path: "manage-staff",
+        element: <StaffManagement />,
       },
     ],
   },

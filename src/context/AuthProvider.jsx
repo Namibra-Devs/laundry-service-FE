@@ -1,14 +1,21 @@
 import { createContext } from "react";
 import PropTypes from "prop-types";
+import { useState } from "react";
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const values = {
-    user: {},
-  };
+  const [auth, setAuth] = useState({
+    // email: "user@gmail.com",
+    // password: "user6789",
+    // role: "admin",
+  });
 
-  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 // Prop validation

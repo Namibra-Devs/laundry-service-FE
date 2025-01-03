@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --custom-yellow: #ffde21;
+  --custom-yellow-dark: #bfa719;
+  /* --custom-yellow-faded: #ffde21; */
+  --custom-dark: #1a1a1a;
+  --custom-ash: #f5f5f5;
+  --success: #00a991;
+  --ash-dark: #fffce94d;
+}
+
 body {
-  background: #1a1a1a;
+  background: var(--custom-dark);
+}
+
+@layer utilities {
+  .sidebarLink.active {
+    @apply text-custom_yellow_dark bg-ash_dark rounded-md;
+  }
+
+  .sidebarLink {
+    @apply flex items-center space-x-2 px-2 py-3 border-l-[3px] border-transparent my-2;
+  }
+
+  .sidebarSubLink {
+    @apply hover:text-custom_yellow w-fit my-3 capitalize;
+  }
+
+  .sidebarSubLink.active {
+    @apply text-custom_yellow w-fit;
+  }
 }
