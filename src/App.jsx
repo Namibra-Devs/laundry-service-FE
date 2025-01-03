@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
+import Unauthorized from "./pages/Unauthorized";
 import Dashboard from "./pages/private/admin/pages/Dashboard";
 import Orders from "./pages/private/shared/pages/Orders";
 import Items from "./pages/private/shared/pages/Items";
@@ -9,11 +10,18 @@ import BranchManagement from "./pages/private/admin/pages/BranchManagement";
 import StaffManagement from "./pages/private/admin/pages/StaffManagement";
 import ErrorPage from "./pages/ErrorPage";
 import RequireAuth from "./components/common/RequireAuth";
+import AdminProtected from "./components/common/AdminProtected";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
+    errorElement: <ErrorPage />,
+  },
+
+  {
+    path: "/unauthorized",
+    element: <Unauthorized />,
     errorElement: <ErrorPage />,
   },
 
@@ -24,7 +32,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: (
+          <AdminProtected>
+            <Dashboard />
+          </AdminProtected>
+        ),
       },
       {
         path: "orders",
@@ -44,11 +56,19 @@ const router = createBrowserRouter([
       },
       {
         path: "manage-branch",
-        element: <BranchManagement />,
+        element: (
+          <AdminProtected>
+            <BranchManagement />
+          </AdminProtected>
+        ),
       },
       {
         path: "manage-staff",
-        element: <StaffManagement />,
+        element: (
+          <AdminProtected>
+            <StaffManagement />
+          </AdminProtected>
+        ),
       },
     ],
   },

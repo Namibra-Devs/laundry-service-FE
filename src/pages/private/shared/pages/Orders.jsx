@@ -1,4 +1,11 @@
+import { Link } from "react-router-dom";
+
 const Orders = () => {
-  return <div>Orders</div>;
+  return (
+    <div>
+      Orders
+      <Link to="/dashboard">Dashboard</Link>
+    </div>
+  );
 };
 export default Orders;

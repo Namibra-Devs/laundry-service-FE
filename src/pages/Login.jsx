@@ -13,7 +13,8 @@ const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location?.state?.form?.pathname || "/dashboard";
+
+  const fromPath = location?.state?.from?.pathname;
 
   const Login = async (e) => {
     e.preventDefault();
@@ -24,8 +25,14 @@ const Login = () => {
     } else {
       setAuth(response.data);
       console.log(response.data);
-      navigate(from);
-      // console.log(response?.data);
+
+      if (response?.data?.role === "admin") {
+        const from = fromPath || "/dashboard";
+        navigate(from, { replace: true });
+      } else {
+        const from = fromPath || "/dashboard/orders";
+        navigate(from, { replace: true });
+      }
     }
   };
 
