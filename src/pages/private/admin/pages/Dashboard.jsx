@@ -8,6 +8,7 @@ import {
   HeartHandshakeIcon,
   Users,
 } from "lucide-react";
+import OverviewGraph from "../components/OverviewGraph";
 
 const Dashboard = () => {
   const { auth } = useAuth();
@@ -77,6 +78,13 @@ const Dashboard = () => {
             metric={cardItem?.metric}
           />
         ))}
+      </div>
+
+      <div className="custom_box_shadow py-5 sm:p-5 rounded-lg">
+        <p className="text-xl mb-5 px-2 sm:p-0">Orders per month</p>
+        <div className="graphContainer w-[390px] sm:w-full h-[500px] overflow-x-scroll">
+          <OverviewGraph />
+        </div>
       </div>
     </>
   );
