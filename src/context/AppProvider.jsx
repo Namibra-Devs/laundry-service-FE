@@ -7,7 +7,9 @@ export const AppContext = createContext();
 const AppProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentForm, setCurrentForm] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  // create item modal actions
   const openModal = (form) => {
     setCurrentForm(form);
     setIsModalOpen(true);
@@ -18,11 +20,25 @@ const AppProvider = ({ children }) => {
     setCurrentForm(null);
   };
 
+  // view item modal actions
+  const openViewModal = (form) => {
+    setCurrentForm(form);
+    setIsViewModalOpen(true);
+  };
+
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setCurrentForm(null);
+  };
+
   const values = {
-    isModalOpen,
     currentForm,
+    isModalOpen,
     openModal,
     closeModal,
+    isViewModalOpen,
+    openViewModal,
+    closeViewModal,
   };
 
   return <AppContext.Provider value={values}>{children}</AppContext.Provider>;

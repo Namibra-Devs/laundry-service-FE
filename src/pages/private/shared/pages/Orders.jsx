@@ -8,6 +8,7 @@ import OrdersTable from "../components/OrdersTable";
 import OrdersContainers from "../components/OrdersContainers";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import useAppContext from "../../../../hooks/useAppContext";
+import ViewItemModal from "../../../../components/common/ViewItemModal";
 
 const Orders = () => {
   const [activeMode, setActiveMode] = useState("containers");
@@ -25,6 +26,7 @@ const Orders = () => {
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
   const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
+  const { isViewModalOpen, openViewModal, closeViewModal } = useAppContext();
 
   return (
     <>
@@ -33,6 +35,13 @@ const Orders = () => {
         onClose={closeModal}
         section={currentForm || ""}
         onSubmit={() => console.log(`submitting ${currentForm} form`)}
+      />
+
+      <ViewItemModal
+        isModalOpen={isViewModalOpen}
+        onClose={closeViewModal}
+        section={currentForm || ""}
+        // onSubmit={() => console.log(`submitting ${currentForm} form`)}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -71,6 +80,11 @@ const Orders = () => {
 
       <div>
         {activeMode === "table" ? <OrdersTable /> : <OrdersContainers />}
+        <CustomButton
+          label="View Order"
+          variant="contained"
+          onClick={() => openViewModal("Order")}
+        />
       </div>
     </>
   );
