@@ -22,7 +22,7 @@ const Sidebar = () => {
   const { sidebar, closeSidebar } = useAppStore((state) => state);
   return (
     <div
-      className={`bg-dark text-white w-[70%] h-screen lg:h-[97vh] sm:w-[40%] lg:w-[15%] fixed top-0 z-10 lg:relative flex flex-col justify-between transition-all duration-300 lg:pr-2 p-2 lg:p-0 lg:left-0 ${
+      className={`sidebar bg-dark text-white w-[70%] h-screen lg:h-[97vh] overflow-y-scroll sm:w-[40%] lg:w-[15%] fixed top-0 z-10 lg:relative flex flex-col justify-between transition-all duration-300 lg:pr-2 p-2 lg:p-0 lg:left-0 ${
         sidebar ? "left-0" : "-left-full"
       }`}
     >

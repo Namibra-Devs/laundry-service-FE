@@ -12,7 +12,7 @@ export const AuthenticateUser = async (email, password) => {
   //   console.log("error", error);
   // }
 
-  return { data: { email, password, role: "admin" }, state: "success" };
+  return { data: { email, password, role: "staff" }, state: "success" };
 };
 
 // export const LogOut = () => {

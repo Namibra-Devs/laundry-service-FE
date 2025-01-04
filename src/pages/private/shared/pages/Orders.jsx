@@ -7,6 +7,7 @@ import { useState } from "react";
 import OrdersTable from "../components/OrdersTable";
 import OrdersContainers from "../components/OrdersContainers";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
+import useAppContext from "../../../../hooks/useAppContext";
 
 const Orders = () => {
   const [activeMode, setActiveMode] = useState("containers");
@@ -23,18 +24,7 @@ const Orders = () => {
 
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentForm, setCurrentForm] = useState(null);
-
-  const openModal = (form) => {
-    setCurrentForm(form);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setCurrentForm(null);
-  };
+  const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
 
   return (
     <>

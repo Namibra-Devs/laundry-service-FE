@@ -20,7 +20,8 @@ body {
 }
 
 main::-webkit-scrollbar,
-.graphContainer::-webkit-scrollbar {
+.graphContainer::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
   /* width: 5px; */
   display: none;
 }
