@@ -2,9 +2,12 @@ import { File } from "lucide-react";
 import CustomButton from "../../../../components/CustomButton";
 import useAuth from "../../../../hooks/useAuth";
 import DashboardCard from "../components/DashboardCard";
-import { ShoppingBag } from "lucide-react";
-import { Building2 } from "lucide-react";
-import { Users } from "lucide-react";
+import {
+  ShoppingCart,
+  Building2,
+  HeartHandshakeIcon,
+  Users,
+} from "lucide-react";
 
 const Dashboard = () => {
   const { auth } = useAuth();
@@ -12,22 +15,36 @@ const Dashboard = () => {
   const cardDetails = [
     {
       label: "total orders",
-      icon: <ShoppingBag />,
+      icon: <ShoppingCart />,
       count: 89,
+      metric: +21,
     },
     {
       label: "total customers",
-      icon: <ShoppingBag />,
+      icon: <Users />,
       count: 89,
+      metric: +21,
     },
     {
       label: "total branches",
       icon: <Building2 />,
       count: 89,
+      metric: +21,
     },
     {
       label: "total staff",
       icon: <Users />,
+      count: 89,
+      metric: +21,
+    },
+    {
+      label: "total services",
+      icon: <HeartHandshakeIcon />,
+      count: 89,
+    },
+    {
+      label: "today's orders",
+      icon: <ShoppingCart />,
       count: 89,
     },
   ];
@@ -50,13 +67,14 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-3 my-5">
+      <div className="flex flex-wrap my-5 gap-3">
         {cardDetails?.map((cardItem, index) => (
           <DashboardCard
             key={index}
             icon={cardItem?.icon}
             label={cardItem?.label}
             count={cardItem?.count}
+            metric={cardItem?.metric}
           />
         ))}
       </div>

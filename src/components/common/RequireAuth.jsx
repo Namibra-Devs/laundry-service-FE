@@ -13,15 +13,12 @@ const RequireAuth = () => {
   return auth?.email ? (
     <div className="flex sm:p-2">
       <Sidebar />
-      <main className="flex-[4] bg-white sm:rounded-md py-5 px-2 sm:px-5 h-[97vh]">
+      <main className="flex-[4] bg-white sm:rounded-md py-5 px-2 sm:px-5 h-fit sm:h-[97vh]">
         <SidebarIcon className="lg:hidden block" onClick={openSidebar} />
         <Outlet />
       </main>
     </div>
   ) : (
-    //  auth?.role !== "admin" ? (
-    //   <Navigate to="/dashboard/orders" />
-    // ) :
     <Navigate to="/" state={{ from: location }} replace />
   );
 };

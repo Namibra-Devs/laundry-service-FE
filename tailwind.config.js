@@ -9,6 +9,8 @@ export default {
         custom_yellow_fade: "var(--custom-yellow-fade)",
         dark: "var(--custom-dark)",
         ash_dark: "var(--ash-dark)",
+        success: "var(--success)",
+        danger: "var(--danger)",
       },
     },
   },
