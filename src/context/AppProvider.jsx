@@ -8,6 +8,7 @@ const AppProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentForm, setCurrentForm] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewModalType, setViewModalType] = useState("view");
 
   // create item modal actions
   const openModal = (form) => {
@@ -31,6 +32,16 @@ const AppProvider = ({ children }) => {
     setCurrentForm(null);
   };
 
+  const viewItem = (section) => {
+    openViewModal(section);
+    setViewModalType("view");
+  };
+
+  const editItem = (section) => {
+    openViewModal(section);
+    setViewModalType("edit");
+  };
+
   const values = {
     currentForm,
     isModalOpen,
@@ -39,6 +50,10 @@ const AppProvider = ({ children }) => {
     isViewModalOpen,
     openViewModal,
     closeViewModal,
+    viewModalType,
+    setViewModalType,
+    viewItem,
+    editItem,
   };
 
   return <AppContext.Provider value={values}>{children}</AppContext.Provider>;

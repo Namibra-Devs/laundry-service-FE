@@ -25,8 +25,16 @@ const Orders = () => {
 
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
-  const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
-  const { isViewModalOpen, openViewModal, closeViewModal } = useAppContext();
+  const {
+    isModalOpen,
+    currentForm,
+    openModal,
+    closeModal,
+    viewItem,
+    editItem,
+    isViewModalOpen,
+    closeViewModal,
+  } = useAppContext();
 
   return (
     <>
@@ -83,7 +91,12 @@ const Orders = () => {
         <CustomButton
           label="View Order"
           variant="contained"
-          onClick={() => openViewModal("Order")}
+          onClick={() => viewItem("Order")}
+        />
+        <CustomButton
+          label="Edit Order"
+          variant="contained"
+          onClick={() => editItem("Order")}
         />
       </div>
     </>
