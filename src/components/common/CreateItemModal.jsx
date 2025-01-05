@@ -1,21 +1,15 @@
 import PropTypes from "prop-types";
 import { X } from "lucide-react";
 import CustomButton from "../CustomButton";
+import CreateItemForm from "../../pages/private/shared/components/Items/CreateItemForm";
 
 const CreateItemModal = ({ isModalOpen, onClose, section, onSubmit }) => {
-  const allowedSections = [
-    "Order",
-    "Item",
-    "Service",
-    "Customer",
-    "Branch",
-    "Staff",
-  ];
+  const allowedSections = ["Item", "Service", "Customer", "Branch", "Staff"];
   if (!isModalOpen || !allowedSections.includes(section)) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[80vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h4 className="text-base text-gray-500">Add {section}</h4>
@@ -29,19 +23,17 @@ const CreateItemModal = ({ isModalOpen, onClose, section, onSubmit }) => {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {section === "Order"
-            ? "order form"
-            : section === "Item"
-            ? "item form"
-            : section === "Service"
-            ? "services form"
-            : section === "Customer"
-            ? "Customer form"
-            : section === "Branch"
-            ? "Branch form"
-            : section === "Staff"
-            ? "Staff form"
-            : null}
+          {section === "Item" ? (
+            <CreateItemForm />
+          ) : section === "Service" ? (
+            "services form"
+          ) : section === "Customer" ? (
+            "Customer form"
+          ) : section === "Branch" ? (
+            "Branch form"
+          ) : section === "Staff" ? (
+            "Staff form"
+          ) : null}
         </div>
 
         {/* Footer */}

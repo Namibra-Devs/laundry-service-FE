@@ -13,7 +13,7 @@ const Input = ({ label, name, id, value, onChange, type }) => {
         value={value}
         onChange={onChange}
         required
-        className="mt-1 block w-full p-2 border rounded-md border-gray-300 focus:ring-red-500 focus:border-red-500 text-gray-600"
+        className="mt-1 block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 focus:border-red-500 text-gray-600"
       />
     </div>
   );
