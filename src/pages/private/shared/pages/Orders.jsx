@@ -6,12 +6,14 @@ import ViewToggle from "../components/OrdersViewToggle";
 import { useState } from "react";
 import OrdersTable from "../components/OrdersTable";
 import OrdersContainers from "../components/OrdersContainers";
-import CreateItemModal from "../../../../components/common/CreateItemModal";
 import useAppContext from "../../../../hooks/useAppContext";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
+import CreateOrderModal from "../components/createOrderModal";
 
 const Orders = () => {
   const [activeMode, setActiveMode] = useState("containers");
+  const [currentItemId, setCurrentItemId] = useState(null);
+  const [orderModal, setOrderModal] = useState(false);
 
   const days = [
     "Sunday",
@@ -25,30 +27,36 @@ const Orders = () => {
 
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
-  const {
-    isModalOpen,
-    currentForm,
-    openModal,
-    closeModal,
-    viewItem,
-    editItem,
-    isViewModalOpen,
-    closeViewModal,
-  } = useAppContext();
+  const { currentForm, viewItem, editItem, isViewModalOpen, closeViewModal } =
+    useAppContext();
+
+  const onViewClick = (id) => {
+    viewItem("Order");
+    setCurrentItemId(id);
+  };
+
+  const onEditClick = (id) => {
+    editItem("Order");
+    setCurrentItemId(id);
+  };
+
+  const openOrderModal = () => {
+    setOrderModal(true);
+  };
+
+  const closeOrderModal = () => {
+    setOrderModal(false);
+  };
 
   return (
     <>
-      <CreateItemModal
-        isModalOpen={isModalOpen}
-        onClose={closeModal}
-        section={currentForm || ""}
-        onSubmit={() => console.log(`submitting ${currentForm} form`)}
-      />
+      <CreateOrderModal isModalOpen={orderModal} onClose={closeOrderModal} />
 
       <ViewItemModal
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
+        currentItemId={currentItemId}
         // onSubmit={() => console.log(`submitting ${currentForm} form`)}
       />
 
@@ -63,7 +71,7 @@ const Orders = () => {
             label="Add Order"
             icon={<Plus />}
             variant="contained"
-            onClick={() => openModal("Order")}
+            onClick={openOrderModal}
           />
           <div className="sm:hidden block">
             <ViewToggle setActiveMode={setActiveMode} activeMode={activeMode} />
@@ -89,14 +97,24 @@ const Orders = () => {
       <div>
         {activeMode === "table" ? <OrdersTable /> : <OrdersContainers />}
         <CustomButton
-          label="View Order"
+          label="View Order 1"
           variant="contained"
-          onClick={() => viewItem("Order")}
+          onClick={() => onViewClick(1)}
         />
         <CustomButton
-          label="Edit Order"
+          label="View Order 2"
           variant="contained"
-          onClick={() => editItem("Order")}
+          onClick={() => onViewClick(2)}
+        />
+        <CustomButton
+          label="Edit Order 1"
+          variant="contained"
+          onClick={() => onEditClick(1)}
+        />
+        <CustomButton
+          label="Edit Order 2"
+          variant="contained"
+          onClick={() => onEditClick(2)}
         />
       </div>
     </>

@@ -2,56 +2,60 @@ import { X } from "lucide-react";
 import CustomButton from "../CustomButton";
 import PropTypes from "prop-types";
 import useAppContext from "../../hooks/useAppContext";
+import OrderDetails from "../../pages/private/shared/components/OrderDetails";
+import EditOrder from "../../pages/private/shared/components/EditOrder";
 
-const ViewContents = ({ section }) => {
+const ViewContents = ({ section, itemId }) => {
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-4">
-      {section === "Order"
-        ? "order details"
-        : section === "Item"
-        ? "item details"
-        : section === "Service"
-        ? "services details"
-        : section === "Customer"
-        ? "Customer details"
-        : section === "Branch"
-        ? "Branch details"
-        : section === "Staff"
-        ? "Staff details"
-        : null}
+    <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
+      {section === "Order" ? (
+        <OrderDetails itemId={itemId} />
+      ) : section === "Item" ? (
+        "item details"
+      ) : section === "Service" ? (
+        "services details"
+      ) : section === "Customer" ? (
+        "Customer details"
+      ) : section === "Branch" ? (
+        "Branch details"
+      ) : section === "Staff" ? (
+        "Staff details"
+      ) : null}
     </div>
   );
 };
 
 ViewContents.propTypes = {
   section: PropTypes.string.isRequired,
+  itemId: PropTypes.number.isRequired,
 };
 
-const EditContents = ({ section }) => {
+const EditContents = ({ section, itemId }) => {
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-4">
-      {section === "Order"
-        ? "Edit order"
-        : section === "Item"
-        ? "Edit item"
-        : section === "Service"
-        ? "Edit services"
-        : section === "Customer"
-        ? "Edit Customer"
-        : section === "Branch"
-        ? "Edit Branch"
-        : section === "Staff"
-        ? "Edit Staff"
-        : null}
+    <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
+      {section === "Order" ? (
+        <EditOrder itemId={itemId} />
+      ) : section === "Item" ? (
+        "Edit item"
+      ) : section === "Service" ? (
+        "Edit services"
+      ) : section === "Customer" ? (
+        "Edit Customer"
+      ) : section === "Branch" ? (
+        "Edit Branch"
+      ) : section === "Staff" ? (
+        "Edit Staff"
+      ) : null}
     </div>
   );
 };
 
 EditContents.propTypes = {
   section: PropTypes.string.isRequired,
+  itemId: PropTypes.number.isRequired,
 };
 
-const ViewItemModal = ({ isModalOpen, onClose, section }) => {
+const ViewItemModal = ({ isModalOpen, onClose, section, currentItemId }) => {
   const { viewModalType, setViewModalType } = useAppContext();
 
   const allowedSections = [
@@ -82,9 +86,9 @@ const ViewItemModal = ({ isModalOpen, onClose, section }) => {
 
         {/* Content */}
         {viewModalType === "view" ? (
-          <ViewContents section={section} />
+          <ViewContents section={section} itemId={currentItemId} />
         ) : (
-          <EditContents section={section} />
+          <EditContents section={section} itemId={currentItemId} />
         )}
 
         {/* Footer */}
@@ -114,7 +118,7 @@ ViewItemModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
-  viewType: PropTypes.string.isRequired,
+  currentItemId: PropTypes.number,
 };
 
 export default ViewItemModal;
