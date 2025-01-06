@@ -7,7 +7,7 @@ const Input = ({ label, name, id, value, onChange, type }) => {
         {label}
       </label>
       <input
-        type={type}
+        type={type ? type : "text"}
         id={id}
         name={name ? name : ""}
         value={value}

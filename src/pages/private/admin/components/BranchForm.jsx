@@ -12,7 +12,7 @@ const BranchForm = () => {
     setBranchStatus,
   } = useBranchForm((state) => state);
 
-  const statusOptions = ["open", "closed"];
+  const statusOptions = [status, "closed"];
 
   return (
     <>

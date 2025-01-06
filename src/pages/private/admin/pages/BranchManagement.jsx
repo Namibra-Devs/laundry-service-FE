@@ -17,14 +17,9 @@ const BranchManagement = () => {
     closeViewModal,
   } = useAppContext();
 
-  const {
-    name,
-    location,
-    status,
-    setBranchName,
-    setBranchLocation,
-    setBranchStatus,
-  } = useBranchForm((state) => state);
+  const { name, location, status, clearBranchForm } = useBranchForm(
+    (state) => state
+  );
 
   const createBranch = () => {
     console.log("Branch:", { name, location, status });
@@ -32,9 +27,7 @@ const BranchManagement = () => {
 
   const onClose = () => {
     closeModal();
-    setBranchName("");
-    setBranchLocation("");
-    setBranchStatus("");
+    clearBranchForm();
   };
 
   return (

@@ -2,16 +2,30 @@ import { Plus } from "lucide-react";
 import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
+import { useStaffForm } from "../../../../lib/store/PageForms";
 
 const StaffManagement = () => {
   const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
+
+  const { name, email, password, branch, clearStaffForm } = useStaffForm(
+    (state) => state
+  );
+
+  const createStaff = () => {
+    console.log("Staff:", { name, email, password, branch });
+  };
+  const onClose = () => {
+    closeModal();
+    clearStaffForm();
+  };
+
   return (
     <>
       <CreateItemModal
         isModalOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={onClose}
         section={currentForm || ""}
-        onSubmit={() => console.log(`submitting ${currentForm} form`)}
+        onSubmit={createStaff}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
