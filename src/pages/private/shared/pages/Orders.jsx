@@ -14,6 +14,8 @@ const Orders = () => {
   const [activeMode, setActiveMode] = useState("containers");
   const [currentItemId, setCurrentItemId] = useState(null);
   const [orderModal, setOrderModal] = useState(false);
+  const [day, setDay] = useState("");
+  const [branch, setBranch] = useState("");
 
   const days = [
     "Sunday",
@@ -57,7 +59,6 @@ const Orders = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItemId={currentItemId}
-        // onSubmit={() => console.log(`submitting ${currentForm} form`)}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -88,8 +89,20 @@ const Orders = () => {
           <SearchInput placeholder="search by employee etc..." />
 
           <div className="flex items-center space-x-3 mt-2 lg:mt-0">
-            <Dropdown options={["Day", ...days]} />
-            <Dropdown options={["Branch", ...branches]} />
+            <div className="w-28">
+              <Dropdown
+                options={["Day", ...days]}
+                item={day}
+                setItem={setDay}
+              />
+            </div>
+            <div className="w-28">
+              <Dropdown
+                options={["Branch", ...branches]}
+                item={branch}
+                setItem={setBranch}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
+import { useBranchForm } from "../../../../lib/store/PageForms";
 
 const BranchManagement = () => {
   const {
@@ -10,26 +11,45 @@ const BranchManagement = () => {
     currentForm,
     openModal,
     closeModal,
-    viewItem,
-    editItem,
+    // viewItem,
+    // editItem,
     isViewModalOpen,
     closeViewModal,
   } = useAppContext();
+
+  const {
+    name,
+    location,
+    status,
+    setBranchName,
+    setBranchLocation,
+    setBranchStatus,
+  } = useBranchForm((state) => state);
+
+  const createBranch = () => {
+    console.log("Branch:", { name, location, status });
+  };
+
+  const onClose = () => {
+    closeModal();
+    setBranchName("");
+    setBranchLocation("");
+    setBranchStatus("");
+  };
 
   return (
     <>
       <CreateItemModal
         isModalOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={onClose}
         section={currentForm || ""}
-        onSubmit={() => console.log(`submitting ${currentForm} form`)}
+        onSubmit={createBranch}
       />
 
       <ViewItemModal
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
-        // onSubmit={() => console.log(`submitting ${currentForm} form`)}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -44,17 +64,6 @@ const BranchManagement = () => {
           onClick={() => openModal("Branch")}
         />
       </div>
-
-      <CustomButton
-        label="View Branch"
-        variant="contained"
-        onClick={() => viewItem("Branch")}
-      />
-      <CustomButton
-        label="Edit Branch"
-        variant="contained"
-        onClick={() => editItem("Branch")}
-      />
     </>
   );
 };
