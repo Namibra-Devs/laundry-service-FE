@@ -8,7 +8,7 @@ import OrdersTable from "../components/OrdersTable";
 import OrdersContainers from "../components/OrdersContainers";
 import useAppContext from "../../../../hooks/useAppContext";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
-import CreateOrderModal from "../components/createOrderModal";
+import CreateOrderModal from "../components/CreateOrderModal";
 
 const Orders = () => {
   const [activeMode, setActiveMode] = useState("containers");
