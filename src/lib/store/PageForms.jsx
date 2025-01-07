@@ -62,3 +62,44 @@ export const useServiceForm = create((set) => ({
     set(() => ({ branch: "" }));
   },
 }));
+
+export const useCustomerForm = create((set) => ({
+  firstName: "",
+  middleName: "",
+  surName: "",
+  email: "",
+  phoneNumber: "",
+  houseNumber: "",
+  branch: "",
+
+  setCustomerFirstName: (value) => {
+    set(() => ({ firstName: value }));
+  },
+  setCustomerMiddleName: (value) => {
+    set(() => ({ middleName: value }));
+  },
+  setCustomerSurName: (value) => {
+    set(() => ({ surName: value }));
+  },
+  setCustomerEmail: (value) => {
+    set(() => ({ email: value }));
+  },
+  setCustomerPhoneNumber: (value) => {
+    set(() => ({ phoneNumber: value }));
+  },
+  setCustomerHouseNumber: (value) => {
+    set(() => ({ houseNumber: value }));
+  },
+  setCustomerBranch: (value) => {
+    set(() => ({ branch: value }));
+  },
+  clearCustomerForm: () => {
+    set(() => ({ firstName: "" }));
+    set(() => ({ middleName: "" }));
+    set(() => ({ surName: "" }));
+    set(() => ({ email: "" }));
+    set(() => ({ phoneNumber: "" }));
+    set(() => ({ houseNumber: "" }));
+    set(() => ({ branch: "" }));
+  },
+}));
