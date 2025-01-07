@@ -2,17 +2,29 @@ import { Plus } from "lucide-react";
 import CustomButton from "../../../../components/CustomButton";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import useAppContext from "../../../../hooks/useAppContext";
+import { useItemsForm } from "../../../../lib/store/PageForms";
 
 const Items = () => {
   const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
+
+  const { itemName, prices, clearItemForm } = useItemsForm((state) => state);
+
+  const createItem = () => {
+    console.log("Item", { name: itemName, prices });
+  };
+
+  const onClose = () => {
+    closeModal();
+    clearItemForm();
+  };
 
   return (
     <>
       <CreateItemModal
         isModalOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={onClose}
         section={currentForm || ""}
-        onSubmit={() => console.log(`submitting ${currentForm} form`)}
+        onSubmit={createItem}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
