@@ -4,6 +4,8 @@ import CustomButton from "../CustomButton";
 import CreateItemForm from "../../pages/private/shared/components/Items/CreateItemForm";
 import BranchForm from "../../pages/private/admin/components/BranchForm";
 import StaffForm from "../../pages/private/admin/components/StaffForm";
+import ServicesForm from "../../pages/private/shared/components/ServicesForm";
+import CustomersForm from "../../pages/private/shared/components/CustomersForm";
 
 const CreateItemModal = ({ isModalOpen, onClose, section, onSubmit }) => {
   const allowedSections = ["Item", "Service", "Customer", "Branch", "Staff"];
@@ -28,9 +30,9 @@ const CreateItemModal = ({ isModalOpen, onClose, section, onSubmit }) => {
           {section === "Item" ? (
             <CreateItemForm />
           ) : section === "Service" ? (
-            "services form"
+            <ServicesForm />
           ) : section === "Customer" ? (
-            "Customer form"
+            <CustomersForm />
           ) : section === "Branch" ? (
             <BranchForm />
           ) : section === "Staff" ? (

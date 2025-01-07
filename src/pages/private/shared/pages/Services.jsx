@@ -2,17 +2,28 @@ import CustomButton from "../../../../components/CustomButton";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import { Plus } from "lucide-react";
 import useAppContext from "../../../../hooks/useAppContext";
+import { useServiceForm } from "../../../../lib/store/PageForms";
 
 const Services = () => {
   const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
+
+  const { name, branch, clearServiceForm } = useServiceForm((state) => state);
+
+  const createService = () => {
+    console.log("Service:", { name, branch });
+  };
+  const onClose = () => {
+    closeModal();
+    clearServiceForm();
+  };
 
   return (
     <>
       <CreateItemModal
         isModalOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={onClose}
         section={currentForm || ""}
-        onSubmit={() => console.log(`submitting ${currentForm} form`)}
+        onSubmit={createService}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

@@ -17,7 +17,7 @@ export const useBranchForm = create((set) => ({
   clearBranchForm: () => {
     set(() => ({ name: "" }));
     set(() => ({ location: "" }));
-    set(() => ({ status: "" }));
+    set(() => ({ status: "open" }));
   },
 }));
 
@@ -43,6 +43,22 @@ export const useStaffForm = create((set) => ({
     set(() => ({ name: "" }));
     set(() => ({ email: "" }));
     set(() => ({ password: "" }));
+    set(() => ({ branch: "" }));
+  },
+}));
+
+export const useServiceForm = create((set) => ({
+  name: "",
+  branch: "",
+
+  setServiceName: (value) => {
+    set(() => ({ name: value }));
+  },
+  setServiceBranch: (value) => {
+    set(() => ({ branch: value }));
+  },
+  clearServiceForm: () => {
+    set(() => ({ name: "" }));
     set(() => ({ branch: "" }));
   },
 }));
