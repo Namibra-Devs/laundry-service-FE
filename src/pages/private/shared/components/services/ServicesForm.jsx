@@ -1,6 +1,6 @@
-import Dropdown from "../../../../components/Dropdown";
-import Input from "../../../../components/Input";
-import { useServiceForm } from "../../../../lib/store/PageForms";
+import Dropdown from "@/components/Dropdown";
+import Input from "@/components/Input";
+import { useServiceForm } from "@/lib/store/PageForms";
 
 const ServicesForm = () => {
   const { name, setServiceName, branch, setServiceBranch } = useServiceForm(

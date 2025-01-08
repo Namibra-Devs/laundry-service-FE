@@ -4,7 +4,7 @@ import CustomButton from "../CustomButton";
 import CreateItemForm from "../../pages/private/shared/components/Items/CreateItemForm";
 import BranchForm from "../../pages/private/admin/components/branch/BranchForm";
 import StaffForm from "../../pages/private/admin/components/staff/StaffForm";
-import ServicesForm from "../../pages/private/shared/components/ServicesForm";
+import ServicesForm from "../../pages/private/shared/components/services/ServicesForm";
 import CustomersForm from "../../pages/private/shared/components/customers/CustomersForm";
 
 const CreateItemModal = ({ isModalOpen, onClose, section, onSubmit }) => {
