@@ -9,7 +9,7 @@ const Dropdown = ({ options, item, setItem, label }) => {
       <label className={`${label ? "block" : "hidden"} text-sm mb-1`}>
         {label}
       </label>
-      <div className="relative text-dark">
+      <div className="relative text-dark cursor-pointer">
         <div
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center justify-between border-2 border-gray-300 rounded-md px-4 py-2 w-full text-sm"

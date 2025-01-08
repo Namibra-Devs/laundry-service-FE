@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Logo from "../assets/images/logo.png";
 import { LucideEyeClosed, LucideEye } from "lucide-react";
-import { AuthenticateUser } from "../lib/utils/login";
+import { AuthenticateUser } from "../lib/utils/auth";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 

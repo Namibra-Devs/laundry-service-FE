@@ -109,7 +109,7 @@ const Orders = () => {
 
       <div>
         {activeMode === "table" ? <OrdersTable /> : <OrdersContainers />}
-        <CustomButton
+        {/* <CustomButton
           label="View Order 1"
           variant="contained"
           onClick={() => onViewClick(1)}
@@ -128,7 +128,7 @@ const Orders = () => {
           label="Edit Order 2"
           variant="contained"
           onClick={() => onEditClick(2)}
-        />
+        /> */}
       </div>
     </>
   );
