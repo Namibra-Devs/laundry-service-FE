@@ -5,7 +5,7 @@ import CreateItemForm from "../../pages/private/shared/components/Items/CreateIt
 import BranchForm from "../../pages/private/admin/components/branch/BranchForm";
 import StaffForm from "../../pages/private/admin/components/staff/StaffForm";
 import ServicesForm from "../../pages/private/shared/components/ServicesForm";
-import CustomersForm from "../../pages/private/shared/components/CustomersForm";
+import CustomersForm from "../../pages/private/shared/components/customers/CustomersForm";
 
 const CreateItemModal = ({ isModalOpen, onClose, section, onSubmit }) => {
   const allowedSections = ["Item", "Service", "Customer", "Branch", "Staff"];

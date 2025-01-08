@@ -8,6 +8,8 @@ import StaffDetails from "@/pages/private/admin/components/staff/StaffDetails";
 import EditStaffForm from "@/pages/private/admin/components/staff/EditStaffForm";
 import BranchDetails from "@/pages/private/admin/components/branch/BranchDetails";
 import EditBranchForm from "@/pages/private/admin/components/branch/EditBranchForm";
+import CustomerDetails from "@/pages/private/shared/components/customers/CustomerDetails";
+import EditCustomerForm from "@/pages/private/shared/components/customers/EditCustomerForm";
 
 const ViewContents = ({ section, itemId }) => {
   return (
@@ -19,7 +21,7 @@ const ViewContents = ({ section, itemId }) => {
       ) : section === "Service" ? (
         "services details"
       ) : section === "Customer" ? (
-        "Customer details"
+        <CustomerDetails itemId={itemId} />
       ) : section === "Branch" ? (
         <BranchDetails itemId={itemId} />
       ) : section === "Staff" ? (
@@ -44,7 +46,7 @@ const EditContents = ({ section, itemId }) => {
       ) : section === "Service" ? (
         "Edit services"
       ) : section === "Customer" ? (
-        "Edit Customer"
+        <EditCustomerForm itemId={itemId} />
       ) : section === "Branch" ? (
         <EditBranchForm itemId={itemId} />
       ) : section === "Staff" ? (

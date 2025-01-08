@@ -72,9 +72,7 @@ const BranchManagement = () => {
         />
       </div>
 
-      <div>
-        <BranchTable onViewClick={onViewClick} onEditClick={onEditClick} />
-      </div>
+      <BranchTable onViewClick={onViewClick} onEditClick={onEditClick} />
     </>
   );
 };

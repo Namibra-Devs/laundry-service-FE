@@ -1,6 +1,6 @@
-import Dropdown from "../../../../components/Dropdown";
-import Input from "../../../../components/Input";
-import { useCustomerForm } from "../../../../lib/store/PageForms";
+import Dropdown from "@/components/Dropdown";
+import Input from "@/components/Input";
+import { useCustomerForm } from "@/lib/store/PageForms";
 
 const CustomersForm = () => {
   const customer = useCustomerForm((state) => state);

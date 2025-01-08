@@ -3,9 +3,32 @@ import CreateItemModal from "../../../../components/common/CreateItemModal";
 import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import { useCustomerForm } from "../../../../lib/store/PageForms";
+import ViewItemModal from "@/components/common/ViewItemModal";
+import { CustomersTable } from "../components/customers/CustomersTable";
 
 const Customers = () => {
-  const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
+  const {
+    viewItem,
+    editItem,
+    setCurrentItemId,
+    isViewModalOpen,
+    closeViewModal,
+    isModalOpen,
+    currentForm,
+    openModal,
+    closeModal,
+    currentItemId,
+  } = useAppContext();
+
+  const onViewClick = (id) => {
+    viewItem("Customer");
+    setCurrentItemId(id);
+  };
+
+  const onEditClick = (id) => {
+    editItem("Customer");
+    setCurrentItemId(id);
+  };
 
   const customer = useCustomerForm((state) => state);
 
@@ -35,6 +58,13 @@ const Customers = () => {
         onSubmit={createCustomer}
       />
 
+      <ViewItemModal
+        isModalOpen={isViewModalOpen}
+        onClose={closeViewModal}
+        section={currentForm || ""}
+        currentItemId={currentItemId}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <div className="mb-3 sm:mb-0">
           <h1 className="font-[700] text-[25px] capitalize">Shop</h1>
@@ -50,6 +80,8 @@ const Customers = () => {
           onClick={() => openModal("Customer")}
         />
       </div>
+
+      <CustomersTable onViewClick={onViewClick} onEditClick={onEditClick} />
     </>
   );
 };
