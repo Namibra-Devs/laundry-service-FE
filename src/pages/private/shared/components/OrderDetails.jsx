@@ -68,8 +68,8 @@ const OrderDetails = ({ itemId }) => {
           <p>Item Name</p>
           <div className="flex items-center space-x-2">
             <img
-              src={iconDictionary?.shirt}
-              alt={"t-shirt"}
+              src={iconDictionary?.t_shirt}
+              alt={"t_shirt"}
               className="w-[26px] h-auto"
             />
             <p className="font-semibold">T-Shirt</p>

@@ -12,7 +12,6 @@ import CreateOrderModal from "../components/CreateOrderModal";
 
 const Orders = () => {
   const [activeMode, setActiveMode] = useState("containers");
-  const [currentItemId, setCurrentItemId] = useState(null);
   const [orderModal, setOrderModal] = useState(false);
   const [day, setDay] = useState("");
   const [branch, setBranch] = useState("");
@@ -29,18 +28,8 @@ const Orders = () => {
 
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
-  const { currentForm, viewItem, editItem, isViewModalOpen, closeViewModal } =
+  const { currentForm, isViewModalOpen, closeViewModal, currentItemId } =
     useAppContext();
-
-  const onViewClick = (id) => {
-    viewItem("Order");
-    setCurrentItemId(id);
-  };
-
-  const onEditClick = (id) => {
-    editItem("Order");
-    setCurrentItemId(id);
-  };
 
   const openOrderModal = () => {
     setOrderModal(true);

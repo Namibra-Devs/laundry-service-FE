@@ -3,8 +3,8 @@ import { create } from "zustand";
 export const useOrders = create((set) => ({
   orders: [
     {
-      id: 1,
-      customerName: "John Mike",
+      id: 11,
+      customerName: "Customer 1",
       customerPhoneNumber: "+233 88 989 8989",
       customerEmail: "john@email.com",
       time: "09:00",
@@ -15,8 +15,8 @@ export const useOrders = create((set) => ({
       state: "pending",
     },
     {
-      id: 2,
-      customerName: "John Mike",
+      id: 12,
+      customerName: "Customer 2",
       customerPhoneNumber: "+233 88 989 8989",
       customerEmail: "john@email.com",
       time: "09:00",
