@@ -12,6 +12,8 @@ import CustomerDetails from "@/pages/private/shared/components/customers/Custome
 import EditCustomerForm from "@/pages/private/shared/components/customers/EditCustomerForm";
 import ServiceDetails from "@/pages/private/shared/components/services/ServiceDetails";
 import EditServiceForm from "@/pages/private/shared/components/services/EditServiceForm";
+import ItemDetails from "@/pages/private/shared/components/Items/ItemDetails";
+import EditItemForm from "@/pages/private/shared/components/Items/EditItemForm";
 
 const ViewContents = ({ section, itemId }) => {
   return (
@@ -19,7 +21,7 @@ const ViewContents = ({ section, itemId }) => {
       {section === "Order" ? (
         <OrderDetails itemId={itemId} />
       ) : section === "Item" ? (
-        "item details"
+        <ItemDetails itemId={itemId} />
       ) : section === "Service" ? (
         <ServiceDetails itemId={itemId} />
       ) : section === "Customer" ? (
@@ -44,7 +46,7 @@ const EditContents = ({ section, itemId }) => {
       {section === "Order" ? (
         <EditOrder itemId={itemId} />
       ) : section === "Item" ? (
-        "Edit item"
+        <EditItemForm itemId={itemId} />
       ) : section === "Service" ? (
         <EditServiceForm itemId={itemId} />
       ) : section === "Customer" ? (

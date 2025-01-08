@@ -30,10 +30,10 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { ServicesData } from "@/lib/data/servicesSData";
+import { ItemsData } from "@/lib/data/ItemsData";
 import PropTypes from "prop-types";
 
-const data = ServicesData?.reverse();
+const data = ItemsData?.reverse();
 
 const generateColumns = ({ onViewClick, onEditClick }) => {
   return [
@@ -61,9 +61,23 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
     },
     {
       accessorKey: "name",
-      header: "Service Name",
+      header: "Item Name",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("name")}</div>
+      ),
+    },
+    {
+      accessorKey: "washPrice",
+      header: "Wash Price",
+      cell: ({ row }) => (
+        <div className="capitalize">GHC {row.getValue("washPrice")}</div>
+      ),
+    },
+    {
+      accessorKey: "ironPrice",
+      header: "Iron Price",
+      cell: ({ row }) => (
+        <div className="capitalize">GHC {row.getValue("ironPrice")}</div>
       ),
     },
     {
@@ -85,7 +99,7 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
       header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const service = row.original;
+        const item = row.original;
 
         return (
           <DropdownMenu>
@@ -98,17 +112,17 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuItem onClick={() => onViewClick(service?.id)}>
-                View Service
+              <DropdownMenuItem onClick={() => onViewClick(item?.id)}>
+                View Item
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEditClick(service?.id)}>
-                Edit Service
+              <DropdownMenuItem onClick={() => onEditClick(item?.id)}>
+                Edit Item
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => alert("Deleting Service: " + service?.id)}
+                onClick={() => alert("Deleting Item: " + item?.id)}
               >
-                Delete Service
+                Delete Item
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -118,7 +132,7 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
   ];
 };
 
-export function ServicesTable({ onViewClick, onEditClick }) {
+export function ItemsTable({ onViewClick, onEditClick }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -146,7 +160,6 @@ export function ServicesTable({ onViewClick, onEditClick }) {
   });
 
   const [selectedBranch, setSelectedBranch] = useState("Branch");
-  const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
 
   return (
     <div className="w-full">
@@ -195,7 +208,7 @@ export function ServicesTable({ onViewClick, onEditClick }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Accra"]?.map((branch) => (
+              {["Accra", "Kumasi"]?.map((branch) => (
                 <DropdownMenuItem
                   key={branch}
                   onClick={() => {
@@ -210,36 +223,6 @@ export function ServicesTable({ onViewClick, onEditClick }) {
                 onClick={() => {
                   setSelectedBranch("Branch");
                   table.getColumn("branch")?.setFilterValue(""); // Clear the filter to show all staff
-                }}
-              >
-                Clear Filter
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                {selectedAddedBy}
-                <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {["Sara Smith"]?.map((person) => (
-                <DropdownMenuItem
-                  key={person}
-                  onClick={() => {
-                    setSelectedAddedBy(person);
-                    table.getColumn("addedBy")?.setFilterValue(person);
-                  }}
-                >
-                  {person}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedAddedBy("Added By");
-                  table.getColumn("addedBy")?.setFilterValue(""); // Clear the filter to show all staff
                 }}
               >
                 Clear Filter
@@ -326,7 +309,7 @@ export function ServicesTable({ onViewClick, onEditClick }) {
   );
 }
 
-ServicesTable.propTypes = {
+ItemsTable.propTypes = {
   onViewClick: PropTypes.func.isRequired,
   onEditClick: PropTypes.func.isRequired,
 };
