@@ -3,9 +3,32 @@ import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import { useStaffForm } from "../../../../lib/store/PageForms";
+import { StaffTable } from "../components/StaffTable";
+import ViewItemModal from "@/components/common/ViewItemModal";
 
 const StaffManagement = () => {
-  const { isModalOpen, currentForm, openModal, closeModal } = useAppContext();
+  const {
+    viewItem,
+    editItem,
+    setCurrentItemId,
+    isViewModalOpen,
+    closeViewModal,
+    isModalOpen,
+    currentForm,
+    openModal,
+    closeModal,
+    currentItemId,
+  } = useAppContext();
+
+  const onViewClick = (id) => {
+    viewItem("Staff");
+    setCurrentItemId(id);
+  };
+
+  const onEditClick = (id) => {
+    editItem("Staff");
+    setCurrentItemId(id);
+  };
 
   const { name, email, password, branch, clearStaffForm } = useStaffForm(
     (state) => state
@@ -28,6 +51,13 @@ const StaffManagement = () => {
         onSubmit={createStaff}
       />
 
+      <ViewItemModal
+        isModalOpen={isViewModalOpen}
+        onClose={closeViewModal}
+        section={currentForm || ""}
+        currentItemId={currentItemId}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <h1 className="font-[700] text-[25px] capitalize mb-3 sm:mb-0">
           Staff Management
@@ -39,6 +69,10 @@ const StaffManagement = () => {
           variant="contained"
           onClick={() => openModal("Staff")}
         />
+      </div>
+
+      <div>
+        <StaffTable onViewClick={onViewClick} onEditClick={onEditClick} />
       </div>
     </>
   );

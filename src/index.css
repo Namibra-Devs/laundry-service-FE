@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* --custom-blue-fade: #e3f0f8; */
-  /* --custom-blue-fade: #18a0fb00; */
-}
-
 body {
   background: #1a1a1a;
 }
@@ -50,5 +45,11 @@ main::-webkit-scrollbar,
 
   .sidebarSubLink.active {
     @apply text-custom_yellow w-fit;
+  }
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
   }
 }

@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import useAppContext from "../../hooks/useAppContext";
 import OrderDetails from "../../pages/private/shared/components/OrderDetails";
 import EditOrder from "../../pages/private/shared/components/EditOrder";
+import StaffDetails from "@/pages/private/admin/components/staff/StaffDetails";
+import EditStaffForm from "@/pages/private/admin/components/staff/EditStaffForm";
 
 const ViewContents = ({ section, itemId }) => {
   return (
@@ -19,7 +21,7 @@ const ViewContents = ({ section, itemId }) => {
       ) : section === "Branch" ? (
         "Branch details"
       ) : section === "Staff" ? (
-        "Staff details"
+        <StaffDetails itemId={itemId} />
       ) : null}
     </div>
   );
@@ -27,7 +29,7 @@ const ViewContents = ({ section, itemId }) => {
 
 ViewContents.propTypes = {
   section: PropTypes.string.isRequired,
-  itemId: PropTypes.number.isRequired,
+  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 const EditContents = ({ section, itemId }) => {
@@ -44,7 +46,7 @@ const EditContents = ({ section, itemId }) => {
       ) : section === "Branch" ? (
         "Edit Branch"
       ) : section === "Staff" ? (
-        "Edit Staff"
+        <EditStaffForm itemId={itemId} />
       ) : null}
     </div>
   );
@@ -52,7 +54,7 @@ const EditContents = ({ section, itemId }) => {
 
 EditContents.propTypes = {
   section: PropTypes.string.isRequired,
-  itemId: PropTypes.number.isRequired,
+  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 const ViewItemModal = ({ isModalOpen, onClose, section, currentItemId }) => {
@@ -118,7 +120,7 @@ ViewItemModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
-  currentItemId: PropTypes.number,
+  currentItemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default ViewItemModal;
