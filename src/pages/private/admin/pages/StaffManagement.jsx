@@ -3,7 +3,7 @@ import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import { useStaffForm } from "../../../../lib/store/PageForms";
-import { StaffTable } from "../components/StaffTable";
+import { StaffTable } from "../components/staff/StaffTable";
 import ViewItemModal from "@/components/common/ViewItemModal";
 
 const StaffManagement = () => {

@@ -1,6 +1,6 @@
-import Dropdown from "../../../../components/Dropdown";
-import Input from "../../../../components/Input";
-import { useBranchForm } from "../../../../lib/store/PageForms";
+import Dropdown from "@/components/Dropdown";
+import Input from "@/components/Input";
+import { useBranchForm } from "@/lib/store/PageForms";
 
 const BranchForm = () => {
   const {

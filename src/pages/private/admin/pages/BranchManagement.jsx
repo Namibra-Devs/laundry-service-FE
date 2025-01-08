@@ -4,18 +4,31 @@ import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
 import { useBranchForm } from "../../../../lib/store/PageForms";
+import { BranchTable } from "../components/branch/BranchTable";
 
 const BranchManagement = () => {
   const {
+    viewItem,
+    editItem,
+    setCurrentItemId,
+    isViewModalOpen,
+    closeViewModal,
     isModalOpen,
     currentForm,
     openModal,
     closeModal,
-    // viewItem,
-    // editItem,
-    isViewModalOpen,
-    closeViewModal,
+    currentItemId,
   } = useAppContext();
+
+  const onViewClick = (id) => {
+    viewItem("Branch");
+    setCurrentItemId(id);
+  };
+
+  const onEditClick = (id) => {
+    editItem("Branch");
+    setCurrentItemId(id);
+  };
 
   const { name, location, status, clearBranchForm } = useBranchForm(
     (state) => state
@@ -43,6 +56,7 @@ const BranchManagement = () => {
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
+        currentItemId={currentItemId}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -56,6 +70,10 @@ const BranchManagement = () => {
           variant="contained"
           onClick={() => openModal("Branch")}
         />
+      </div>
+
+      <div>
+        <BranchTable onViewClick={onViewClick} onEditClick={onEditClick} />
       </div>
     </>
   );

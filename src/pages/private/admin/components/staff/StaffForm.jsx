@@ -1,6 +1,6 @@
-import Dropdown from "../../../../components/Dropdown";
-import Input from "../../../../components/Input";
-import { useStaffForm } from "../../../../lib/store/PageForms";
+import Dropdown from "@/components/Dropdown";
+import Input from "@/components/Input";
+import { useStaffForm } from "@/lib/store/PageForms";
 
 const StaffForm = () => {
   const {

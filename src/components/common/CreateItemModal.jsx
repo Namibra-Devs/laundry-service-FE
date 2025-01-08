@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 import { X } from "lucide-react";
 import CustomButton from "../CustomButton";
 import CreateItemForm from "../../pages/private/shared/components/Items/CreateItemForm";
-import BranchForm from "../../pages/private/admin/components/BranchForm";
-import StaffForm from "../../pages/private/admin/components/StaffForm";
+import BranchForm from "../../pages/private/admin/components/branch/BranchForm";
+import StaffForm from "../../pages/private/admin/components/staff/StaffForm";
 import ServicesForm from "../../pages/private/shared/components/ServicesForm";
 import CustomersForm from "../../pages/private/shared/components/CustomersForm";
 
