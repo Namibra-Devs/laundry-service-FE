@@ -8,7 +8,6 @@ import ViewItemModal from "@/components/common/ViewItemModal";
 
 const StaffManagement = () => {
   const {
-    viewItem,
     editItem,
     setCurrentItemId,
     isViewModalOpen,
@@ -19,11 +18,6 @@ const StaffManagement = () => {
     closeModal,
     currentItemId,
   } = useAppContext();
-
-  const onViewClick = (id) => {
-    viewItem("Staff");
-    setCurrentItemId(id);
-  };
 
   const onEditClick = (id) => {
     editItem("Staff");
@@ -72,7 +66,7 @@ const StaffManagement = () => {
       </div>
 
       <div>
-        <StaffTable onViewClick={onViewClick} onEditClick={onEditClick} />
+        <StaffTable onEditClick={onEditClick} />
       </div>
     </>
   );

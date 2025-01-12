@@ -4,13 +4,10 @@ import PropTypes from "prop-types";
 import useAppContext from "../../hooks/useAppContext";
 import OrderDetails from "../../pages/private/shared/components/OrderDetails";
 import EditOrder from "../../pages/private/shared/components/EditOrder";
-import StaffDetails from "@/pages/private/admin/components/staff/StaffDetails";
 import EditStaffForm from "@/pages/private/admin/components/staff/EditStaffForm";
-import BranchDetails from "@/pages/private/admin/components/branch/BranchDetails";
 import EditBranchForm from "@/pages/private/admin/components/branch/EditBranchForm";
 import CustomerDetails from "@/pages/private/shared/components/customers/CustomerDetails";
 import EditCustomerForm from "@/pages/private/shared/components/customers/EditCustomerForm";
-import ServiceDetails from "@/pages/private/shared/components/services/ServiceDetails";
 import EditServiceForm from "@/pages/private/shared/components/services/EditServiceForm";
 import ItemDetails from "@/pages/private/shared/components/Items/ItemDetails";
 import EditItemForm from "@/pages/private/shared/components/Items/EditItemForm";
@@ -22,14 +19,8 @@ const ViewContents = ({ section, itemId }) => {
         <OrderDetails itemId={itemId} />
       ) : section === "Item" ? (
         <ItemDetails itemId={itemId} />
-      ) : section === "Service" ? (
-        <ServiceDetails itemId={itemId} />
       ) : section === "Customer" ? (
         <CustomerDetails itemId={itemId} />
-      ) : section === "Branch" ? (
-        <BranchDetails itemId={itemId} />
-      ) : section === "Staff" ? (
-        <StaffDetails itemId={itemId} />
       ) : null}
     </div>
   );
@@ -112,11 +103,15 @@ const ViewItemModal = ({ isModalOpen, onClose, section, currentItemId }) => {
               onClick={() => setViewModalType("edit")}
             />
           ) : (
-            <CustomButton
-              label="View"
-              variant="contained"
-              onClick={() => setViewModalType("view")}
-            />
+            <>
+              {["Staff", "Branch", "Service"].includes(section) || (
+                <CustomButton
+                  label="View"
+                  variant="contained"
+                  onClick={() => setViewModalType("view")}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

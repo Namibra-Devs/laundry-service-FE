@@ -8,7 +8,6 @@ import ViewItemModal from "@/components/common/ViewItemModal";
 
 const Services = () => {
   const {
-    viewItem,
     editItem,
     setCurrentItemId,
     isViewModalOpen,
@@ -19,11 +18,6 @@ const Services = () => {
     closeModal,
     currentItemId,
   } = useAppContext();
-
-  const onViewClick = (id) => {
-    viewItem("Service");
-    setCurrentItemId(id);
-  };
 
   const onEditClick = (id) => {
     editItem("Service");
@@ -72,7 +66,7 @@ const Services = () => {
         />
       </div>
 
-      <ServicesTable onViewClick={onViewClick} onEditClick={onEditClick} />
+      <ServicesTable onEditClick={onEditClick} />
     </>
   );
 };

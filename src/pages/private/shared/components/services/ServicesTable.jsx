@@ -35,7 +35,7 @@ import PropTypes from "prop-types";
 
 const data = ServicesData?.reverse();
 
-const generateColumns = ({ onViewClick, onEditClick }) => {
+const generateColumns = ({ onEditClick }) => {
   return [
     {
       id: "select",
@@ -97,10 +97,6 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-              <DropdownMenuItem onClick={() => onViewClick(service?.id)}>
-                View Service
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEditClick(service?.id)}>
                 Edit Service
               </DropdownMenuItem>
@@ -118,13 +114,13 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
   ];
 };
 
-export function ServicesTable({ onViewClick, onEditClick }) {
+export function ServicesTable({ onEditClick }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onViewClick, onEditClick });
+  const columns = generateColumns({ onEditClick });
 
   const table = useReactTable({
     data,
@@ -327,6 +323,5 @@ export function ServicesTable({ onViewClick, onEditClick }) {
 }
 
 ServicesTable.propTypes = {
-  onViewClick: PropTypes.func.isRequired,
   onEditClick: PropTypes.func.isRequired,
 };

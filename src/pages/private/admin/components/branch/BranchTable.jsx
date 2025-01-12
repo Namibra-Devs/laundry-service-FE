@@ -35,7 +35,7 @@ import PropTypes from "prop-types";
 
 const data = BranchesData?.reverse();
 
-const generateColumns = ({ onViewClick, onEditClick }) => {
+const generateColumns = ({ onEditClick }) => {
   return [
     {
       id: "select",
@@ -115,10 +115,6 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-              <DropdownMenuItem onClick={() => onViewClick(branch?.id)}>
-                View Branch
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEditClick(branch?.id)}>
                 Edit Branch
               </DropdownMenuItem>
@@ -136,13 +132,13 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
   ];
 };
 
-export function BranchTable({ onViewClick, onEditClick }) {
+export function BranchTable({ onEditClick }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onViewClick, onEditClick });
+  const columns = generateColumns({ onEditClick });
 
   const table = useReactTable({
     data,
@@ -344,6 +340,5 @@ export function BranchTable({ onViewClick, onEditClick }) {
 }
 
 BranchTable.propTypes = {
-  onViewClick: PropTypes.func.isRequired,
   onEditClick: PropTypes.func.isRequired,
 };
