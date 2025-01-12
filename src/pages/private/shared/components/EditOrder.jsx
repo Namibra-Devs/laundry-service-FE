@@ -5,7 +5,7 @@ const EditOrder = ({ itemId }) => {
 };
 
 EditOrder.propTypes = {
-  itemId: PropTypes.number.isRequired,
+  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default EditOrder;

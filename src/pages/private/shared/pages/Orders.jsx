@@ -4,7 +4,7 @@ import SearchInput from "../../../../components/SearchInput";
 import Dropdown from "../../../../components/Dropdown";
 import ViewToggle from "../components/OrdersViewToggle";
 import { useState } from "react";
-import OrdersTable from "../components/OrdersTable";
+import { OrdersTable } from "../components/Orders/OrdersTable";
 import OrdersContainers from "../components/OrdersContainers";
 import useAppContext from "../../../../hooks/useAppContext";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
@@ -28,8 +28,25 @@ const Orders = () => {
 
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
-  const { currentForm, isViewModalOpen, closeViewModal, currentItemId } =
-    useAppContext();
+  const {
+    viewItem,
+    editItem,
+    setCurrentItemId,
+    isViewModalOpen,
+    closeViewModal,
+    currentForm,
+    currentItemId,
+  } = useAppContext();
+
+  const onViewClick = (id) => {
+    viewItem("Order");
+    setCurrentItemId(id);
+  };
+
+  const onEditClick = (id) => {
+    editItem("Order");
+    setCurrentItemId(id);
+  };
 
   const openOrderModal = () => {
     setOrderModal(true);
@@ -97,27 +114,11 @@ const Orders = () => {
       </div>
 
       <div>
-        {activeMode === "table" ? <OrdersTable /> : <OrdersContainers />}
-        {/* <CustomButton
-          label="View Order 1"
-          variant="contained"
-          onClick={() => onViewClick(1)}
-        />
-        <CustomButton
-          label="View Order 2"
-          variant="contained"
-          onClick={() => onViewClick(2)}
-        />
-        <CustomButton
-          label="Edit Order 1"
-          variant="contained"
-          onClick={() => onEditClick(1)}
-        />
-        <CustomButton
-          label="Edit Order 2"
-          variant="contained"
-          onClick={() => onEditClick(2)}
-        /> */}
+        {activeMode === "table" ? (
+          <OrdersTable onViewClick={onViewClick} onEditClick={onEditClick} />
+        ) : (
+          <OrdersContainers />
+        )}
       </div>
     </>
   );

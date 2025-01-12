@@ -94,7 +94,7 @@ const OrderDetails = ({ itemId }) => {
 };
 
 OrderDetails.propTypes = {
-  itemId: PropTypes.number.isRequired,
+  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default OrderDetails;
