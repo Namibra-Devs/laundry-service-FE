@@ -1,7 +1,8 @@
+import { useOrders } from "@/lib/store/OrdersStore";
 import { Users, Grid2X2Icon } from "lucide-react";
-import PropTypes from "prop-types";
 
-const ViewToggle = ({ activeMode, setActiveMode }) => {
+const ViewToggle = () => {
+  const { activeMode, setActiveMode } = useOrders((state) => state);
   return (
     <div className="w-fit flex items-center gap-2 bg-gray-100 p-1 rounded-md shadow-sm">
       <button
@@ -23,11 +24,6 @@ const ViewToggle = ({ activeMode, setActiveMode }) => {
       </button>
     </div>
   );
-};
-
-ViewToggle.propTypes = {
-  activeMode: PropTypes.string.isRequired,
-  setActiveMode: PropTypes.func.isRequired,
 };
 
 export default ViewToggle;

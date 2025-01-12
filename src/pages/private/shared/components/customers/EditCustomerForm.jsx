@@ -1,10 +1,8 @@
-import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
 
-const EditCustomerForm = ({ itemId }) => {
-  return <div>Edit Customer: {itemId}</div>;
+const EditCustomerForm = () => {
+  const { currentItem: customer } = useAppContext();
+  return <div>Edit Customer: {customer?.name}</div>;
 };
 
-EditCustomerForm.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
 export default EditCustomerForm;

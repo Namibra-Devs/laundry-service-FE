@@ -115,7 +115,7 @@ const generateColumns = ({ onEditClick }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => onEditClick(branch?.id)}>
+              <DropdownMenuItem onClick={() => onEditClick(branch)}>
                 Edit Branch
               </DropdownMenuItem>
               <DropdownMenuSeparator />

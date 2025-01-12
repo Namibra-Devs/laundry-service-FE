@@ -1,11 +1,8 @@
-import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
 
-const EditOrder = ({ itemId }) => {
-  return <div>Edit Order Item: {itemId}</div>;
-};
-
-EditOrder.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+const EditOrder = () => {
+  const { currentItem: order } = useAppContext();
+  return <div>Edit Order Item: {order?.id}</div>;
 };
 
 export default EditOrder;

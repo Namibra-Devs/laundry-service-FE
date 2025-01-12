@@ -10,24 +10,24 @@ const Items = () => {
   const {
     viewItem,
     editItem,
-    setCurrentItemId,
+    setCurrentItem,
     isViewModalOpen,
     closeViewModal,
     isModalOpen,
     currentForm,
     openModal,
     closeModal,
-    currentItemId,
+    currentItem,
   } = useAppContext();
 
-  const onViewClick = (id) => {
+  const onViewClick = (item) => {
     viewItem("Item");
-    setCurrentItemId(id);
+    setCurrentItem(item);
   };
 
-  const onEditClick = (id) => {
+  const onEditClick = (item) => {
     editItem("Item");
-    setCurrentItemId(id);
+    setCurrentItem(item);
   };
 
   const { itemName, prices, clearItemForm } = useItemsForm((state) => state);
@@ -54,7 +54,7 @@ const Items = () => {
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
-        currentItemId={currentItemId}
+        currentItem={currentItem}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

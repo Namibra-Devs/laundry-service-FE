@@ -9,19 +9,19 @@ import ViewItemModal from "@/components/common/ViewItemModal";
 const Services = () => {
   const {
     editItem,
-    setCurrentItemId,
+    setCurrentItem,
     isViewModalOpen,
     closeViewModal,
     isModalOpen,
     currentForm,
     openModal,
     closeModal,
-    currentItemId,
+    currentItem,
   } = useAppContext();
 
-  const onEditClick = (id) => {
+  const onEditClick = (serviceItem) => {
     editItem("Service");
-    setCurrentItemId(id);
+    setCurrentItem(serviceItem);
   };
 
   const { name, branch, clearServiceForm } = useServiceForm((state) => state);
@@ -47,7 +47,7 @@ const Services = () => {
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
-        currentItemId={currentItemId}
+        currentItem={currentItem}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

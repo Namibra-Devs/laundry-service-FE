@@ -1,10 +1,9 @@
-import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
 
-const CustomerDetails = ({ itemId }) => {
-  return <div>Customer Details For: {itemId}</div>;
+const CustomerDetails = () => {
+  const { currentItem: customer } = useAppContext();
+
+  return <div>Customer Details For: {customer?.id}</div>;
 };
 
-CustomerDetails.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
 export default CustomerDetails;

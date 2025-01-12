@@ -1,10 +1,7 @@
-import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
 
-const EditServiceForm = ({ itemId }) => {
-  return <div>Edit Service: {itemId}</div>;
-};
-
-EditServiceForm.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+const EditServiceForm = () => {
+  const { currentItem: service } = useAppContext();
+  return <div>Edit Service: {service?.name}</div>;
 };
 export default EditServiceForm;

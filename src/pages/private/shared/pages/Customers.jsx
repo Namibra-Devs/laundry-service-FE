@@ -10,24 +10,24 @@ const Customers = () => {
   const {
     viewItem,
     editItem,
-    setCurrentItemId,
+    setCurrentItem,
     isViewModalOpen,
     closeViewModal,
     isModalOpen,
     currentForm,
     openModal,
     closeModal,
-    currentItemId,
+    currentItem,
   } = useAppContext();
 
-  const onViewClick = (id) => {
+  const onViewClick = (customerItem) => {
     viewItem("Customer");
-    setCurrentItemId(id);
+    setCurrentItem(customerItem);
   };
 
-  const onEditClick = (id) => {
+  const onEditClick = (customerItem) => {
     editItem("Customer");
-    setCurrentItemId(id);
+    setCurrentItem(customerItem);
   };
 
   const customer = useCustomerForm((state) => state);
@@ -62,7 +62,7 @@ const Customers = () => {
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
-        currentItemId={currentItemId}
+        currentItem={currentItem}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

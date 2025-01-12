@@ -33,6 +33,7 @@ import { ArrowRight } from "lucide-react";
 import { ordersData } from "@/lib/data/ordersData";
 import PropTypes from "prop-types";
 import { iconDictionary } from "@/lib/data/IconsDictionary";
+import ViewToggle from "../OrdersViewToggle";
 
 const data = ordersData?.reverse();
 
@@ -143,10 +144,10 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuItem onClick={() => onViewClick(Order?.id)}>
+              <DropdownMenuItem onClick={() => onViewClick(Order)}>
                 View Order
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEditClick(Order?.id)}>
+              <DropdownMenuItem onClick={() => onEditClick(Order)}>
                 Edit Order
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -195,7 +196,9 @@ export function OrdersTable({ onViewClick, onEditClick }) {
   return (
     <div className="w-full">
       <div className="flex items-center py-4 justify-between">
-        <div>...</div>
+        <div className="sm:block hidden">
+          <ViewToggle />
+        </div>
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search customers..."

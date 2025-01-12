@@ -4,7 +4,6 @@ import { useCustomerForm } from "@/lib/store/PageForms";
 
 const CustomersForm = () => {
   const customer = useCustomerForm((state) => state);
-
   const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
   return (

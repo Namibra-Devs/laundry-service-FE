@@ -1,10 +1,8 @@
-import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
 
-const EditItemForm = ({ itemId }) => {
-  return <div>Edit Item: {itemId}</div>;
+const EditItemForm = () => {
+  const { currentItem: item } = useAppContext();
+  return <div>Edit Item: {item?.id}</div>;
 };
 
-EditItemForm.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
 export default EditItemForm;

@@ -12,15 +12,15 @@ import EditServiceForm from "@/pages/private/shared/components/services/EditServ
 import ItemDetails from "@/pages/private/shared/components/Items/ItemDetails";
 import EditItemForm from "@/pages/private/shared/components/Items/EditItemForm";
 
-const ViewContents = ({ section, itemId }) => {
+const ViewContents = ({ section }) => {
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
       {section === "Order" ? (
-        <OrderDetails itemId={itemId} />
+        <OrderDetails />
       ) : section === "Item" ? (
-        <ItemDetails itemId={itemId} />
+        <ItemDetails />
       ) : section === "Customer" ? (
-        <CustomerDetails itemId={itemId} />
+        <CustomerDetails />
       ) : null}
     </div>
   );
@@ -28,24 +28,23 @@ const ViewContents = ({ section, itemId }) => {
 
 ViewContents.propTypes = {
   section: PropTypes.string.isRequired,
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
-const EditContents = ({ section, itemId }) => {
+const EditContents = ({ section }) => {
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
       {section === "Order" ? (
-        <EditOrder itemId={itemId} />
+        <EditOrder />
       ) : section === "Item" ? (
-        <EditItemForm itemId={itemId} />
+        <EditItemForm />
       ) : section === "Service" ? (
-        <EditServiceForm itemId={itemId} />
+        <EditServiceForm />
       ) : section === "Customer" ? (
-        <EditCustomerForm itemId={itemId} />
+        <EditCustomerForm />
       ) : section === "Branch" ? (
-        <EditBranchForm itemId={itemId} />
+        <EditBranchForm />
       ) : section === "Staff" ? (
-        <EditStaffForm itemId={itemId} />
+        <EditStaffForm />
       ) : null}
     </div>
   );
@@ -53,10 +52,9 @@ const EditContents = ({ section, itemId }) => {
 
 EditContents.propTypes = {
   section: PropTypes.string.isRequired,
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
-const ViewItemModal = ({ isModalOpen, onClose, section, currentItemId }) => {
+const ViewItemModal = ({ isModalOpen, onClose, section }) => {
   const { viewModalType, setViewModalType } = useAppContext();
 
   const allowedSections = [
@@ -87,9 +85,9 @@ const ViewItemModal = ({ isModalOpen, onClose, section, currentItemId }) => {
 
         {/* Content */}
         {viewModalType === "view" ? (
-          <ViewContents section={section} itemId={currentItemId} />
+          <ViewContents section={section} />
         ) : (
-          <EditContents section={section} itemId={currentItemId} />
+          <EditContents section={section} />
         )}
 
         {/* Footer */}
@@ -123,7 +121,6 @@ ViewItemModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
-  currentItemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default ViewItemModal;

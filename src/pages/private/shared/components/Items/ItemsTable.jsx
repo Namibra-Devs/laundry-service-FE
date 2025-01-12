@@ -112,10 +112,10 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuItem onClick={() => onViewClick(item?.id)}>
+              <DropdownMenuItem onClick={() => onViewClick(item)}>
                 View Item
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEditClick(item?.id)}>
+              <DropdownMenuItem onClick={() => onEditClick(item)}>
                 Edit Item
               </DropdownMenuItem>
               <DropdownMenuSeparator />

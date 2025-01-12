@@ -8,26 +8,20 @@ import { BranchTable } from "../components/branch/BranchTable";
 
 const BranchManagement = () => {
   const {
-    viewItem,
     editItem,
-    setCurrentItemId,
+    setCurrentItem,
     isViewModalOpen,
     closeViewModal,
     isModalOpen,
     currentForm,
     openModal,
     closeModal,
-    currentItemId,
+    currentItem,
   } = useAppContext();
 
-  const onViewClick = (id) => {
-    viewItem("Branch");
-    setCurrentItemId(id);
-  };
-
-  const onEditClick = (id) => {
+  const onEditClick = (branchItem) => {
     editItem("Branch");
-    setCurrentItemId(id);
+    setCurrentItem(branchItem);
   };
 
   const { name, location, status, clearBranchForm } = useBranchForm(
@@ -56,7 +50,7 @@ const BranchManagement = () => {
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
-        currentItemId={currentItemId}
+        currentItem={currentItem}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -72,7 +66,7 @@ const BranchManagement = () => {
         />
       </div>
 
-      <BranchTable onViewClick={onViewClick} onEditClick={onEditClick} />
+      <BranchTable onEditClick={onEditClick} />
     </>
   );
 };

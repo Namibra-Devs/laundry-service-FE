@@ -19,7 +19,7 @@ export const ordersData = [
   },
   {
     id: "f7d91734-02e2-44ff-9c44-6b4533fcb4ed",
-    customerName: "Ibrahim Adams",
+    customerName: "Mike Joe",
     items: ["jeans", "shorts", "t_shirt", "t_shirt"],
     dateCreated: "31 Mar, 2024",
     quantity: 4,

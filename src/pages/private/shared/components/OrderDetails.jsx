@@ -1,15 +1,15 @@
+import useAppContext from "@/hooks/useAppContext";
 import { iconDictionary } from "../../../../lib/data/IconsDictionary";
-import PropTypes from "prop-types";
 
-const OrderDetails = ({ itemId }) => {
-  // const orderItem  = useFetchItem(orders, itemId) params are resourceType and itemId
+const OrderDetails = () => {
+  const { currentItem: order } = useAppContext();
 
   return (
     <>
       <article className="p-3 rounded-md bg-ash_light cursor-default">
         <div className="flex items-center justify-between my-3">
-          <p>Customer Name {itemId}</p>
-          <p className="font-semibold">Ibrahim Yakubu</p>
+          <p>Customer Name</p>
+          <p className="font-semibold">{order?.customerName}</p>
         </div>
         <div className="flex items-center justify-between my-3">
           <p>Email</p>
@@ -91,10 +91,6 @@ const OrderDetails = ({ itemId }) => {
       </div>
     </>
   );
-};
-
-OrderDetails.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default OrderDetails;

@@ -1,10 +1,9 @@
-import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
 
-const EditBranchForm = ({ itemId }) => {
-  return <div>Editing Branch: {itemId}</div>;
+const EditBranchForm = () => {
+  const { currentItem: branch } = useAppContext();
+
+  return <div>Editing Branch: {branch?.name}</div>;
 };
 
-EditBranchForm.propTypes = {
-  itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
 export default EditBranchForm;

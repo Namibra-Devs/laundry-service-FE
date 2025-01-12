@@ -1,7 +1,5 @@
 import CustomButton from "../../../../components/CustomButton";
 import { Plus } from "lucide-react";
-import SearchInput from "../../../../components/SearchInput";
-import Dropdown from "../../../../components/Dropdown";
 import ViewToggle from "../components/OrdersViewToggle";
 import { useState } from "react";
 import { OrdersTable } from "../components/Orders/OrdersTable";
@@ -9,43 +7,32 @@ import OrdersContainers from "../components/OrdersContainers";
 import useAppContext from "../../../../hooks/useAppContext";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
 import CreateOrderModal from "../components/CreateOrderModal";
+import Filters from "../components/Orders/Filters";
+import { useOrders } from "@/lib/store/OrdersStore";
 
 const Orders = () => {
-  const [activeMode, setActiveMode] = useState("containers");
   const [orderModal, setOrderModal] = useState(false);
-  const [day, setDay] = useState("");
-  const [branch, setBranch] = useState("");
-
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-
-  const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
 
   const {
     viewItem,
     editItem,
-    setCurrentItemId,
+    setCurrentItem,
     isViewModalOpen,
     closeViewModal,
     currentForm,
-    currentItemId,
+    currentItem,
   } = useAppContext();
 
-  const onViewClick = (id) => {
+  const { activeMode } = useOrders((state) => state);
+
+  const onViewClick = (orderItem) => {
     viewItem("Order");
-    setCurrentItemId(id);
+    setCurrentItem(orderItem);
   };
 
-  const onEditClick = (id) => {
+  const onEditClick = (orderItem) => {
     editItem("Order");
-    setCurrentItemId(id);
+    setCurrentItem(orderItem);
   };
 
   const openOrderModal = () => {
@@ -64,7 +51,7 @@ const Orders = () => {
         isModalOpen={isViewModalOpen}
         onClose={closeViewModal}
         section={currentForm || ""}
-        currentItemId={currentItemId}
+        currentItem={currentItem}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -81,37 +68,12 @@ const Orders = () => {
             onClick={openOrderModal}
           />
           <div className="sm:hidden block">
-            <ViewToggle setActiveMode={setActiveMode} activeMode={activeMode} />
+            <ViewToggle />
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-        <div className="hidden sm:block">
-          <ViewToggle setActiveMode={setActiveMode} activeMode={activeMode} />
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center space-x-4">
-          <SearchInput placeholder="search by employee etc..." />
-
-          <div className="flex items-center space-x-3 mt-2 lg:mt-0">
-            <div className="w-28">
-              <Dropdown
-                options={["Day", ...days]}
-                item={day}
-                setItem={setDay}
-              />
-            </div>
-            <div className="w-28">
-              <Dropdown
-                options={["Branch", ...branches]}
-                item={branch}
-                setItem={setBranch}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      {activeMode === "containers" && <Filters />}
 
       <div>
         {activeMode === "table" ? (

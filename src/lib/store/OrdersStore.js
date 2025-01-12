@@ -27,4 +27,9 @@ export const useOrders = create((set) => ({
       state: "completed",
     },
   ],
+
+  activeMode: "containers",
+  setActiveMode: (mode) => {
+    set(() => ({ activeMode: mode }));
+  },
 }));
