@@ -1,6 +1,5 @@
 import { File } from "lucide-react";
 import CustomButton from "../../../../components/CustomButton";
-import useAuth from "../../../../hooks/useAuth";
 import DashboardCard from "../components/DashboardCard";
 import {
   ShoppingCart,
@@ -9,10 +8,13 @@ import {
   Users,
 } from "lucide-react";
 import OverviewGraph from "../components/OverviewGraph";
+import useAuth from "@/hooks/useAuth";
+import { decodeToken } from "@/lib/utils/decodeToken";
 
 const Dashboard = () => {
-  const { auth } = useAuth();
-
+  const {
+    auth: { user },
+  } = useAuth();
   const cardDetails = [
     {
       label: "total orders",
@@ -50,12 +52,16 @@ const Dashboard = () => {
     },
   ];
 
+  const exportData = () => {
+    alert("exporting data");
+  };
+
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <div className="mb-3 sm:mb-0">
           <h1 className="font-[700] text-[25px] capitalize">
-            Hello, {auth?.role}
+            Hello, {user?.name}
           </h1>
           <p>Here is an overview of your dashboard</p>
         </div>
@@ -64,7 +70,7 @@ const Dashboard = () => {
           label="Export Report"
           icon={<File />}
           variant="contained"
-          onClick={() => {}}
+          onClick={exportData}
         />
       </div>
 

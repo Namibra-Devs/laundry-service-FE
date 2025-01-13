@@ -1,15 +1,18 @@
 import { useState } from "react";
 import Logo from "../assets/images/logo.png";
 import { LucideEyeClosed, LucideEye } from "lucide-react";
-import { AuthenticateUser } from "../lib/utils/auth";
 import { useLocation, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { AuthenticateUser } from "@/lib/utils/auth";
+import useAuth from "@/hooks/useAuth";
 
 const Login = () => {
+  const { setAuth } = useAuth();
   const [inputState, setInputState] = useState("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setAuth } = useAuth();
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,15 +21,21 @@ const Login = () => {
 
   const Login = async (e) => {
     e.preventDefault();
-    const response = await AuthenticateUser(email, password);
-    if (response.state === "error") {
-      alert(response.error);
+    setMessage("");
+    setLoading(true);
+
+    const { data, loading, message } = await AuthenticateUser(email, password);
+    setMessage(message);
+    setLoading(loading);
+
+    if (!data) {
       return;
     } else {
-      setAuth(response.data);
-      console.log(response.data);
+      const accessToken = data.token;
+      const user = data.user;
+      setAuth({ user, accessToken });
 
-      if (response?.data?.role === "admin") {
+      if (data?.user?.role === "admin") {
         const from = fromPath || "/dashboard";
         navigate(from, { replace: true });
       } else {
@@ -45,6 +54,14 @@ const Login = () => {
         <div className="w-20 h-20 bg-custom_yellow flex items-center justify-center border-[7px] border-solid border-dark rounded-[1.3rem] absolute -top-8 left-1/2 transform translate-x-[-50%]">
           <img src={Logo} alt="logo" />
         </div>
+
+        {message && (
+          <p
+            className={`bg-danger text-white px-5 py-3 rounded-md text-center`}
+          >
+            {message}
+          </p>
+        )}
 
         <div className="border-b-2 border-gray-400">
           <label htmlFor="email-address" className="text-xl">
@@ -87,12 +104,21 @@ const Login = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="bg-custom_yellow text-dark w-full py-3 rounded-md text-center capitalize mt-10"
-        >
-          login
-        </button>
+        {loading ? (
+          <p
+            type="submit"
+            className="bg-gray-200 text-dark w-full py-3 rounded-md text-center capitalize mt-10 active:scale-105 transition-all duration-300 cursor-wait"
+          >
+            Logging in ...
+          </p>
+        ) : (
+          <button
+            type="submit"
+            className="bg-custom_yellow text-dark w-full py-3 rounded-md text-center capitalize mt-10 active:scale-105 transition-all duration-300"
+          >
+            Login
+          </button>
+        )}
       </form>
     </div>
   );

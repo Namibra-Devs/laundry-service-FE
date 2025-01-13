@@ -1,14 +1,17 @@
 import { Navigate, useLocation } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
 import PropTypes from "prop-types";
+import useAuth from "@/hooks/useAuth";
 
 const AdminProtected = ({ children }) => {
-  const { auth } = useAuth();
   const location = useLocation();
+
+  const {
+    auth: { user },
+  } = useAuth();
 
   return (
     <>
-      {auth?.role === "admin" ? (
+      {user?.role === "admin" ? (
         children
       ) : (
         <Navigate to="/unauthorized" state={{ from: location }} replace />

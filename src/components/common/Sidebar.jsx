@@ -1,25 +1,31 @@
 import { useState } from "react";
-// import { LogOut as LogOutIcon } from "lucide-react";
-import { Link } from "react-router-dom";
 import {
   Sidebar as SidebarIcon,
   LayoutDashboard,
   Building2,
   ShoppingCart,
   Users,
-  ArrowDown,
+  LogOut as LogOutIcon,
   Store,
+  ArrowDown,
 } from "lucide-react";
-import useAuth from "../../hooks/useAuth";
 import { useAppStore } from "../../lib/store/AppStore";
+import { Logout } from "@/lib/utils/auth";
+import { useNavigate, Link } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 const Sidebar = () => {
   const [active, setActive] = useState("dashboard");
   const [subActive, setSubActive] = useState("");
   const [shopOptions, setShopOptions] = useState(false);
-  const { auth } = useAuth();
 
   const { sidebar, closeSidebar } = useAppStore((state) => state);
+
+  const {
+    auth: { user },
+  } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <div
       className={`sidebar bg-dark text-white w-[70%] h-screen lg:h-[97vh] overflow-y-scroll sm:w-[40%] lg:w-[15%] fixed top-0 z-10 lg:relative flex flex-col justify-between transition-all duration-300 lg:pr-2 p-2 lg:p-0 lg:left-0 ${
@@ -41,7 +47,7 @@ const Sidebar = () => {
 
         <div className="mt-10">
           <h5 className="text-gray-400">Menu</h5>
-          {auth?.role === "admin" && (
+          {user?.role === "admin" && (
             <Link
               to="/dashboard"
               onClick={() => {
@@ -130,7 +136,7 @@ const Sidebar = () => {
 
       {/* bottom */}
       <div className="mt-10 py-5">
-        {auth?.role === "admin" && (
+        {user?.role === "admin" && (
           <div>
             <h5 className="text-gray-400">Management</h5>
             <Link
@@ -166,9 +172,15 @@ const Sidebar = () => {
         <div className="flex items-center justify-between bg-[#44444433] p-3 rounded-md mt-5">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-custom_yellow rounded-md"></div>
-            <p>{auth?.role}</p>
+            <p>{user?.role}</p>
           </div>
-          <ArrowDown className="cursor-pointer" />
+          <LogOutIcon
+            className="cursor-pointer"
+            onClick={() => {
+              Logout();
+              navigate("/");
+            }}
+          />
         </div>
       </div>
     </div>

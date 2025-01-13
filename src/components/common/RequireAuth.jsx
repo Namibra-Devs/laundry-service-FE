@@ -1,16 +1,18 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
 import Sidebar from "./Sidebar";
 import { Sidebar as SidebarIcon } from "lucide-react";
 import { useAppStore } from "../../lib/store/AppStore";
+import useAuth from "@/hooks/useAuth";
 
 const RequireAuth = () => {
-  const { auth } = useAuth();
   const location = useLocation();
 
   const { openSidebar } = useAppStore((state) => state);
+  const {
+    auth: { user },
+  } = useAuth();
 
-  return auth?.email ? (
+  return user ? (
     <div className="flex sm:p-2">
       <Sidebar />
       <main className="flex-[4] bg-white sm:rounded-md py-5 px-2 sm:px-5 h-fit sm:h-[97vh] sm:overflow-y-scroll">
