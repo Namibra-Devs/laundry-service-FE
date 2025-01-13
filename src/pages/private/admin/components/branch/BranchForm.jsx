@@ -8,11 +8,11 @@ const BranchForm = () => {
     setBranchName,
     location,
     setBranchLocation,
-    status,
     setBranchStatus,
+    status,
   } = useBranchForm((state) => state);
 
-  const statusOptions = [status, "closed"];
+  const statusOptions = ["active", "inactive"];
 
   return (
     <>
@@ -35,8 +35,8 @@ const BranchForm = () => {
         />
         <Dropdown
           options={statusOptions}
-          item={status}
           setItem={setBranchStatus}
+          item={status}
           label="Status"
         />
       </form>

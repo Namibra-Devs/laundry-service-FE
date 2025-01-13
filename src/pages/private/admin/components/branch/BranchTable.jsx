@@ -30,10 +30,8 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { BranchesData, BranchLocations } from "@/lib/data/branchesData";
+import { BranchLocations } from "@/lib/data/branchesData";
 import PropTypes from "prop-types";
-
-const data = BranchesData?.reverse();
 
 const generateColumns = ({ onEditClick }) => {
   return [
@@ -132,7 +130,7 @@ const generateColumns = ({ onEditClick }) => {
   ];
 };
 
-export function BranchTable({ onEditClick }) {
+export function BranchTable({ onEditClick, branches }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -141,7 +139,7 @@ export function BranchTable({ onEditClick }) {
   const columns = generateColumns({ onEditClick });
 
   const table = useReactTable({
-    data,
+    data: branches,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -341,4 +339,5 @@ export function BranchTable({ onEditClick }) {
 
 BranchTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
+  branches: PropTypes.array.isRequired,
 };

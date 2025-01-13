@@ -34,8 +34,3 @@ export const AuthenticateUser = async (email, password) => {
 
   return result;
 };
-
-export const Logout = () => {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("userRole");
-};

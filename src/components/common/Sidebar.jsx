@@ -10,8 +10,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { useAppStore } from "../../lib/store/AppStore";
-import { Logout } from "@/lib/utils/auth";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 
 const Sidebar = () => {
@@ -24,7 +23,6 @@ const Sidebar = () => {
   const {
     auth: { user },
   } = useAuth();
-  const navigate = useNavigate();
 
   return (
     <div
@@ -174,13 +172,7 @@ const Sidebar = () => {
             <div className="w-10 h-10 bg-custom_yellow rounded-md"></div>
             <p>{user?.role}</p>
           </div>
-          <LogOutIcon
-            className="cursor-pointer"
-            onClick={() => {
-              Logout();
-              navigate("/");
-            }}
-          />
+          <LogOutIcon className="cursor-pointer" />
         </div>
       </div>
     </div>

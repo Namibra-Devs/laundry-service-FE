@@ -3,7 +3,7 @@ import { create } from "zustand";
 export const useBranchForm = create((set) => ({
   name: "",
   location: "",
-  status: "open",
+  status: "",
 
   setBranchName: (nameValue) => {
     set(() => ({ name: nameValue }));
@@ -17,7 +17,7 @@ export const useBranchForm = create((set) => ({
   clearBranchForm: () => {
     set(() => ({ name: "" }));
     set(() => ({ location: "" }));
-    set(() => ({ status: "open" }));
+    set(() => ({ status: "" }));
   },
 }));
 

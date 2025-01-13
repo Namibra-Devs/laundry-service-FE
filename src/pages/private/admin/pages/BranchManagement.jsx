@@ -5,8 +5,23 @@ import CreateItemModal from "../../../../components/common/CreateItemModal";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
 import { useBranchForm } from "../../../../lib/store/PageForms";
 import { BranchTable } from "../components/branch/BranchTable";
+import { createData } from "@/lib/utils/createData";
+import { useState } from "react";
+import useAuth from "@/hooks/useAuth";
+import useFetchAllItems from "@/hooks/useFetchAllItems";
+import { BranchesData } from "@/lib/data/branchesData";
+import { useEffect } from "react";
+import axios from "@/api/axios";
 
 const BranchManagement = () => {
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // const branches = useFetchAllItems("branch");
+
+  const branchesData = BranchesData?.reverse();
+
   const {
     editItem,
     setCurrentItem,
@@ -28,13 +43,68 @@ const BranchManagement = () => {
     (state) => state
   );
 
-  const createBranch = () => {
-    console.log("Branch:", { name, location, status });
+  const {
+    auth: { accessToken, user },
+  } = useAuth();
+
+  useEffect(() => {
+    const getBranches = async () => {
+      try {
+        const response = await axios.get(`/api/branches/user/${user?.id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        console.log(response?.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getBranches();
+  }, [user?.id, accessToken]);
+
+  const createBranch = async () => {
+    setMessage("");
+    setLoading(true);
+
+    if (!name || !location || !status) {
+      setMessageType("error");
+      setMessage("All fields are required");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, message } = await createData(
+        "branch",
+        { name, location, status },
+        accessToken
+      );
+
+      if (message?.type === "success") {
+        console.log("Success:", data);
+      } else {
+        console.error("Error:", message?.text);
+      }
+
+      setMessageType("success");
+      setMessage(message?.text);
+      clearBranchForm();
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      setMessageType("error");
+      setMessage("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClose = () => {
     closeModal();
     clearBranchForm();
+    setLoading(false);
+    setMessage("");
   };
 
   return (
@@ -44,6 +114,9 @@ const BranchManagement = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createBranch}
+        messageType={messageType}
+        message={message}
+        loading={loading}
       />
 
       <ViewItemModal
@@ -66,7 +139,7 @@ const BranchManagement = () => {
         />
       </div>
 
-      <BranchTable onEditClick={onEditClick} />
+      <BranchTable onEditClick={onEditClick} branches={branchesData} />
     </>
   );
 };
