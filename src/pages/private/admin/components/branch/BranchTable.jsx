@@ -30,10 +30,10 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { BranchLocations } from "@/lib/data/branchesData";
 import PropTypes from "prop-types";
+import { formatDate } from "@/lib/utils/formatDate";
 
-const generateColumns = ({ onEditClick }) => {
+const generateColumns = ({ onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -72,10 +72,12 @@ const generateColumns = ({ onEditClick }) => {
       ),
     },
     {
-      accessorKey: "dateCreated",
+      accessorKey: "createdAt",
       header: "Date Created",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("dateCreated")}</div>
+        <div className="capitalize">
+          {formatDate(row.getValue("createdAt"))}
+        </div>
       ),
     },
     {
@@ -117,9 +119,7 @@ const generateColumns = ({ onEditClick }) => {
                 Edit Branch
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => alert("Deleting Branch: " + branch?.id)}
-              >
+              <DropdownMenuItem onClick={() => onDeleteClick(branch?._id)}>
                 Delete Branch
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -130,13 +130,20 @@ const generateColumns = ({ onEditClick }) => {
   ];
 };
 
-export function BranchTable({ onEditClick, branches }) {
+export function BranchTable({
+  onEditClick,
+  onDeleteClick,
+  branches,
+  locations,
+  dates,
+  isFetchLoading,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onEditClick });
+  const columns = generateColumns({ onEditClick, onDeleteClick });
 
   const table = useReactTable({
     data: branches,
@@ -161,7 +168,7 @@ export function BranchTable({ onEditClick, branches }) {
   const [selectedLocation, setSelectedLocation] = useState("Location");
 
   return (
-    <div className="w-full">
+    <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
         <div>...</div>
         <div className="flex items-center space-x-5">
@@ -180,9 +187,9 @@ export function BranchTable({ onEditClick, branches }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {BranchLocations?.map((location) => (
+              {locations?.map((location, index) => (
                 <DropdownMenuItem
-                  key={location}
+                  key={index}
                   onClick={() => {
                     setSelectedLocation(location);
                     table.getColumn("location")?.setFilterValue(location);
@@ -238,19 +245,19 @@ export function BranchTable({ onEditClick, branches }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["14 Dec, 2024", "31 Aug, 2024"]?.map((dateCreated) => (
+              {dates?.map((date) => (
                 <DropdownMenuItem
-                  key={dateCreated}
+                  key={date}
                   onClick={() => {
-                    table.getColumn("dateCreated")?.setFilterValue(dateCreated);
+                    table.getColumn("createdAt")?.setFilterValue(date);
                   }}
                 >
-                  {dateCreated}
+                  {formatDate(date, true)}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
                 onClick={() => {
-                  table.getColumn("dateCreated")?.setFilterValue(""); // Clear the filter to show all staff
+                  table.getColumn("createdAt")?.setFilterValue(""); // Clear the filter to show all staff
                 }}
               >
                 Clear Filter
@@ -302,7 +309,9 @@ export function BranchTable({ onEditClick, branches }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {isFetchLoading
+                    ? "Fetching your Data"
+                    : "No Branches Data Available"}
                 </TableCell>
               </TableRow>
             )}
@@ -339,5 +348,9 @@ export function BranchTable({ onEditClick, branches }) {
 
 BranchTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
   branches: PropTypes.array.isRequired,
+  locations: PropTypes.array.isRequired,
+  dates: PropTypes.array.isRequired,
+  isFetchLoading: PropTypes.bool.isRequired,
 };

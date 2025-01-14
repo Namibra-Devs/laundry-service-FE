@@ -21,7 +21,7 @@ const CreateItemModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl min-h-[70vh] max-h-[90vh] flex flex-col relative">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-screen flex flex-col relative">
         {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">
             <div className="h-12 w-12 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>

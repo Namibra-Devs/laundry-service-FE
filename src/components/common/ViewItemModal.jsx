@@ -30,7 +30,7 @@ ViewContents.propTypes = {
   section: PropTypes.string.isRequired,
 };
 
-const EditContents = ({ section }) => {
+const EditContents = ({ section, refetchFunction }) => {
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
       {section === "Order" ? (
@@ -42,7 +42,7 @@ const EditContents = ({ section }) => {
       ) : section === "Customer" ? (
         <EditCustomerForm />
       ) : section === "Branch" ? (
-        <EditBranchForm />
+        <EditBranchForm refetchFunction={refetchFunction} />
       ) : section === "Staff" ? (
         <EditStaffForm />
       ) : null}
@@ -52,9 +52,10 @@ const EditContents = ({ section }) => {
 
 EditContents.propTypes = {
   section: PropTypes.string.isRequired,
+  refetchFunction: PropTypes.func.isRequired,
 };
 
-const ViewItemModal = ({ isModalOpen, onClose, section }) => {
+const ViewItemModal = ({ isModalOpen, onClose, section, refetchFunction }) => {
   const { viewModalType, setViewModalType } = useAppContext();
 
   const allowedSections = [
@@ -69,7 +70,7 @@ const ViewItemModal = ({ isModalOpen, onClose, section }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end bg-black bg-opacity-50 sm:pr-2">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[80vh] sm:h-[98vh] flex flex-col z-20">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-screen flex flex-col z-20 relative">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h4 className="text-base text-gray-500">
@@ -87,7 +88,7 @@ const ViewItemModal = ({ isModalOpen, onClose, section }) => {
         {viewModalType === "view" ? (
           <ViewContents section={section} />
         ) : (
-          <EditContents section={section} />
+          <EditContents section={section} refetchFunction={refetchFunction} />
         )}
 
         {/* Footer */}
@@ -121,6 +122,7 @@ ViewItemModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
+  refetchFunction: PropTypes.func.isRequired,
 };
 
 export default ViewItemModal;

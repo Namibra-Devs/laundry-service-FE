@@ -8,19 +8,41 @@ import { BranchTable } from "../components/branch/BranchTable";
 import { createData } from "@/lib/utils/createData";
 import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import useFetchAllItems from "@/hooks/useFetchAllItems";
-import { BranchesData } from "@/lib/data/branchesData";
-import { useEffect } from "react";
+import DeleteAlert from "@/components/common/DeleteAlert";
 import axios from "@/api/axios";
+import { useEffect } from "react";
+import useFetchAllItems from "@/hooks/useFetchAllItems";
 
 const BranchManagement = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState();
 
-  // const branches = useFetchAllItems("branch");
+  const { name, location, status, clearBranchForm } = useBranchForm(
+    (state) => state
+  );
 
-  const branchesData = BranchesData?.reverse();
+  const {
+    data: { data: branches },
+    loading: isFetchLoading,
+    // messageType: fetchMessage,
+  } = useFetchAllItems({ resourceType: "branches" });
+
+  const [branchesData, setBranchesData] = useState([]);
+
+  useEffect(() => {
+    if (Array.isArray(branches)) {
+      const reversedBranches = [...branches].reverse();
+      setBranchesData(reversedBranches);
+    }
+  }, [branches]);
+
+  const locations = [
+    ...new Set(branchesData?.map((branch) => branch?.location)),
+  ];
+
+  const dates = [...new Set(branchesData?.map((branch) => branch?.createdAt))];
 
   const {
     editItem,
@@ -32,6 +54,8 @@ const BranchManagement = () => {
     openModal,
     closeModal,
     currentItem,
+    deleteModal,
+    setDeleteModal,
   } = useAppContext();
 
   const onEditClick = (branchItem) => {
@@ -39,30 +63,31 @@ const BranchManagement = () => {
     setCurrentItem(branchItem);
   };
 
-  const { name, location, status, clearBranchForm } = useBranchForm(
-    (state) => state
-  );
+  const onDeleteClick = (id) => {
+    setSelectedId(id);
+    setDeleteModal(true);
+  };
 
   const {
     auth: { accessToken, user },
   } = useAuth();
 
-  useEffect(() => {
-    const getBranches = async () => {
-      try {
-        const response = await axios.get(`/api/branches/user/${user?.id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        console.log(response?.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const refetchBranches = async () => {
+    try {
+      console.log("Refetching branches...");
+      const response = await axios.get(`/api/branches/user/${user?.id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-    getBranches();
-  }, [user?.id, accessToken]);
+      const fetchedData = response?.data?.data;
+      setBranchesData([...fetchedData].reverse());
+      console.log("Fetched Data:", fetchedData);
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    }
+  };
 
   const createBranch = async () => {
     setMessage("");
@@ -84,13 +109,15 @@ const BranchManagement = () => {
 
       if (message?.type === "success") {
         console.log("Success:", data);
+        await refetchBranches();
+        setMessageType("success");
+        setMessage(message?.text);
+        clearBranchForm();
       } else {
         console.error("Error:", message?.text);
+        setMessageType("error");
+        setMessage(message?.text);
       }
-
-      setMessageType("success");
-      setMessage(message?.text);
-      clearBranchForm();
     } catch (error) {
       console.error("Unexpected error:", error);
       setMessageType("error");
@@ -109,6 +136,13 @@ const BranchManagement = () => {
 
   return (
     <>
+      <DeleteAlert
+        page="Branch"
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        itemId={selectedId}
+        refetchFunction={refetchBranches}
+      />
       <CreateItemModal
         isModalOpen={isModalOpen}
         onClose={onClose}
@@ -124,6 +158,8 @@ const BranchManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
+        loading={loading}
+        refetchFunction={refetchBranches}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -139,7 +175,16 @@ const BranchManagement = () => {
         />
       </div>
 
-      <BranchTable onEditClick={onEditClick} branches={branchesData} />
+      <div className="w-screen sm:w-full overflow-auto">
+        <BranchTable
+          onEditClick={onEditClick}
+          onDeleteClick={onDeleteClick}
+          branches={branchesData}
+          locations={locations}
+          dates={dates}
+          isFetchLoading={isFetchLoading}
+        />
+      </div>
     </>
   );
 };
