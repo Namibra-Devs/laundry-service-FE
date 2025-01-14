@@ -31,11 +31,11 @@ const Login = () => {
     if (!data) {
       return;
     } else {
-      const accessToken = data.token;
-      const user = data.user;
-      setAuth({ user, accessToken });
+      const accessToken = data?.data?.token;
+      const user = data?.data?.user;
+      setAuth((prev) => ({ ...prev, user, accessToken }));
 
-      if (data?.user?.role === "admin") {
+      if (user?.role === "admin") {
         const from = fromPath || "/dashboard";
         navigate(from, { replace: true });
       } else {
@@ -79,14 +79,14 @@ const Login = () => {
         </div>
 
         <div className="mt-10 border-b-2 border-gray-400">
-          <label htmlFor="email-address" className="text-xl">
+          <label htmlFor="password" className="text-xl">
             Password
           </label>
           <div className="flex items-center space-x-5">
             <input
               type={inputState === "text" ? "text" : "password"}
-              id="email-address"
-              name="email-address"
+              id="password"
+              name="password"
               // required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
