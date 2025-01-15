@@ -15,6 +15,7 @@ const useFetchAllItems = ({ resourceType }) => {
 
   const endpoints = {
     branches: "/api/branches/user",
+    services: "/api/services/user",
   };
 
   const endpoint = endpoints[resourceType];

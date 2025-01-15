@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createContext } from "react";
 import PropTypes from "prop-types";
+import useFetchAllItems from "@/hooks/useFetchAllItems";
 
 export const AppContext = createContext();
 
@@ -11,6 +12,10 @@ const AppProvider = ({ children }) => {
   const [viewModalType, setViewModalType] = useState("view");
   const [currentItem, setCurrentItem] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
+
+  const {
+    data: { data: branches },
+  } = useFetchAllItems({ resourceType: "branches" });
 
   // create item modal actions
   const openModal = (form) => {
@@ -60,6 +65,7 @@ const AppProvider = ({ children }) => {
     setCurrentItem,
     setDeleteModal,
     deleteModal,
+    branches,
   };
 
   return <AppContext.Provider value={values}>{children}</AppContext.Provider>;

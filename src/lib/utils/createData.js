@@ -9,9 +9,9 @@ export const createData = async (page, data, accessToken) => {
   };
 
   const endpoints = {
-    staff: "/api/staff/create",
     branch: "/api/branches/create",
     service: "/api/services/create",
+    staff: "/api/staff/create",
     customer: "/api/customers/create",
     item: "/api/items/create",
   };
@@ -69,7 +69,8 @@ export const createData = async (page, data, accessToken) => {
       } else {
         result.message = {
           type: "error",
-          text: error.response?.data?.message || error.message,
+          text: "oops! Failed to create data",
+          // text: error.response?.data?.message || error.message,
         };
         console.error("Error:", error);
       }

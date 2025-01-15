@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const Dropdown = ({ options, item, setItem, label }) => {
+const StringDropdown = ({ options, item, setItem, label }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -37,11 +37,11 @@ const Dropdown = ({ options, item, setItem, label }) => {
                 key={index}
                 className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer w-[10rem]"
                 onClick={() => {
-                  setItem(option?._id);
+                  setItem(option);
                   setIsOpen(false);
                 }}
               >
-                {option?.name}
+                {option}
               </li>
             ))}
           </ul>
@@ -51,11 +51,11 @@ const Dropdown = ({ options, item, setItem, label }) => {
   );
 };
 
-Dropdown.propTypes = {
+StringDropdown.propTypes = {
   options: PropTypes.array.isRequired,
   item: PropTypes.string,
   setItem: PropTypes.func.isRequired,
   label: PropTypes.string,
 };
 
-export default Dropdown;
+export default StringDropdown;

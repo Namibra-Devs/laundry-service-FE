@@ -30,12 +30,9 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { ServicesData } from "@/lib/data/servicesSData";
 import PropTypes from "prop-types";
 
-const data = ServicesData?.reverse();
-
-const generateColumns = ({ onEditClick }) => {
+const generateColumns = ({ onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -74,10 +71,10 @@ const generateColumns = ({ onEditClick }) => {
       ),
     },
     {
-      accessorKey: "addedBy",
+      accessorKey: "addBy",
       header: "Added By",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("addedBy")}</div>
+        <div className="capitalize">{row.getValue("addBy")}</div>
       ),
     },
     {
@@ -101,9 +98,7 @@ const generateColumns = ({ onEditClick }) => {
                 Edit Service
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => alert("Deleting Service: " + service?.id)}
-              >
+              <DropdownMenuItem onClick={() => onDeleteClick(service?._id)}>
                 Delete Service
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -114,16 +109,22 @@ const generateColumns = ({ onEditClick }) => {
   ];
 };
 
-export function ServicesTable({ onEditClick }) {
+export function ServicesTable({
+  onEditClick,
+  onDeleteClick,
+  isFetchLoading,
+  services,
+  branchesList,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onEditClick });
+  const columns = generateColumns({ onEditClick, onDeleteClick });
 
   const table = useReactTable({
-    data,
+    data: services,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -145,7 +146,7 @@ export function ServicesTable({ onEditClick }) {
   const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
 
   return (
-    <div className="w-full">
+    <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
         <div>...</div>
         <div className="flex items-center space-x-5">
@@ -165,7 +166,7 @@ export function ServicesTable({ onEditClick }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Accra"]?.map((branch) => (
+              {branchesList?.map((branch) => (
                 <DropdownMenuItem
                   key={branch}
                   onClick={() => {
@@ -261,7 +262,9 @@ export function ServicesTable({ onEditClick }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {isFetchLoading
+                    ? "Fetching your Data"
+                    : "No Services Data Available"}
                 </TableCell>
               </TableRow>
             )}
@@ -298,4 +301,8 @@ export function ServicesTable({ onEditClick }) {
 
 ServicesTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  isFetchLoading: PropTypes.bool.isRequired,
+  services: PropTypes.array.isRequired,
+  branchesList: PropTypes.array.isRequired,
 };

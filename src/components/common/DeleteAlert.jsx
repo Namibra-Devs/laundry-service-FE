@@ -32,9 +32,8 @@ const DeleteAlert = ({
       if (data) {
         console.log("Deletion successful:", data);
         setMessage(`${page} deleted successfully`);
+        await refetchFunction();
       }
-
-      await refetchFunction();
     } catch (error) {
       console.error("Error during deletion:", error.message || error);
       setMessage("An error occurred while deleting the item.");

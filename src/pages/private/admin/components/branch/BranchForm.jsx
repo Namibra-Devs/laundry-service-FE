@@ -1,6 +1,6 @@
-import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { useBranchForm } from "@/lib/store/PageForms";
+import StringDropdown from "./StringDropdown";
 
 const BranchForm = () => {
   const {
@@ -33,7 +33,7 @@ const BranchForm = () => {
           onChange={(e) => setBranchLocation(e.target.value)}
           type="text"
         />
-        <Dropdown
+        <StringDropdown
           options={statusOptions}
           setItem={setBranchStatus}
           item={status}
