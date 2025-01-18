@@ -1,5 +1,6 @@
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
+import useAppContext from "@/hooks/useAppContext";
 import { useStaffForm } from "@/lib/store/PageForms";
 
 const StaffForm = () => {
@@ -14,7 +15,14 @@ const StaffForm = () => {
     setStaffBranch,
   } = useStaffForm((state) => state);
 
-  const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
+  const { branches } = useAppContext();
+
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
+
+  const getBranchName = (branchId) => {
+    const branch = branches.find((b) => b._id === branchId);
+    return branch?.name || branchId;
+  };
 
   return (
     <form className="p-4 my-5">
@@ -43,8 +51,8 @@ const StaffForm = () => {
         type="password"
       />
       <Dropdown
-        options={branches}
-        item={branch}
+        options={branchesList}
+        item={getBranchName(branch)}
         setItem={setStaffBranch}
         label="Branch"
       />

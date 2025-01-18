@@ -3,9 +3,12 @@ import { useState } from "react";
 import { iconDictionary } from "../../../../../lib/data/IconsDictionary";
 import { Ellipsis } from "lucide-react";
 import useAppContext from "../../../../../hooks/useAppContext";
+import { useOrders } from "@/lib/store/OrdersStore";
 
 const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
   const { viewItem, editItem, setCurrentItemId } = useAppContext();
+
+  const { updateOrderState } = useOrders((state) => state);
 
   const onViewClick = (id) => {
     viewItem("Order");
@@ -16,6 +19,13 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
   //     editItem("Order");
   //     setCurrentItemId(id);
   //   };
+
+  const toMappings = {
+    pending: "in_progress",
+    in_progress: "completed",
+    completed: "delivered",
+    delivered: "pending",
+  };
 
   return (
     <div className="relative inline-block text-left">
@@ -32,7 +42,10 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
           </button>
           <button
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => alert(state)}
+            onClick={() => {
+              updateOrderState(order, toMappings[state]);
+              console.log(`moving to: ${toMappings[state]}`);
+            }}
           >
             To{" "}
             {state === "pending"
@@ -81,10 +94,13 @@ const OrderItem = ({ order, state }) => {
   };
 
   const { color } = stateColors[state] || "";
+  const { setDraggedOrder } = useOrders((state) => state);
 
   return (
     <div
-      className={`bg-white p-3 rounded-[10px] my-2 border-2 border-transparent ${color} transition-all duration-300 cursor-default relative`}
+      className={`bg-white p-3 rounded-[10px] my-2 border-2 border-transparent ${color} transition-all duration-300 cursor-move relative`}
+      draggable
+      onDragStart={() => setDraggedOrder(order)}
     >
       {/* header */}
       <div className="flex items-center justify-between">

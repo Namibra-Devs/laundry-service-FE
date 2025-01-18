@@ -352,5 +352,5 @@ BranchTable.propTypes = {
   branches: PropTypes.array.isRequired,
   locations: PropTypes.array.isRequired,
   dates: PropTypes.array.isRequired,
-  isFetchLoading: PropTypes.bool.isRequired,
+  isFetchLoading: PropTypes.bool,
 };

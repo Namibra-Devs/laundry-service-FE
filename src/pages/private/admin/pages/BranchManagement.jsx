@@ -11,7 +11,6 @@ import useAuth from "@/hooks/useAuth";
 import DeleteAlert from "@/components/common/DeleteAlert";
 import axios from "@/api/axios";
 import { useEffect } from "react";
-import useFetchAllItems from "@/hooks/useFetchAllItems";
 
 const BranchManagement = () => {
   const [message, setMessage] = useState("");
@@ -23,12 +22,7 @@ const BranchManagement = () => {
     (state) => state
   );
 
-  const {
-    data: { data: branches },
-    loading: isFetchLoading,
-    // messageType: fetchMessage,
-  } = useFetchAllItems({ resourceType: "branches" });
-
+  const { branches } = useAppContext();
   const [branchesData, setBranchesData] = useState([]);
 
   useEffect(() => {
@@ -41,8 +35,28 @@ const BranchManagement = () => {
   const locations = [
     ...new Set(branchesData?.map((branch) => branch?.location)),
   ];
-
   const dates = [...new Set(branchesData?.map((branch) => branch?.createdAt))];
+
+  const {
+    auth: { accessToken, user },
+  } = useAuth();
+
+  const refetchBranches = async () => {
+    try {
+      console.log("Refetching branches...");
+      const response = await axios.get(`/api/branches/user/${user?.id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const fetchedData = response?.data?.data;
+      setBranchesData([...fetchedData].reverse());
+      console.log("Fetched Data:", fetchedData);
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    }
+  };
 
   const {
     editItem,
@@ -66,27 +80,6 @@ const BranchManagement = () => {
   const onDeleteClick = (id) => {
     setSelectedId(id);
     setDeleteModal(true);
-  };
-
-  const {
-    auth: { accessToken, user },
-  } = useAuth();
-
-  const refetchBranches = async () => {
-    try {
-      console.log("Refetching branches...");
-      const response = await axios.get(`/api/branches/user/${user?.id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const fetchedData = response?.data?.data;
-      setBranchesData([...fetchedData].reverse());
-      console.log("Fetched Data:", fetchedData);
-    } catch (error) {
-      console.error("Error fetching branches:", error);
-    }
   };
 
   const createBranch = async () => {
@@ -135,7 +128,7 @@ const BranchManagement = () => {
   };
 
   return (
-    <>
+    <div className="h-screen sm:h-fit">
       <DeleteAlert
         page="Branch"
         deleteModal={deleteModal}
@@ -182,10 +175,9 @@ const BranchManagement = () => {
           branches={branchesData}
           locations={locations}
           dates={dates}
-          isFetchLoading={isFetchLoading}
         />
       </div>
-    </>
+    </div>
   );
 };
 export default BranchManagement;

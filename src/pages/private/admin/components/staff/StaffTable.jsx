@@ -30,12 +30,9 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { StaffData } from "@/lib/data/staffData";
 import PropTypes from "prop-types";
 
-const data = StaffData?.reverse();
-
-const generateColumns = ({ onEditClick }) => {
+const generateColumns = ({ onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -116,9 +113,7 @@ const generateColumns = ({ onEditClick }) => {
                 Edit Staff
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => alert("Deleting Staff: " + staff.id)}
-              >
+              <DropdownMenuItem onClick={() => onDeleteClick(staff.id)}>
                 Delete Staff
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -129,16 +124,22 @@ const generateColumns = ({ onEditClick }) => {
   ];
 };
 
-export function StaffTable({ onEditClick }) {
+export function StaffTable({
+  onEditClick,
+  onDeleteClick,
+  staff,
+  isFetchLoading,
+  branchesList,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onEditClick });
+  const columns = generateColumns({ onEditClick, onDeleteClick });
 
   const table = useReactTable({
-    data,
+    data: staff,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -176,13 +177,7 @@ export function StaffTable({ onEditClick }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {[
-                "Hidden Stone Village",
-                "Hidden Mist Village",
-                "Hidden Sand Village",
-                "Hidden Cloud Village",
-                "Hidden Leaf Village",
-              ].map((branch) => (
+              {branchesList?.map((branch) => (
                 <DropdownMenuItem
                   key={branch}
                   onClick={() => {
@@ -246,7 +241,9 @@ export function StaffTable({ onEditClick }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {isFetchLoading
+                    ? "Fetching your Data"
+                    : "No Staff Data Available"}
                 </TableCell>
               </TableRow>
             )}
@@ -283,4 +280,8 @@ export function StaffTable({ onEditClick }) {
 
 StaffTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  staff: PropTypes.array.isRequired,
+  isFetchLoading: PropTypes.func.isRequired,
+  branchesList: PropTypes.array.isRequired,
 };

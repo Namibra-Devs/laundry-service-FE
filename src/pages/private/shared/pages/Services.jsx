@@ -7,7 +7,6 @@ import { ServicesTable } from "../components/services/ServicesTable";
 import ViewItemModal from "@/components/common/ViewItemModal";
 import DeleteAlert from "@/components/common/DeleteAlert";
 import { useState } from "react";
-import useFetchAllItems from "@/hooks/useFetchAllItems";
 import { useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import axios from "@/api/axios";
@@ -21,12 +20,7 @@ const Services = () => {
 
   const { name, branch, clearServiceForm } = useServiceForm((state) => state);
 
-  const {
-    data: { data: services },
-    loading: isFetchLoading,
-    // messageType: fetchMessage,
-  } = useFetchAllItems({ resourceType: "services" });
-
+  const { services } = useAppContext();
   const [servicesData, setServicesData] = useState([]);
 
   useEffect(() => {
@@ -37,10 +31,7 @@ const Services = () => {
   }, [services]);
 
   const { branches } = useAppContext();
-
   const branchesList = [...new Set(branches?.map((branch) => branch?._id))];
-
-  console.log(servicesData);
 
   const {
     editItem,
@@ -87,7 +78,6 @@ const Services = () => {
 
       const fetchedData = response?.data?.data;
       setServicesData([...fetchedData].reverse());
-      console.log("Fetched Data:", fetchedData);
     } catch (error) {
       console.error("Error fetching services:", error);
     }
@@ -132,7 +122,7 @@ const Services = () => {
   };
 
   return (
-    <>
+    <div className="h-screen sm:h-fit">
       <DeleteAlert
         page="Service"
         deleteModal={deleteModal}
@@ -155,6 +145,8 @@ const Services = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
+        loading={loading}
+        refetchFunction={refetchServices}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -177,12 +169,12 @@ const Services = () => {
         <ServicesTable
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
-          isFetchLoading={isFetchLoading}
+          // isFetchLoading={isFetchLoading}
           services={servicesData}
           branchesList={branchesList}
         />
       </div>
-    </>
+    </div>
   );
 };
 export default Services;

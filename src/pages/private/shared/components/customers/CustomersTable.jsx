@@ -30,12 +30,9 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { CustomersData } from "@/lib/data/customersData";
 import PropTypes from "prop-types";
 
-const data = CustomersData?.reverse();
-
-const generateColumns = ({ onViewClick, onEditClick }) => {
+const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -126,9 +123,7 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
                 Edit Customer
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => alert("Deleting Customer: " + customer?.id)}
-              >
+              <DropdownMenuItem onClick={() => onDeleteClick(customer?.id)}>
                 Delete Customer
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -139,16 +134,21 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
   ];
 };
 
-export function CustomersTable({ onViewClick, onEditClick }) {
+export function CustomersTable({
+  onViewClick,
+  onEditClick,
+  onDeleteClick,
+  customers,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onViewClick, onEditClick });
+  const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
   const table = useReactTable({
-    data,
+    data: customers,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -350,4 +350,6 @@ export function CustomersTable({ onViewClick, onEditClick }) {
 CustomersTable.propTypes = {
   onViewClick: PropTypes.func.isRequired,
   onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  customers: PropTypes.array.isRequired,
 };

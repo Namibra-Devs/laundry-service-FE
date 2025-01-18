@@ -9,7 +9,8 @@ export const updateData = async (page, itemId, data, accessToken) => {
   };
 
   const endpoints = {
-    branch: "/api/branches/",
+    branch: "/api/branches",
+    customer: "/api/customers/update",
   };
 
   const endpoint = endpoints[page];

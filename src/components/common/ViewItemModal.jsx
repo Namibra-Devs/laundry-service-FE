@@ -40,11 +40,11 @@ const EditContents = ({ section, refetchFunction }) => {
       ) : section === "Service" ? (
         <EditServiceForm />
       ) : section === "Customer" ? (
-        <EditCustomerForm />
+        <EditCustomerForm refetchFunction={refetchFunction} />
       ) : section === "Branch" ? (
         <EditBranchForm refetchFunction={refetchFunction} />
       ) : section === "Staff" ? (
-        <EditStaffForm />
+        <EditStaffForm refetchFunction={refetchFunction} />
       ) : null}
     </div>
   );

@@ -3,8 +3,9 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import useAppContext from "@/hooks/useAppContext";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-const EditStaffForm = () => {
+const EditStaffForm = ({ refetchFunction }) => {
   const { currentItem: staff } = useAppContext();
   const [branch, setStaffBranch] = useState("");
 
@@ -67,5 +68,9 @@ const EditStaffForm = () => {
       </div>
     </form>
   );
+};
+
+EditStaffForm.propTypes = {
+  refetchFunction: PropTypes.func.isRequired,
 };
 export default EditStaffForm;

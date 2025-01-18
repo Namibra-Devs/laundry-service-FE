@@ -38,6 +38,7 @@ OptionsDropDown.propTypes = {
 
 const Column = ({ state }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [drop, setDrop] = useState(false);
 
   const stateColors = {
     pending: {
@@ -67,8 +68,30 @@ const Column = ({ state }) => {
 
   const { main, fade } = stateColors[state] || "";
 
+  const { draggedOrder, setDraggedOrder, moveOrder } = useOrders(
+    (state) => state
+  );
+
   return (
-    <div className="h-[75vh] bg-ash_light p-2 rounded-md relative">
+    <div
+      className={`h-[75vh] bg-ash_light p-2 rounded-md relative ${
+        drop && "border-dashed border-2 border-gray-400"
+      }`}
+      onDragOver={(e) => {
+        setDrop(true);
+        e.preventDefault();
+      }}
+      onDragLeave={(e) => {
+        setDrop(false);
+        e.preventDefault();
+      }}
+      onDrop={() => {
+        setDraggedOrder(null);
+        setDrop(false);
+        moveOrder(draggedOrder, state);
+        // console.log(`${draggedOrder?.customerName} moved to ${state}`);
+      }}
+    >
       <div className="flex items-center justify-between">
         <div
           className={`flex items-center space-x-3 ${fade} py-1 px-2 rounded-md`}

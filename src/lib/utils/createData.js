@@ -11,9 +11,10 @@ export const createData = async (page, data, accessToken) => {
   const endpoints = {
     branch: "/api/branches/create",
     service: "/api/services/create",
-    staff: "/api/staff/create",
+    staff: "/api/auth/register",
     customer: "/api/customers/create",
-    item: "/api/items/create",
+    // --------------
+    // item: "/api/items/create",
   };
 
   const endpoint = endpoints[page];

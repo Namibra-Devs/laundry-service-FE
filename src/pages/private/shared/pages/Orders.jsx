@@ -75,7 +75,7 @@ const Orders = () => {
 
       {activeMode === "containers" && <Filters />}
 
-      <div>
+      <div className="w-screen sm:w-full overflow-auto">
         {activeMode === "table" ? (
           <OrdersTable onViewClick={onViewClick} onEditClick={onEditClick} />
         ) : (

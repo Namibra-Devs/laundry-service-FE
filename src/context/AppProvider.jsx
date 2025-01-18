@@ -17,6 +17,18 @@ const AppProvider = ({ children }) => {
     data: { data: branches },
   } = useFetchAllItems({ resourceType: "branches" });
 
+  const {
+    data: { data: staff },
+  } = useFetchAllItems({ resourceType: "staff" });
+
+  const {
+    data: { data: services },
+  } = useFetchAllItems({ resourceType: "services" });
+
+  const {
+    data: { data: customers },
+  } = useFetchAllItems({ resourceType: "customers" });
+
   // create item modal actions
   const openModal = (form) => {
     setCurrentForm(form);
@@ -49,6 +61,13 @@ const AppProvider = ({ children }) => {
     setViewModalType("edit");
   };
 
+  const dataValues = {
+    staff,
+    branches,
+    services,
+    customers,
+  };
+
   const values = {
     currentForm,
     isModalOpen,
@@ -65,10 +84,13 @@ const AppProvider = ({ children }) => {
     setCurrentItem,
     setDeleteModal,
     deleteModal,
-    branches,
   };
 
-  return <AppContext.Provider value={values}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ ...values, ...dataValues }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 AppProvider.propTypes = {

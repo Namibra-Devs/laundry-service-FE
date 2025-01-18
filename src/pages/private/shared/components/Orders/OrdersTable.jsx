@@ -194,7 +194,7 @@ export function OrdersTable({ onViewClick, onEditClick }) {
   const [selectedStatus, setSelectedStatus] = useState("Status");
 
   return (
-    <div className="w-full">
+    <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
         <div className="sm:block hidden">
           <ViewToggle />

@@ -8,11 +8,54 @@ import { StaffTable } from "../components/staff/StaffTable";
 import ViewItemModal from "@/components/common/ViewItemModal";
 import { createData } from "@/lib/utils/createData";
 import useAuth from "@/hooks/useAuth";
+import DeleteAlert from "@/components/common/DeleteAlert";
+import axios from "@/api/axios";
+import { useEffect } from "react";
 
 const StaffManagement = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState();
+
+  const { name, email, password, branch, clearStaffForm } = useStaffForm(
+    (state) => state
+  );
+
+  const { staff } = useAppContext();
+  const [staffData, setStaffData] = useState([]);
+
+  const { branches } = useAppContext();
+  const branchesList = [...new Set(branches?.map((branch) => branch?._id))];
+
+  useEffect(() => {
+    if (Array.isArray(staff)) {
+      const reversedBranches = [...staff].reverse();
+      setStaffData(reversedBranches);
+    }
+  }, [staff]);
+
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
+  const refetchStaff = async () => {
+    try {
+      console.log("Refetching staff...");
+      const response = await axios.get(`/api/staffs`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const fetchedData = response?.data?.data;
+      setStaffData([...fetchedData].reverse());
+      console.log("Fetched Data:", fetchedData);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+    }
+  };
+
   const {
     editItem,
     setCurrentItem,
@@ -23,6 +66,8 @@ const StaffManagement = () => {
     openModal,
     closeModal,
     currentItem,
+    deleteModal,
+    setDeleteModal,
   } = useAppContext();
 
   const onEditClick = (staffItem) => {
@@ -30,17 +75,14 @@ const StaffManagement = () => {
     setCurrentItem(staffItem);
   };
 
-  const { name, email, password, branch, clearStaffForm } = useStaffForm(
-    (state) => state
-  );
-
-  const {
-    auth: { accessToken },
-  } = useAuth();
+  const onDeleteClick = (id) => {
+    setSelectedId(id);
+    setDeleteModal(true);
+  };
 
   const createStaff = async () => {
     setMessage("");
-    // setLoading(true);
+    setLoading(true);
 
     if (!name || !email || !password || !branch) {
       setMessageType("error");
@@ -49,31 +91,41 @@ const StaffManagement = () => {
       return;
     }
 
-    console.log("Staff:", { name, email, password, branch });
-    // try {
-    //   const { data, message } = await createData(
-    //     "branch",
-    //     { name, email, password, branch },
-    //     accessToken
-    //   );
+    try {
+      const { data, message } = await createData(
+        "staff",
+        { name, email, password, branch, role: "staff" },
+        accessToken
+      );
 
-    //   if (message?.type === "success") {
-    //     console.log("Success:", data);
-    //   } else {
-    //     console.error("Error:", message?.text);
-    //   }
+      if (message?.type === "success") {
+        console.log("Success:", data);
+        await refetchStaff();
+        setMessageType("success");
+        setMessage(message?.text);
+        clearStaffForm();
+      } else {
+        console.error("Error:", message?.text);
+        setMessageType("error");
+        setMessage(message?.text);
+      }
 
-    //   setMessageType("success");
-    //   setMessage(message?.text);
-    //   clearStaffForm();
-    // } catch (error) {
-    //   console.error("Unexpected error:", error);
-    //   setMessageType("error");
-    //   setMessage("An unexpected error occurred. Please try again.");
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (data) {
+        console.log(data);
+      }
+
+      // setMessageType("success");
+      // setMessage(message?.text);
+      // clearStaffForm();
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      setMessageType("error");
+      setMessage("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   const onClose = () => {
     closeModal();
     clearStaffForm();
@@ -82,7 +134,15 @@ const StaffManagement = () => {
   };
 
   return (
-    <>
+    <div className="h-screen sm:h-fit">
+      <DeleteAlert
+        page="Staff"
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        itemId={selectedId}
+        refetchFunction={refetchStaff}
+      />
+
       <CreateItemModal
         isModalOpen={isModalOpen}
         onClose={onClose}
@@ -98,6 +158,8 @@ const StaffManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
+        loading={loading}
+        refetchFunction={refetchStaff}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -114,9 +176,14 @@ const StaffManagement = () => {
       </div>
 
       <div>
-        <StaffTable onEditClick={onEditClick} />
+        <StaffTable
+          onEditClick={onEditClick}
+          onDeleteClick={onDeleteClick}
+          staff={staffData}
+          branchesList={branchesList}
+        />
       </div>
-    </>
+    </div>
   );
 };
 export default StaffManagement;

@@ -7,7 +7,9 @@ export const handleDelete = async (accessToken, page, itemId) => {
 
   const endpoints = {
     Branch: "/api/branches",
+    Staff: " /api/staff",
     Service: " /api/branches",
+    Customer: "/api/customers/delete",
   };
 
   const endpoint = endpoints[page];

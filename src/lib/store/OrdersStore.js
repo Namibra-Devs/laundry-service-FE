@@ -29,7 +29,24 @@ export const useOrders = create((set) => ({
   ],
 
   activeMode: "containers",
-  setActiveMode: (mode) => {
-    set(() => ({ activeMode: mode }));
+  setActiveMode: (mode) => set({ activeMode: mode }),
+
+  draggedOrder: null,
+  setDraggedOrder: (order) => set({ draggedOrder: order }),
+
+  moveOrder: (order, state) => {
+    set((store) => ({
+      orders: store.orders.map((item) =>
+        item.id === order?.id ? { ...order, state } : item
+      ),
+    }));
+  },
+
+  updateOrderState: (order, state) => {
+    set((store) => ({
+      orders: store.orders.map((item) =>
+        item.id === order?.id ? { ...order, state } : item
+      ),
+    }));
   },
 }));
