@@ -2,25 +2,15 @@ import CustomButton from "@/components/CustomButton";
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import useAppContext from "@/hooks/useAppContext";
-import useAuth from "@/hooks/useAuth";
-import { useBranchForm } from "@/lib/store/PageForms";
-import { updateData } from "@/lib/utils/updateData";
 import { useEffect } from "react";
 import { useState } from "react";
-import PropTypes from "prop-types";
 
 const EditBranchForm = ({ refetchFunction }) => {
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
   const { currentItem: branch } = useAppContext();
-  const {
-    auth: { accessToken },
-  } = useAuth();
 
-  const { clearBranchForm } = useBranchForm((state) => state);
+  // const { clearBranchForm } = useBranchForm((state) => state);
 
   const [formData, setFormData] = useState({
     branchName: "",
@@ -50,53 +40,49 @@ const EditBranchForm = ({ refetchFunction }) => {
   const handleUpdateBranch = async (e) => {
     e.preventDefault();
 
+    if (!formData?.branchName || !formData?.location || !status) {
+      return;
+    }
+
     const newInfo = {
       name: formData?.branchName,
       location: formData?.location,
       status,
     };
 
-    setMessage("");
-    setLoading(true);
+    console.log(newInfo);
 
-    if (!formData?.branchName || !formData?.location || !status) {
-      setMessageType("error");
-      setMessage("All fields are required");
-      setLoading(false);
-      return;
-    }
+    // try {
+    //   const { data, message } = await updateData(
+    //     "branch",
+    //     branch?._id,
+    //     newInfo,
+    //     accessToken
+    //   );
 
-    try {
-      const { data, message } = await updateData(
-        "branch",
-        branch?._id,
-        newInfo,
-        accessToken
-      );
-
-      if (message?.type === "success") {
-        console.log("Success:", data);
-        await refetchFunction();
-        setMessageType("success");
-        setMessage(message?.text);
-        clearBranchForm();
-      } else {
-        console.error("Error:", message?.text);
-        setMessageType("error");
-        setMessage(message?.text);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      setMessageType("error");
-      setMessage("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    //   if (message?.type === "success") {
+    //     console.log("Success:", data);
+    //     await refetchFunction();
+    //     setMessageType("success");
+    //     setMessage(message?.text);
+    //     clearBranchForm();
+    //   } else {
+    //     console.error("Error:", message?.text);
+    //     setMessageType("error");
+    //     setMessage(message?.text);
+    //   }
+    // } catch (error) {
+    //   console.error("Unexpected error:", error);
+    //   setMessageType("error");
+    //   setMessage("An unexpected error occurred. Please try again.");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
     <div>
-      {message && (
+      {/* {message && (
         <p
           className={`${
             messageType === "success" ? "bg-success" : "bg-danger"
@@ -104,14 +90,14 @@ const EditBranchForm = ({ refetchFunction }) => {
         >
           {message}
         </p>
-      )}
+      )} */}
 
       <form className="p-4 my-5">
-        {loading && (
+        {/* {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">
             <div className="h-12 w-12 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
           </div>
-        )}
+        )} */}
         <p>{branch?.location}</p>
         <Input
           label="Name"
@@ -148,7 +134,4 @@ const EditBranchForm = ({ refetchFunction }) => {
   );
 };
 
-EditBranchForm.propTypes = {
-  refetchFunction: PropTypes.func.isRequired,
-};
 export default EditBranchForm;

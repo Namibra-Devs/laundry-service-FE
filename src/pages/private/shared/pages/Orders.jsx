@@ -9,18 +9,34 @@ import ViewItemModal from "../../../../components/common/ViewItemModal";
 import CreateOrderModal from "../components/CreateOrderModal";
 import Filters from "../components/Orders/Filters";
 import { useOrders } from "@/lib/store/OrdersStore";
+import DeleteAlert from "@/components/common/DeleteAlert";
+import { useEffect } from "react";
 
 const Orders = () => {
   const [orderModal, setOrderModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
+  const { orders } = useAppContext();
+
+  const [ordersData, setOrdersData] = useState([]);
+
+  useEffect(() => {
+    if (Array.isArray(orders)) {
+      const reversed = [...orders].reverse();
+      setOrdersData(reversed);
+    }
+  }, [orders]);
 
   const {
-    viewItem,
     editItem,
+    viewItem,
     setCurrentItem,
     isViewModalOpen,
     closeViewModal,
     currentForm,
     currentItem,
+    deleteModal,
+    setDeleteModal,
   } = useAppContext();
 
   const { activeMode } = useOrders((state) => state);
@@ -35,17 +51,39 @@ const Orders = () => {
     setCurrentItem(orderItem);
   };
 
+  const onDeleteClick = (id) => {
+    setSelectedId(id);
+    setDeleteModal(true);
+  };
+
   const openOrderModal = () => {
     setOrderModal(true);
   };
 
-  const closeOrderModal = () => {
+  const createItem = async () => {
+    console.log("items data");
+  };
+
+  const onClose = () => {
     setOrderModal(false);
+    // clearItemsForm();
   };
 
   return (
     <>
-      <CreateOrderModal isModalOpen={orderModal} onClose={closeOrderModal} />
+      <DeleteAlert
+        page="Service"
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        itemId={selectedId}
+      />
+
+      <CreateOrderModal
+        isModalOpen={orderModal}
+        onClose={onClose}
+        section={currentForm || ""}
+        onSubmit={createItem}
+      />
 
       <ViewItemModal
         isModalOpen={isViewModalOpen}
@@ -77,7 +115,12 @@ const Orders = () => {
 
       <div className="w-screen sm:w-full overflow-auto">
         {activeMode === "table" ? (
-          <OrdersTable onViewClick={onViewClick} onEditClick={onEditClick} />
+          <OrdersTable
+            onViewClick={onViewClick}
+            onEditClick={onEditClick}
+            onDeleteClick={onDeleteClick}
+            orders={ordersData}
+          />
         ) : (
           <OrdersContainers />
         )}

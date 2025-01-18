@@ -13,21 +13,41 @@ const AppProvider = ({ children }) => {
   const [currentItem, setCurrentItem] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
 
+  // fetch data
   const {
     data: { data: branches },
-  } = useFetchAllItems({ resourceType: "branches" });
-
+  } = useFetchAllItems({
+    resourceType: "branches",
+  });
   const {
     data: { data: staff },
-  } = useFetchAllItems({ resourceType: "staff" });
-
+  } = useFetchAllItems({
+    resourceType: "staff",
+    customEndpoint: "/api/staff",
+  });
   const {
     data: { data: services },
-  } = useFetchAllItems({ resourceType: "services" });
-
+  } = useFetchAllItems({
+    resourceType: "services",
+  });
   const {
     data: { data: customers },
-  } = useFetchAllItems({ resourceType: "customers" });
+  } = useFetchAllItems({
+    resourceType: "customers",
+    customEndpoint: "/api/customers",
+  });
+  const {
+    data: { data: items },
+  } = useFetchAllItems({
+    resourceType: "items",
+    customEndpoint: "/api/service/items",
+  });
+  const {
+    data: { data: orders },
+  } = useFetchAllItems({
+    resourceType: "orders",
+    customEndpoint: "/api/service/orders",
+  });
 
   // create item modal actions
   const openModal = (form) => {
@@ -62,10 +82,12 @@ const AppProvider = ({ children }) => {
   };
 
   const dataValues = {
-    staff,
     branches,
+    staff,
     services,
     customers,
+    items,
+    orders,
   };
 
   const values = {

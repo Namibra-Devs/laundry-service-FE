@@ -4,25 +4,21 @@ import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
 import ViewItemModal from "../../../../components/common/ViewItemModal";
 import { useBranchForm } from "../../../../lib/store/PageForms";
-import { BranchTable } from "../components/branch/BranchTable";
-import { createData } from "@/lib/utils/createData";
-import { useState } from "react";
-import useAuth from "@/hooks/useAuth";
 import DeleteAlert from "@/components/common/DeleteAlert";
-import axios from "@/api/axios";
+import { BranchTable } from "../components/branch/BranchTable";
+import { useState } from "react";
 import { useEffect } from "react";
 
 const BranchManagement = () => {
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedId, setSelectedId] = useState();
-
   const { name, location, status, clearBranchForm } = useBranchForm(
     (state) => state
   );
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
 
   const { branches } = useAppContext();
+
   const [branchesData, setBranchesData] = useState([]);
 
   useEffect(() => {
@@ -36,27 +32,6 @@ const BranchManagement = () => {
     ...new Set(branchesData?.map((branch) => branch?.location)),
   ];
   const dates = [...new Set(branchesData?.map((branch) => branch?.createdAt))];
-
-  const {
-    auth: { accessToken, user },
-  } = useAuth();
-
-  const refetchBranches = async () => {
-    try {
-      console.log("Refetching branches...");
-      const response = await axios.get(`/api/branches/user/${user?.id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const fetchedData = response?.data?.data;
-      setBranchesData([...fetchedData].reverse());
-      console.log("Fetched Data:", fetchedData);
-    } catch (error) {
-      console.error("Error fetching branches:", error);
-    }
-  };
 
   const {
     editItem,
@@ -83,48 +58,21 @@ const BranchManagement = () => {
   };
 
   const createBranch = async () => {
-    setMessage("");
-    setLoading(true);
-
     if (!name || !location || !status) {
       setMessageType("error");
       setMessage("All fields are required");
-      setLoading(false);
       return;
     }
 
-    try {
-      const { data, message } = await createData(
-        "branch",
-        { name, location, status },
-        accessToken
-      );
-
-      if (message?.type === "success") {
-        console.log("Success:", data);
-        await refetchBranches();
-        setMessageType("success");
-        setMessage(message?.text);
-        clearBranchForm();
-      } else {
-        console.error("Error:", message?.text);
-        setMessageType("error");
-        setMessage(message?.text);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      setMessageType("error");
-      setMessage("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    setMessageType("");
+    setMessage("");
+    clearBranchForm();
+    console.log({ name, location, status });
   };
 
   const onClose = () => {
     closeModal();
     clearBranchForm();
-    setLoading(false);
-    setMessage("");
   };
 
   return (
@@ -134,16 +82,14 @@ const BranchManagement = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchBranches}
       />
       <CreateItemModal
         isModalOpen={isModalOpen}
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createBranch}
-        messageType={messageType}
         message={message}
-        loading={loading}
+        messageType={messageType}
       />
 
       <ViewItemModal
@@ -151,8 +97,6 @@ const BranchManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        loading={loading}
-        refetchFunction={refetchBranches}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

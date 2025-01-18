@@ -4,37 +4,28 @@ import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import { useCustomerForm } from "../../../../lib/store/PageForms";
 import ViewItemModal from "@/components/common/ViewItemModal";
-import { CustomersTable } from "../components/customers/CustomersTable";
 import DeleteAlert from "@/components/common/DeleteAlert";
-import useAuth from "@/hooks/useAuth";
-import axios from "@/api/axios";
+import { CustomersTable } from "../components/customers/CustomersTable";
 import { useState } from "react";
 import { useEffect } from "react";
-import { createData } from "@/lib/utils/createData";
 
 const Customers = () => {
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedId, setSelectedId] = useState();
-
-  const {
-    auth: { accessToken, user },
-  } = useAuth();
+  const [selectedId, setSelectedId] = useState(null);
 
   const { customers } = useAppContext();
+
   const [customersData, setCustomersData] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(customers)) {
-      const reversedBranches = [...customers].reverse();
-      setCustomersData(reversedBranches);
+      const reversed = [...customers].reverse();
+      setCustomersData(reversed);
     }
   }, [customers]);
 
   const {
-    viewItem,
     editItem,
+    viewItem,
     setCurrentItem,
     isViewModalOpen,
     closeViewModal,
@@ -58,23 +49,6 @@ const Customers = () => {
     branch,
   } = useCustomerForm((state) => state);
 
-  const refetchCustomers = async () => {
-    try {
-      console.log("Refetching customers...");
-      const response = await axios.get(`/api/customers`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const fetchedData = response?.data?.data;
-      setCustomersData([...fetchedData].reverse());
-      console.log("Fetched Data:", fetchedData);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-    }
-  };
-
   const onViewClick = (customerItem) => {
     viewItem("Customer");
     setCurrentItem(customerItem);
@@ -91,24 +65,6 @@ const Customers = () => {
   };
 
   const createCustomer = async () => {
-    setMessage("");
-    setLoading(true);
-
-    if (
-      !firstName ||
-      !middleName ||
-      !surName ||
-      !email ||
-      !phoneNumber ||
-      !houseNumber ||
-      !branch
-    ) {
-      setMessageType("error");
-      setMessage("All fields are required");
-      setLoading(false);
-      return;
-    }
-
     const customerObject = {
       firstName,
       middleName,
@@ -119,31 +75,7 @@ const Customers = () => {
       branch,
     };
 
-    try {
-      const { data, message } = await createData(
-        "customer",
-        customerObject,
-        accessToken
-      );
-
-      if (message?.type === "success") {
-        console.log("Success:", data);
-        await refetchCustomers();
-        setMessageType("success");
-        setMessage(message?.text);
-        clearCustomerForm();
-      } else {
-        console.error("Error:", message?.text);
-        setMessageType("error");
-        setMessage(message?.text);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      setMessageType("error");
-      setMessage("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    console.log(customerObject);
   };
 
   const onClose = () => {
@@ -158,7 +90,6 @@ const Customers = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchCustomers}
       />
 
       <CreateItemModal
@@ -166,9 +97,6 @@ const Customers = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createCustomer}
-        messageType={messageType}
-        message={message}
-        loading={loading}
       />
 
       <ViewItemModal
@@ -176,8 +104,6 @@ const Customers = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        loading={loading}
-        refetchFunction={refetchCustomers}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

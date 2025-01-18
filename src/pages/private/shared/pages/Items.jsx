@@ -4,9 +4,26 @@ import CreateItemModal from "../../../../components/common/CreateItemModal";
 import useAppContext from "../../../../hooks/useAppContext";
 import { useItemsForm } from "../../../../lib/store/PageForms";
 import ViewItemModal from "@/components/common/ViewItemModal";
+import DeleteAlert from "@/components/common/DeleteAlert";
+import { useState } from "react";
 import { ItemsTable } from "../components/Items/ItemsTable";
+import { useEffect } from "react";
 
 const Items = () => {
+  const [selectedId, setSelectedId] = useState(null);
+
+  const { branches, items } = useAppContext();
+  const branchesList = [...new Set(branches.map((branch) => branch.name))];
+
+  const [itemsData, setItemsData] = useState([]);
+
+  useEffect(() => {
+    if (Array.isArray(items)) {
+      const reversed = [...items].reverse();
+      setItemsData(reversed);
+    }
+  }, [items]);
+
   const {
     viewItem,
     editItem,
@@ -18,6 +35,8 @@ const Items = () => {
     openModal,
     closeModal,
     currentItem,
+    deleteModal,
+    setDeleteModal,
   } = useAppContext();
 
   const onViewClick = (item) => {
@@ -28,6 +47,11 @@ const Items = () => {
   const onEditClick = (item) => {
     editItem("Item");
     setCurrentItem(item);
+  };
+
+  const onDeleteClick = (id) => {
+    setSelectedId(id);
+    setDeleteModal(true);
   };
 
   const { itemName, prices, clearItemForm } = useItemsForm((state) => state);
@@ -43,6 +67,13 @@ const Items = () => {
 
   return (
     <>
+      <DeleteAlert
+        page="Service"
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        itemId={selectedId}
+      />
+
       <CreateItemModal
         isModalOpen={isModalOpen}
         onClose={onClose}
@@ -73,7 +104,13 @@ const Items = () => {
         />
       </div>
 
-      <ItemsTable onViewClick={onViewClick} onEditClick={onEditClick} />
+      <ItemsTable
+        onViewClick={onViewClick}
+        onEditClick={onEditClick}
+        onDeleteClick={onDeleteClick}
+        items={itemsData}
+        branchesList={branchesList}
+      />
     </>
   );
 };

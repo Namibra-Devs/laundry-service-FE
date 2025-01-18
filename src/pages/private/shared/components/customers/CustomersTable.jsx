@@ -182,33 +182,6 @@ export function CustomersTable({
             }
             className="max-w-48"
           />
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Day <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {["14 Dec, 2024", "31 Aug, 2024"]?.map((day) => (
-                <DropdownMenuItem
-                  key={day}
-                  onClick={() => {
-                    table.getColumn("dateCreated")?.setFilterValue(dateCreated);
-                  }}
-                >
-                  {dateCreated}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem
-                onClick={() => {
-                  table.getColumn("dateCreated")?.setFilterValue(""); // Clear the filter to show all staff
-                }}
-              >
-                Clear Filter
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

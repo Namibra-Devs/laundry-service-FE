@@ -3,35 +3,27 @@ import CreateItemModal from "../../../../components/common/CreateItemModal";
 import { Plus } from "lucide-react";
 import useAppContext from "../../../../hooks/useAppContext";
 import { useServiceForm } from "../../../../lib/store/PageForms";
-import { ServicesTable } from "../components/services/ServicesTable";
 import ViewItemModal from "@/components/common/ViewItemModal";
 import DeleteAlert from "@/components/common/DeleteAlert";
+import { ServicesTable } from "../components/services/ServicesTable";
 import { useState } from "react";
 import { useEffect } from "react";
-import useAuth from "@/hooks/useAuth";
-import axios from "@/api/axios";
-import { createData } from "@/lib/utils/createData";
 
 const Services = () => {
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedId, setSelectedId] = useState();
-
   const { name, branch, clearServiceForm } = useServiceForm((state) => state);
+  const [selectedId, setSelectedId] = useState(null);
 
-  const { services } = useAppContext();
+  const { branches, services } = useAppContext();
+  const branchesList = [...new Set(branches.map((branch) => branch.name))];
+
   const [servicesData, setServicesData] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(services)) {
-      const reversedBranches = [...services].reverse();
-      setServicesData(reversedBranches);
+      const reversed = [...services].reverse();
+      setServicesData(reversed);
     }
   }, [services]);
-
-  const { branches } = useAppContext();
-  const branchesList = [...new Set(branches?.map((branch) => branch?._id))];
 
   const {
     editItem,
@@ -60,65 +52,14 @@ const Services = () => {
   const onClose = () => {
     closeModal();
     clearServiceForm();
-    setMessage("");
-  };
-
-  const {
-    auth: { accessToken, user },
-  } = useAuth();
-
-  const refetchServices = async () => {
-    try {
-      console.log("Refetching services...");
-      const response = await axios.get(`/api/services/user/${user?.id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const fetchedData = response?.data?.data;
-      setServicesData([...fetchedData].reverse());
-    } catch (error) {
-      console.error("Error fetching services:", error);
-    }
   };
 
   const createService = async () => {
-    setMessage("");
-    setLoading(true);
-
     if (!name || !branch) {
-      setMessageType("error");
-      setMessage("All fields are required");
-      setLoading(false);
       return;
     }
 
-    try {
-      const { data, message } = await createData(
-        "service",
-        { name, branch },
-        accessToken
-      );
-
-      if (message?.type === "success") {
-        console.log("Success:", data);
-        await refetchServices();
-        setMessageType("success");
-        setMessage(message?.text);
-        clearServiceForm();
-      } else {
-        console.error("Error:", message?.text);
-        setMessageType("error");
-        setMessage(message?.text);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      setMessageType("error");
-      setMessage("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    console.log({ name, branch });
   };
 
   return (
@@ -128,16 +69,12 @@ const Services = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchServices}
       />
       <CreateItemModal
         isModalOpen={isModalOpen}
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createService}
-        messageType={messageType}
-        message={message}
-        loading={loading}
       />
 
       <ViewItemModal
@@ -145,8 +82,6 @@ const Services = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        loading={loading}
-        refetchFunction={refetchServices}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -169,7 +104,6 @@ const Services = () => {
         <ServicesTable
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
-          // isFetchLoading={isFetchLoading}
           services={servicesData}
           branchesList={branchesList}
         />

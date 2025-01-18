@@ -30,14 +30,11 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { ordersData } from "@/lib/data/ordersData";
 import PropTypes from "prop-types";
 import { iconDictionary } from "@/lib/data/IconsDictionary";
 import ViewToggle from "../OrdersViewToggle";
 
-const data = ordersData?.reverse();
-
-const generateColumns = ({ onViewClick, onEditClick }) => {
+const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -151,9 +148,7 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
                 Edit Order
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => alert("Deleting Order: " + Order?.id)}
-              >
+              <DropdownMenuItem onClick={() => onDeleteClick(Order?.id)}>
                 Delete Order
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -164,16 +159,21 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
   ];
 };
 
-export function OrdersTable({ onViewClick, onEditClick }) {
+export function OrdersTable({
+  onViewClick,
+  onEditClick,
+  onDeleteClick,
+  orders,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onViewClick, onEditClick });
+  const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
   const table = useReactTable({
-    data,
+    data: orders,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -322,4 +322,6 @@ export function OrdersTable({ onViewClick, onEditClick }) {
 OrdersTable.propTypes = {
   onViewClick: PropTypes.func.isRequired,
   onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  orders: PropTypes.array.isRequired,
 };

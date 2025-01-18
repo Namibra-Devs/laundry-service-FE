@@ -30,12 +30,9 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
-import { ItemsData } from "@/lib/data/ItemsData";
 import PropTypes from "prop-types";
 
-const data = ItemsData?.reverse();
-
-const generateColumns = ({ onViewClick, onEditClick }) => {
+const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -119,9 +116,7 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
                 Edit Item
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => alert("Deleting Item: " + item?.id)}
-              >
+              <DropdownMenuItem onClick={() => onDeleteClick(item?.id)}>
                 Delete Item
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -132,16 +127,22 @@ const generateColumns = ({ onViewClick, onEditClick }) => {
   ];
 };
 
-export function ItemsTable({ onViewClick, onEditClick }) {
+export function ItemsTable({
+  onViewClick,
+  onEditClick,
+  onDeleteClick,
+  items,
+  branchesList,
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onViewClick, onEditClick });
+  const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
   const table = useReactTable({
-    data,
+    data: items,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -174,32 +175,6 @@ export function ItemsTable({ onViewClick, onEditClick }) {
             }
             className="max-w-48"
           />
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Day <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {["14 Dec, 2024", "31 Aug, 2024"]?.map((day) => (
-                <DropdownMenuItem
-                  key={day}
-                  onClick={() => {
-                    table.getColumn("dateCreated")?.setFilterValue(dateCreated);
-                  }}
-                >
-                  {dateCreated}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem
-                onClick={() => {
-                  table.getColumn("dateCreated")?.setFilterValue(""); // Clear the filter to show all staff
-                }}
-              >
-                Clear Filter
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -208,7 +183,7 @@ export function ItemsTable({ onViewClick, onEditClick }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Accra", "Kumasi"]?.map((branch) => (
+              {branchesList?.map((branch) => (
                 <DropdownMenuItem
                   key={branch}
                   onClick={() => {
@@ -274,7 +249,7 @@ export function ItemsTable({ onViewClick, onEditClick }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No Items data available
                 </TableCell>
               </TableRow>
             )}
@@ -312,4 +287,7 @@ export function ItemsTable({ onViewClick, onEditClick }) {
 ItemsTable.propTypes = {
   onViewClick: PropTypes.func.isRequired,
   onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  items: PropTypes.array.isRequired,
+  branchesList: PropTypes.array.isRequired,
 };

@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import useAuth from "./useAuth";
 import axios from "@/api/axios";
 
-const useFetchAllItems = ({ resourceType }) => {
+const useFetchAllItems = ({ resourceType, customEndpoint }) => {
   const [data, setData] = useState([]);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
 
   const {
     auth: { accessToken, user },
@@ -18,48 +17,48 @@ const useFetchAllItems = ({ resourceType }) => {
     staff: "/api/staffs",
     services: "/api/services/user",
     customers: "/api/customers",
+    items: "/api/service/items",
+    // orders: "/api/customers",
   };
 
-  const endpoint = endpoints[resourceType];
+  const endpoint = customEndpoint || `${endpoints[resourceType]}/${user?.id}`;
 
   useEffect(() => {
     const fetchData = async () => {
-      setMessage("");
-      setLoading(true);
-
       if (!resourceType || !endpoint) {
-        setMessage("Resource type not specified or invalid");
-        setMessageType("error");
-        setLoading(false);
+        setError("Resource type not specified or invalid");
         return;
       }
 
+      setLoading(true);
+      setError("");
+
       try {
-        const response = await axios.get(`${endpoint}/${user?.id}`, {
+        const response = await axios.get(`${endpoint}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
         setData(response?.data);
-        setMessage("Data fetched successfully");
-        setMessageType("success");
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setMessage("Failed to fetch data");
-        setMessageType("error");
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err?.response?.data?.message || "Failed to fetch data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    if (user?.id && accessToken) {
+      fetchData();
+    }
   }, [user?.id, accessToken, resourceType, endpoint]);
 
-  return { data, loading, message, messageType };
+  return { data, error, loading };
 };
 
 useFetchAllItems.propTypes = {
   resourceType: PropTypes.string.isRequired,
+  customEndpoint: PropTypes.string,
 };
 
 export default useFetchAllItems;

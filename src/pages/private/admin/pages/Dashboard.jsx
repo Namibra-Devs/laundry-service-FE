@@ -9,9 +9,11 @@ import {
 } from "lucide-react";
 import OverviewGraph from "../components/OverviewGraph";
 import useAuth from "@/hooks/useAuth";
-import { decodeToken } from "@/lib/utils/decodeToken";
+import useAppContext from "@/hooks/useAppContext";
 
 const Dashboard = () => {
+  const { staff, branches, services, customers, orders } = useAppContext();
+
   const {
     auth: { user },
   } = useAuth();
@@ -19,36 +21,36 @@ const Dashboard = () => {
     {
       label: "total orders",
       icon: <ShoppingCart />,
-      count: 89,
+      count: orders?.length,
       metric: +21,
     },
     {
       label: "total customers",
       icon: <Users />,
-      count: 89,
+      count: customers?.length,
       metric: +21,
     },
     {
       label: "total branches",
       icon: <Building2 />,
-      count: 89,
+      count: branches?.length,
       metric: +21,
     },
     {
       label: "total staff",
       icon: <Users />,
-      count: 89,
+      count: staff?.length,
       metric: +21,
     },
     {
       label: "total services",
       icon: <HeartHandshakeIcon />,
-      count: 89,
+      count: services?.length,
     },
     {
       label: "today's orders",
       icon: <ShoppingCart />,
-      count: 89,
+      count: orders?.length,
     },
   ];
 
@@ -80,7 +82,7 @@ const Dashboard = () => {
             key={index}
             icon={cardItem?.icon}
             label={cardItem?.label}
-            count={cardItem?.count}
+            count={cardItem?.count || "x"}
             metric={cardItem?.metric}
           />
         ))}

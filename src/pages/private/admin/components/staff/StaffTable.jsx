@@ -128,7 +128,6 @@ export function StaffTable({
   onEditClick,
   onDeleteClick,
   staff,
-  isFetchLoading,
   branchesList,
 }) {
   const [sorting, setSorting] = useState([]);
@@ -241,9 +240,7 @@ export function StaffTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {isFetchLoading
-                    ? "Fetching your Data"
-                    : "No Staff Data Available"}
+                  No Staff Data Available
                 </TableCell>
               </TableRow>
             )}
@@ -282,6 +279,5 @@ StaffTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
   staff: PropTypes.array.isRequired,
-  isFetchLoading: PropTypes.func.isRequired,
   branchesList: PropTypes.array.isRequired,
 };

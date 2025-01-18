@@ -1,60 +1,33 @@
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import CustomButton from "../../../../components/CustomButton";
 import useAppContext from "../../../../hooks/useAppContext";
 import CreateItemModal from "../../../../components/common/CreateItemModal";
-import { useStaffForm } from "../../../../lib/store/PageForms";
-import { StaffTable } from "../components/staff/StaffTable";
 import ViewItemModal from "@/components/common/ViewItemModal";
-import { createData } from "@/lib/utils/createData";
-import useAuth from "@/hooks/useAuth";
 import DeleteAlert from "@/components/common/DeleteAlert";
-import axios from "@/api/axios";
+import { useState, useCallback } from "react";
+import { StaffTable } from "../components/staff/StaffTable";
+import { useStaffForm } from "../../../../lib/store/PageForms";
 import { useEffect } from "react";
 
 const StaffManagement = () => {
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedId, setSelectedId] = useState();
-
   const { name, email, password, branch, clearStaffForm } = useStaffForm(
     (state) => state
   );
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
 
-  const { staff } = useAppContext();
+  const { branches, staff } = useAppContext();
+  const branchesList = [...new Set(branches.map((branch) => branch.name))];
+
   const [staffData, setStaffData] = useState([]);
-
-  const { branches } = useAppContext();
-  const branchesList = [...new Set(branches?.map((branch) => branch?._id))];
 
   useEffect(() => {
     if (Array.isArray(staff)) {
-      const reversedBranches = [...staff].reverse();
-      setStaffData(reversedBranches);
+      const reversedStaff = [...staff].reverse();
+      setStaffData(reversedStaff);
     }
   }, [staff]);
-
-  const {
-    auth: { accessToken },
-  } = useAuth();
-
-  const refetchStaff = async () => {
-    try {
-      console.log("Refetching staff...");
-      const response = await axios.get(`/api/staffs`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const fetchedData = response?.data?.data;
-      setStaffData([...fetchedData].reverse());
-      console.log("Fetched Data:", fetchedData);
-    } catch (error) {
-      console.error("Error fetching staff:", error);
-    }
-  };
 
   const {
     editItem,
@@ -70,66 +43,38 @@ const StaffManagement = () => {
     setDeleteModal,
   } = useAppContext();
 
-  const onEditClick = (staffItem) => {
-    editItem("Staff");
-    setCurrentItem(staffItem);
-  };
+  const onEditClick = useCallback(
+    (staffItem) => {
+      editItem("Staff");
+      setCurrentItem(staffItem);
+    },
+    [editItem, setCurrentItem]
+  );
 
-  const onDeleteClick = (id) => {
-    setSelectedId(id);
-    setDeleteModal(true);
-  };
+  const onDeleteClick = useCallback(
+    (id) => {
+      setSelectedId(id);
+      setDeleteModal(true);
+    },
+    [setDeleteModal]
+  );
 
   const createStaff = async () => {
-    setMessage("");
-    setLoading(true);
-
     if (!name || !email || !password || !branch) {
       setMessageType("error");
       setMessage("All fields are required");
-      setLoading(false);
       return;
     }
 
-    try {
-      const { data, message } = await createData(
-        "staff",
-        { name, email, password, branch, role: "staff" },
-        accessToken
-      );
-
-      if (message?.type === "success") {
-        console.log("Success:", data);
-        await refetchStaff();
-        setMessageType("success");
-        setMessage(message?.text);
-        clearStaffForm();
-      } else {
-        console.error("Error:", message?.text);
-        setMessageType("error");
-        setMessage(message?.text);
-      }
-
-      if (data) {
-        console.log(data);
-      }
-
-      // setMessageType("success");
-      // setMessage(message?.text);
-      // clearStaffForm();
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      setMessageType("error");
-      setMessage("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    setMessageType("");
+    setMessage("");
+    clearStaffForm();
+    console.log({ name, email, password, branch });
   };
 
   const onClose = () => {
     closeModal();
     clearStaffForm();
-    setLoading(false);
     setMessage("");
   };
 
@@ -140,7 +85,6 @@ const StaffManagement = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchStaff}
       />
 
       <CreateItemModal
@@ -148,9 +92,8 @@ const StaffManagement = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createStaff}
-        messageType={messageType}
         message={message}
-        loading={loading}
+        messageType={messageType}
       />
 
       <ViewItemModal
@@ -158,8 +101,6 @@ const StaffManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        loading={loading}
-        refetchFunction={refetchStaff}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -186,4 +127,5 @@ const StaffManagement = () => {
     </div>
   );
 };
+
 export default StaffManagement;
