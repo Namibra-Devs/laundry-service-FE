@@ -121,7 +121,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
                 Edit Customer
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onDeleteClick(customer?.id)}>
+              <DropdownMenuItem onClick={() => onDeleteClick(customer?._id)}>
                 Delete Customer
               </DropdownMenuItem>
             </DropdownMenuContent>

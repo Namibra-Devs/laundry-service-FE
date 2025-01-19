@@ -77,16 +77,16 @@ const Customers = () => {
     setLoading(true);
     setMessage("");
 
-    if (
-      !firstName ||
-      !surName ||
-      !email ||
-      !phoneNumber ||
-      !houseNumber ||
-      !branch
-    ) {
+    if (!firstName || !surName || !email || !phoneNumber || !houseNumber) {
       setMessage("All fields are required");
       setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (!branch) {
+      setMessageType("error");
+      setMessage("Branch is required.");
       setLoading(false);
       return;
     }
