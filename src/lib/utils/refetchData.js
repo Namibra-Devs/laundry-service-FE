@@ -2,7 +2,7 @@ import axios from "@/api/axios";
 
 export const refetchData = async ({ setData, accessToken, endpoint }) => {
   try {
-    console.log("Refetching branches...");
+    console.log("Refetching data...");
 
     if (!endpoint || !accessToken) {
       console.error(

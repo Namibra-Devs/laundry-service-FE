@@ -18,7 +18,7 @@ const StaffManagement = () => {
   );
 
   const {
-    auth: { accessToken, user },
+    auth: { accessToken },
   } = useAuth();
 
   const [message, setMessage] = useState("");
@@ -27,7 +27,7 @@ const StaffManagement = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   const { branches, staff } = useAppContext();
-  const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const [staffData, setStaffData] = useState([]);
 
@@ -134,7 +134,7 @@ const StaffManagement = () => {
   return (
     <div className="h-screen sm:h-fit">
       <DeleteAlert
-        page="Staff"
+        page="staff"
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}

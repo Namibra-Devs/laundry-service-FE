@@ -29,11 +29,11 @@ const EditStaffForm = ({ refetchFunction }) => {
   useEffect(() => {
     if (staff) {
       setFormData({
-        staffName: staff.staffName || "",
+        staffName: staff.name || "",
         email: staff.email || "",
         password: staff.password || "",
       });
-      setStaffBranch(staff.branch || "");
+      setStaffBranch(staff.branch?._id || "");
     }
   }, [staff]);
 
@@ -56,12 +56,13 @@ const EditStaffForm = ({ refetchFunction }) => {
 
   const UpdateStaff = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setMessage("");
 
     if (
-      !formData?.staffName ||
-      !formData?.email ||
+      !formData?.staffName?.trim() ||
+      !formData?.email?.trim() ||
       !formData?.password ||
       !branch
     ) {
@@ -72,9 +73,9 @@ const EditStaffForm = ({ refetchFunction }) => {
     }
 
     const updatedStaff = {
-      name: formData?.staffName.trim(),
-      email: formData?.email.trim(),
-      password: formData?.password,
+      name: formData.staffName.trim(),
+      email: formData.email.trim(),
+      password: formData.password,
       branch,
     };
 
@@ -87,8 +88,8 @@ const EditStaffForm = ({ refetchFunction }) => {
       );
 
       if (message) {
-        setMessageType(message?.type);
-        setMessage(message?.text);
+        setMessageType(message.type);
+        setMessage(message.text);
       }
 
       if (data) {
@@ -98,8 +99,10 @@ const EditStaffForm = ({ refetchFunction }) => {
       }
     } catch (error) {
       console.error("Unexpected error during staff update:", error);
+      const errorMessage =
+        error?.response?.data?.message || "An unexpected error occurred.";
       setMessageType("error");
-      setMessage(message?.text || error.response.message);
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -113,7 +116,7 @@ const EditStaffForm = ({ refetchFunction }) => {
             messageType === "success" ? "bg-success" : "bg-danger"
           } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
         >
-          {message.text}
+          {message}
         </p>
       )}
       <form className="p-4 my-5">
@@ -140,12 +143,13 @@ const EditStaffForm = ({ refetchFunction }) => {
         />
         <Input
           label="Password"
-          name="staffPassword"
-          id="staffPassword"
+          name="password"
+          id="password"
           value={formData?.password}
           onChange={handleChange}
           type="password"
         />
+
         <Dropdown
           options={branchesList}
           item={getBranchName(branch)}

@@ -31,6 +31,7 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
+import { formatDate } from "@/lib/utils/formatDate";
 
 const generateColumns = ({ onEditClick, onDeleteClick }) => {
   return [
@@ -57,10 +58,10 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
       enableHiding: false,
     },
     {
-      accessorKey: "staffName",
+      accessorKey: "name",
       header: "Staff Name",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("staffName")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
     },
     {
@@ -71,26 +72,21 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
       ),
     },
     {
-      accessorKey: "password",
-      header: "Password",
-      cell: ({ row }) => {
-        const password = row.getValue("password");
-        return <p className="text-xl">{".".repeat(password.length)}</p>;
-      },
-    },
-    {
-      accessorKey: "dateCreated",
+      accessorKey: "createdAt",
       header: "Date Created",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("dateCreated")}</div>
+        <div className="capitalize">
+          {formatDate(row.getValue("createdAt"))}
+        </div>
       ),
     },
     {
       accessorKey: "branch",
       header: "Assigned Branch",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("branch")}</div>
-      ),
+      cell: ({ row }) => {
+        const branch = row.getValue("branch");
+        return <p>{branch?.name}</p>;
+      },
     },
     {
       id: "actions",
@@ -113,7 +109,7 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
                 Edit Staff
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onDeleteClick(staff.id)}>
+              <DropdownMenuItem onClick={() => onDeleteClick(staff._id)}>
                 Delete Staff
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -178,12 +174,12 @@ export function StaffTable({
             <DropdownMenuContent align="end">
               {branchesList?.map((branch) => (
                 <DropdownMenuItem
-                  key={branch}
+                  key={branch?._id}
                   onClick={() => {
-                    table.getColumn("branch")?.setFilterValue(branch);
+                    table.getColumn("branch")?.setFilterValue(branch?.name);
                   }}
                 >
-                  {branch}
+                  {branch?.name}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
