@@ -3,18 +3,17 @@ import Input from "@/components/Input";
 import useAppContext from "@/hooks/useAppContext";
 import { useEffect } from "react";
 import { useState } from "react";
-import PropTypes from "prop-types";
 import { useBranchForm } from "@/lib/store/PageForms";
 import { updateData } from "@/lib/utils/updateData";
 import useAuth from "@/hooks/useAuth";
 import StringDropdown from "./StringDropdown";
 
-const EditBranchForm = ({ refetchFunction }) => {
+const EditBranchForm = () => {
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
-  const { currentItem: branch } = useAppContext();
+  const { currentItem: branch, triggerUpdate } = useAppContext();
   const { clearBranchForm } = useBranchForm((state) => state);
 
   const {
@@ -79,7 +78,7 @@ const EditBranchForm = ({ refetchFunction }) => {
 
       if (data) {
         clearBranchForm();
-        await refetchFunction();
+        triggerUpdate("branch");
       }
     } catch (error) {
       console.error("Unexpected error during branch update:", error);
@@ -143,10 +142,6 @@ const EditBranchForm = ({ refetchFunction }) => {
       </form>
     </div>
   );
-};
-
-EditBranchForm.propTypes = {
-  refetchFunction: PropTypes.func,
 };
 
 export default EditBranchForm;

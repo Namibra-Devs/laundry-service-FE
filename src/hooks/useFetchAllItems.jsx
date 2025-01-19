@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useAuth from "./useAuth";
 import axios from "@/api/axios";
 
@@ -23,37 +23,37 @@ const useFetchAllItems = ({ resourceType, customEndpoint }) => {
 
   const endpoint = customEndpoint || `${endpoints[resourceType]}/${user?.id}`;
 
+  const fetchData = useCallback(async () => {
+    if (!resourceType || !endpoint) {
+      setError("Resource type not specified or invalid");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setData(response?.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err?.response?.data?.message || "Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  }, [accessToken, endpoint, resourceType]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (!resourceType || !endpoint) {
-        setError("Resource type not specified or invalid");
-        return;
-      }
-
-      setLoading(true);
-      setError("");
-
-      try {
-        const response = await axios.get(`${endpoint}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setData(response?.data);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError(err?.response?.data?.message || "Failed to fetch data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (user?.id && accessToken) {
       fetchData();
     }
-  }, [user?.id, accessToken, resourceType, endpoint]);
+  }, [user?.id, accessToken, fetchData]);
 
-  return { data, error, loading };
+  return { data, error, loading, refetch: fetchData };
 };
 
 useFetchAllItems.propTypes = {

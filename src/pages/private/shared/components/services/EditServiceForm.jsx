@@ -5,12 +5,11 @@ import useAppContext from "@/hooks/useAppContext";
 import useAuth from "@/hooks/useAuth";
 import { useServiceForm } from "@/lib/store/PageForms";
 import { updateData } from "@/lib/utils/updateData";
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { useEffect } from "react";
 
-const EditServiceForm = ({ refetchFunction }) => {
-  const { currentItem: service } = useAppContext();
+const EditServiceForm = () => {
+  const { currentItem: service, branches, triggerUpdate } = useAppContext();
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,8 +20,6 @@ const EditServiceForm = ({ refetchFunction }) => {
   const {
     auth: { accessToken },
   } = useAuth();
-
-  const { branches } = useAppContext();
 
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
@@ -63,7 +60,7 @@ const EditServiceForm = ({ refetchFunction }) => {
 
       if (data) {
         clearServiceForm();
-        await refetchFunction();
+        triggerUpdate("service");
       }
     } catch (error) {
       console.error("Unexpected error during branch update:", error);
@@ -119,7 +116,4 @@ const EditServiceForm = ({ refetchFunction }) => {
   );
 };
 
-EditServiceForm.propTypes = {
-  refetchFunction: PropTypes.func.isRequired,
-};
 export default EditServiceForm;

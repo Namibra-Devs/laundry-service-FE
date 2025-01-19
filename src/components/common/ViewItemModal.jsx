@@ -30,21 +30,21 @@ ViewContents.propTypes = {
   section: PropTypes.string.isRequired,
 };
 
-const EditContents = ({ section, refetchFunction }) => {
+const EditContents = ({ section }) => {
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
       {section === "Order" ? (
-        <EditOrder refetchFunction={refetchFunction} />
+        <EditOrder />
       ) : section === "Item" ? (
-        <EditItemForm refetchFunction={refetchFunction} />
+        <EditItemForm />
       ) : section === "Service" ? (
-        <EditServiceForm refetchFunction={refetchFunction} />
+        <EditServiceForm />
       ) : section === "Customer" ? (
-        <EditCustomerForm refetchFunction={refetchFunction} />
+        <EditCustomerForm />
       ) : section === "Branch" ? (
-        <EditBranchForm refetchFunction={refetchFunction} />
+        <EditBranchForm />
       ) : section === "Staff" ? (
-        <EditStaffForm refetchFunction={refetchFunction} />
+        <EditStaffForm />
       ) : null}
     </div>
   );
@@ -52,10 +52,9 @@ const EditContents = ({ section, refetchFunction }) => {
 
 EditContents.propTypes = {
   section: PropTypes.string.isRequired,
-  refetchFunction: PropTypes.func.isRequired,
 };
 
-const ViewItemModal = ({ isModalOpen, onClose, section, refetchFunction }) => {
+const ViewItemModal = ({ isModalOpen, onClose, section }) => {
   const { viewModalType, setViewModalType } = useAppContext();
 
   const allowedSections = [
@@ -88,7 +87,7 @@ const ViewItemModal = ({ isModalOpen, onClose, section, refetchFunction }) => {
         {viewModalType === "view" ? (
           <ViewContents section={section} />
         ) : (
-          <EditContents section={section} refetchFunction={refetchFunction} />
+          <EditContents section={section} />
         )}
 
         {/* Footer */}
@@ -122,7 +121,6 @@ ViewItemModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
-  refetchFunction: PropTypes.func,
 };
 
 export default ViewItemModal;

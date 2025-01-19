@@ -10,7 +10,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { createData } from "@/lib/utils/createData";
-import { refetchData } from "@/lib/utils/refetchData";
 
 const Customers = () => {
   const [message, setMessage] = useState("");
@@ -19,10 +18,10 @@ const Customers = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   const {
-    auth: { accessToken, user },
+    auth: { accessToken },
   } = useAuth();
 
-  const { customers } = useAppContext();
+  const { customers, triggerUpdate } = useAppContext();
 
   const [customersData, setCustomersData] = useState([]);
 
@@ -131,11 +130,7 @@ const Customers = () => {
       if (data) {
         console.log("Customer created successfully:", data);
         clearCustomerForm();
-        refetchData({
-          setData: setCustomersData,
-          accessToken,
-          endpoint: `/api/service/items${user?.id}`,
-        });
+        triggerUpdate("customer");
       }
     } catch (error) {
       console.error("Error creating customer:", error);
@@ -152,14 +147,6 @@ const Customers = () => {
     setMessage("");
   };
 
-  const refetchFunction = () => {
-    refetchData({
-      setData: setCustomersData,
-      accessToken,
-      endpoint: `/api/customers${user?.id}`,
-    });
-  };
-
   return (
     <>
       <DeleteAlert
@@ -167,7 +154,6 @@ const Customers = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchFunction}
       />
 
       <CreateItemModal

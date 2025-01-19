@@ -7,9 +7,8 @@ import { useStaffForm } from "@/lib/store/PageForms";
 import { updateData } from "@/lib/utils/updateData";
 import { useEffect } from "react";
 import { useState } from "react";
-import PropTypes from "prop-types";
 
-const EditStaffForm = ({ refetchFunction }) => {
+const EditStaffForm = () => {
   const { currentItem: staff } = useAppContext();
   const [branch, setStaffBranch] = useState("");
   const [message, setMessage] = useState("");
@@ -45,7 +44,7 @@ const EditStaffForm = ({ refetchFunction }) => {
     }));
   };
 
-  const { branches } = useAppContext();
+  const { branches, triggerUpdate } = useAppContext();
 
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
@@ -95,7 +94,7 @@ const EditStaffForm = ({ refetchFunction }) => {
       if (data) {
         console.log("Staff updated successfully:", data);
         clearStaffForm();
-        await refetchFunction();
+        triggerUpdate("staff");
       }
     } catch (error) {
       console.error("Unexpected error during staff update:", error);
@@ -135,8 +134,8 @@ const EditStaffForm = ({ refetchFunction }) => {
         />
         <Input
           label="Email"
-          name="staffEmail"
-          id="staffEmail"
+          name="email"
+          id="email"
           value={formData?.email}
           onChange={handleChange}
           type="email"
@@ -167,10 +166,6 @@ const EditStaffForm = ({ refetchFunction }) => {
       </form>
     </>
   );
-};
-
-EditStaffForm.propTypes = {
-  refetchFunction: PropTypes.func.isRequired,
 };
 
 export default EditStaffForm;

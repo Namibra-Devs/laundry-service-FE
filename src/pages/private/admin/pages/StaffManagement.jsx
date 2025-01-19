@@ -10,7 +10,6 @@ import { useStaffForm } from "../../../../lib/store/PageForms";
 import { useEffect } from "react";
 import { createData } from "@/lib/utils/createData";
 import useAuth from "@/hooks/useAuth";
-import { refetchData } from "@/lib/utils/refetchData";
 
 const StaffManagement = () => {
   const { name, email, password, branch, clearStaffForm } = useStaffForm(
@@ -26,7 +25,7 @@ const StaffManagement = () => {
   const [messageType, setMessageType] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  const { branches, staff } = useAppContext();
+  const { branches, staff, triggerUpdate } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const [staffData, setStaffData] = useState([]);
@@ -101,11 +100,7 @@ const StaffManagement = () => {
 
       if (data) {
         console.log("Staff created successfully:", data);
-        refetchData({
-          setData: setStaffData,
-          accessToken,
-          endpoint: `/api/staffs`,
-        });
+        triggerUpdate("staff");
         clearStaffForm();
       }
     } catch (error) {
@@ -123,14 +118,6 @@ const StaffManagement = () => {
     setMessage("");
   };
 
-  const refetchFunction = () => {
-    refetchData({
-      setData: setStaffData,
-      accessToken,
-      endpoint: `/api/staffs`,
-    });
-  };
-
   return (
     <div className="h-screen sm:h-fit">
       <DeleteAlert
@@ -138,7 +125,6 @@ const StaffManagement = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchFunction}
       />
 
       <CreateItemModal
@@ -156,7 +142,6 @@ const StaffManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        refetchFunction={refetchFunction}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

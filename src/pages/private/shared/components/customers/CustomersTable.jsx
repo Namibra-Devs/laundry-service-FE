@@ -57,39 +57,37 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       enableHiding: false,
     },
     {
-      accessorKey: "name",
-      header: "Customer Name",
+      accessorKey: "firstName",
+      header: "Name",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
+        <div className="capitalize">{row.getValue("firstName")}</div>
       ),
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("email")}</div>
-      ),
+      cell: ({ row }) => {
+        const email = row.getValue("email");
+        return <div>{email.slice(0, email.indexOf("@") + 1) + "..."}</div>;
+      },
     },
     {
-      accessorKey: "phoneNumber",
-      header: "Phone Number",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("phoneNumber")}</div>
-      ),
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
     },
     {
       accessorKey: "houseNumber",
       header: "House Number",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("houseNumber")}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue("houseNumber")}</div>,
     },
     {
       accessorKey: "branch",
       header: "Branch",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("branch")}</div>
-      ),
+      cell: ({ row }) => {
+        const branch = row.getValue("branch");
+        return <div className="capitalize">{branch?.name}</div>;
+      },
     },
     {
       accessorKey: "addedBy",
@@ -176,9 +174,9 @@ export function CustomersTable({
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search names..."
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
+            value={table.getColumn("firstName")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
+              table.getColumn("firstName")?.setFilterValue(event.target.value)
             }
             className="max-w-48"
           />

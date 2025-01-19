@@ -67,9 +67,7 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("email")}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
       accessorKey: "createdAt",

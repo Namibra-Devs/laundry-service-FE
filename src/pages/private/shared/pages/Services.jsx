@@ -10,7 +10,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { createData } from "@/lib/utils/createData";
 import useAuth from "@/hooks/useAuth";
-import { refetchData } from "@/lib/utils/refetchData";
 
 const Services = () => {
   const { name, branch, clearServiceForm } = useServiceForm((state) => state);
@@ -20,10 +19,10 @@ const Services = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   const {
-    auth: { accessToken, user },
+    auth: { accessToken },
   } = useAuth();
 
-  const { branches, services } = useAppContext();
+  const { branches, services, triggerUpdate } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
 
   const [servicesData, setServicesData] = useState([]);
@@ -98,11 +97,7 @@ const Services = () => {
       if (data) {
         console.log("Service created successfully:", data);
         clearServiceForm();
-        refetchData({
-          setData: setServicesData,
-          accessToken,
-          endpoint: `/api/services/user${user?.id}`,
-        });
+        triggerUpdate("service");
       }
     } catch (error) {
       console.error("Error creating service:", error);
@@ -113,14 +108,6 @@ const Services = () => {
     }
   };
 
-  const refetchFunction = () => {
-    refetchData({
-      setData: setServicesData,
-      accessToken,
-      endpoint: `/api/services/user${user?.id}`,
-    });
-  };
-
   return (
     <div className="h-screen sm:h-fit">
       <DeleteAlert
@@ -128,7 +115,6 @@ const Services = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchFunction}
       />
       <CreateItemModal
         isModalOpen={isModalOpen}
@@ -145,7 +131,6 @@ const Services = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        refetchFunction={refetchFunction}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

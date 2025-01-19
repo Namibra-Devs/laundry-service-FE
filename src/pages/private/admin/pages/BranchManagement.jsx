@@ -10,7 +10,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { createData } from "@/lib/utils/createData";
-import { refetchData } from "../../../../lib/utils/refetchData";
 
 const BranchManagement = () => {
   const { name, location, status, clearBranchForm } = useBranchForm(
@@ -18,7 +17,7 @@ const BranchManagement = () => {
   );
 
   const {
-    auth: { accessToken, user },
+    auth: { accessToken },
   } = useAuth();
 
   const [message, setMessage] = useState("");
@@ -26,7 +25,7 @@ const BranchManagement = () => {
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
-  const { branches } = useAppContext();
+  const { branches, triggerUpdate } = useAppContext();
 
   const [branchesData, setBranchesData] = useState([]);
 
@@ -100,11 +99,7 @@ const BranchManagement = () => {
       if (data) {
         console.log("Branch created successfully:", data);
         clearBranchForm();
-        refetchData({
-          setData: setBranchesData,
-          accessToken,
-          endpoint: `/api/branches/user/${user?.id}`,
-        });
+        triggerUpdate("branch");
       }
     } catch (error) {
       console.error("Error creating branch:", error);
@@ -125,14 +120,6 @@ const BranchManagement = () => {
     setMessage("");
   };
 
-  const refetchFunction = () => {
-    refetchData({
-      setData: setBranchesData,
-      accessToken,
-      endpoint: `/api/branches/user/${user?.id}`,
-    });
-  };
-
   return (
     <div className="h-screen sm:h-fit">
       <DeleteAlert
@@ -140,7 +127,6 @@ const BranchManagement = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchFunction}
       />
       <CreateItemModal
         isModalOpen={isModalOpen}
@@ -157,7 +143,6 @@ const BranchManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
-        refetchFunction={refetchFunction}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

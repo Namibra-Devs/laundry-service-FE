@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createContext } from "react";
 import PropTypes from "prop-types";
 import useFetchAllItems from "@/hooks/useFetchAllItems";
+import { useEffect } from "react";
 
 export const AppContext = createContext();
 
@@ -13,41 +14,88 @@ const AppProvider = ({ children }) => {
   const [currentItem, setCurrentItem] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
 
+  const [dataVersion, setDataVersion] = useState(0); // Trigger updates
+  const [modifiedResource, setModifiedResource] = useState(null);
+
   // fetch data
   const {
     data: { data: branches },
+    refetch: refetchBranches,
   } = useFetchAllItems({
     resourceType: "branches",
   });
+
   const {
     data: { data: staff },
+    refetch: refetchStaff,
   } = useFetchAllItems({
     resourceType: "staff",
     customEndpoint: "/api/staffs",
   });
+
   const {
     data: { data: services },
+    refetch: refetchServices,
   } = useFetchAllItems({
     resourceType: "services",
   });
+
   const {
     data: { data: customers },
+    refetch: refetchCustomers,
   } = useFetchAllItems({
     resourceType: "customers",
     customEndpoint: "/api/customers",
   });
+
   const {
     data: { data: items },
+    refetch: refetchItems,
   } = useFetchAllItems({
     resourceType: "items",
     customEndpoint: "/api/service/items",
   });
+
   const {
     data: { data: orders },
+    refetch: refetchOrders,
   } = useFetchAllItems({
     resourceType: "orders",
     customEndpoint: "/api/orders",
   });
+
+  const triggerUpdate = (resource) => {
+    setModifiedResource(resource);
+    setDataVersion((prev) => prev + 1);
+  };
+
+  useEffect(() => {
+    if (modifiedResource) {
+      console.log(dataVersion, modifiedResource);
+      switch (modifiedResource) {
+        case "branch":
+          refetchBranches();
+          break;
+        case "staff":
+          refetchStaff();
+          break;
+        case "service":
+          refetchServices();
+          break;
+        case "customer":
+          refetchCustomers();
+          break;
+        case "item":
+          refetchItems();
+          break;
+        case "order":
+          refetchOrders();
+          break;
+        default:
+          console.warn("Unknown resource:", modifiedResource);
+      }
+    }
+  }, [dataVersion]);
 
   // create item modal actions
   const openModal = (form) => {
@@ -106,6 +154,7 @@ const AppProvider = ({ children }) => {
     setCurrentItem,
     setDeleteModal,
     deleteModal,
+    triggerUpdate,
   };
 
   return (

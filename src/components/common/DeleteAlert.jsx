@@ -4,17 +4,14 @@ import PropTypes from "prop-types";
 import { handleDelete } from "@/lib/utils/deleteData";
 import useAuth from "@/hooks/useAuth";
 import { useState } from "react";
+import useAppContext from "@/hooks/useAppContext";
 
-const DeleteAlert = ({
-  page,
-  setDeleteModal,
-  deleteModal,
-  itemId,
-  refetchFunction,
-}) => {
+const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
   const {
     auth: { accessToken },
   } = useAuth();
+
+  const { triggerUpdate } = useAppContext();
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +29,7 @@ const DeleteAlert = ({
       if (data) {
         console.log("Deletion successful:", data);
         setMessage(`${page} deleted successfully`);
-        await refetchFunction();
+        triggerUpdate(page);
       }
     } catch (error) {
       console.error("Error during deletion:", error.message || error);
@@ -105,7 +102,6 @@ DeleteAlert.propTypes = {
   setDeleteModal: PropTypes.func.isRequired,
   deleteModal: PropTypes.bool.isRequired,
   itemId: PropTypes.string,
-  refetchFunction: PropTypes.func,
 };
 
 export default DeleteAlert;
