@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { createData } from "@/lib/utils/createData";
+import { refetchData } from "../../../../lib/utils/refetchData";
 
 const BranchManagement = () => {
   const { name, location, status, clearBranchForm } = useBranchForm(
@@ -17,7 +18,7 @@ const BranchManagement = () => {
   );
 
   const {
-    auth: { accessToken },
+    auth: { accessToken, user },
   } = useAuth();
 
   const [message, setMessage] = useState("");
@@ -98,9 +99,13 @@ const BranchManagement = () => {
 
       if (data) {
         console.log("Branch created successfully:", data);
+        clearBranchForm();
+        refetchData({
+          setData: setBranchesData,
+          accessToken,
+          endpoint: `/api/branches/user/${user?.id}`,
+        });
       }
-
-      clearBranchForm();
     } catch (error) {
       console.error("Error creating branch:", error);
 
@@ -118,6 +123,14 @@ const BranchManagement = () => {
     closeModal();
     clearBranchForm();
     setMessage("");
+  };
+
+  const refetchFunction = () => {
+    refetchData({
+      setData: setBranchesData,
+      accessToken,
+      endpoint: `/api/branches/user/${user?.id}`,
+    });
   };
 
   return (
@@ -143,6 +156,7 @@ const BranchManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
+        refetchFunction={refetchFunction}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

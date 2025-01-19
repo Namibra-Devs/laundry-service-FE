@@ -2,13 +2,23 @@ import CustomButton from "@/components/CustomButton";
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import useAppContext from "@/hooks/useAppContext";
+import useAuth from "@/hooks/useAuth";
+import { useStaffForm } from "@/lib/store/PageForms";
+import { updateData } from "@/lib/utils/updateData";
 import { useEffect } from "react";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-const EditStaffForm = () => {
+const EditStaffForm = ({ refetchFunction }) => {
   const { currentItem: staff } = useAppContext();
   const [branch, setStaffBranch] = useState("");
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { clearStaffForm } = useStaffForm((state) => state);
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   const [formData, setFormData] = useState({
     staffName: "",
@@ -35,31 +45,64 @@ const EditStaffForm = () => {
     }));
   };
 
-  const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
+  const { branches } = useAppContext();
 
-  const handleUpdateStaff = async () => {
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
+
+  const getBranchName = (branchId) => {
+    const branch = branches.find((b) => b._id === branchId);
+    return branch?.name || branchId;
+  };
+
+  const UpdateStaff = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
     if (
-      !formData.staffName ||
-      !formData.email ||
-      !formData.password ||
+      !formData?.staffName ||
+      !formData?.email ||
+      !formData?.password ||
       !branch
     ) {
-      setMessage((prev) => ({
-        ...prev,
-        text: "All fields are required",
-        type: "error",
-      }));
+      setMessageType("error");
+      setMessage("All fields are required.");
+      setLoading(false);
       return;
     }
 
-    setMessage(null);
-    const newInfo = {
-      staffName: formData.staffName,
-      email: formData.email,
-      password: formData.password,
+    const updatedStaff = {
+      name: formData?.staffName.trim(),
+      email: formData?.email.trim(),
+      password: formData?.password,
+      branch,
     };
 
-    console.log(newInfo);
+    try {
+      const { data, message } = await updateData(
+        "staff",
+        staff?._id,
+        updatedStaff,
+        accessToken
+      );
+
+      if (message) {
+        setMessageType(message?.type);
+        setMessage(message?.text);
+      }
+
+      if (data) {
+        console.log("Staff updated successfully:", data);
+        clearStaffForm();
+        await refetchFunction();
+      }
+    } catch (error) {
+      console.error("Unexpected error during staff update:", error);
+      setMessageType("error");
+      setMessage(message?.text || error.response.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,13 +110,18 @@ const EditStaffForm = () => {
       {message && (
         <p
           className={`${
-            message.type === "success" ? "bg-success" : "bg-danger"
+            messageType === "success" ? "bg-success" : "bg-danger"
           } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
         >
           {message.text}
         </p>
       )}
       <form className="p-4 my-5">
+        {loading && (
+          <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">
+            <div className="h-12 w-12 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+          </div>
+        )}
         <Input
           label="Staff Name"
           name="staffName"
@@ -99,8 +147,8 @@ const EditStaffForm = () => {
           type="password"
         />
         <Dropdown
-          options={branches}
-          item={branch}
+          options={branchesList}
+          item={getBranchName(branch)}
           setItem={setStaffBranch}
           label="Branch"
         />
@@ -109,12 +157,16 @@ const EditStaffForm = () => {
           <CustomButton
             label="Update Staff"
             variant="contained"
-            onClick={handleUpdateStaff}
+            onClick={UpdateStaff}
           />
         </div>
       </form>
     </>
   );
+};
+
+EditStaffForm.propTypes = {
+  refetchFunction: PropTypes.func.isRequired,
 };
 
 export default EditStaffForm;

@@ -10,6 +10,7 @@ import { useStaffForm } from "../../../../lib/store/PageForms";
 import { useEffect } from "react";
 import { createData } from "@/lib/utils/createData";
 import useAuth from "@/hooks/useAuth";
+import { refetchData } from "@/lib/utils/refetchData";
 
 const StaffManagement = () => {
   const { name, email, password, branch, clearStaffForm } = useStaffForm(
@@ -17,7 +18,7 @@ const StaffManagement = () => {
   );
 
   const {
-    auth: { accessToken },
+    auth: { accessToken, user },
   } = useAuth();
 
   const [message, setMessage] = useState("");
@@ -100,9 +101,13 @@ const StaffManagement = () => {
 
       if (data) {
         console.log("Staff created successfully:", data);
+        refetchData({
+          setData: setStaffData,
+          accessToken,
+          endpoint: `/api/staffs`,
+        });
+        clearStaffForm();
       }
-
-      clearStaffForm();
     } catch (error) {
       console.error("Error creating staff:", error);
       setMessage("An unexpected error occurred. Please try again later.");
@@ -116,6 +121,14 @@ const StaffManagement = () => {
     closeModal();
     clearStaffForm();
     setMessage("");
+  };
+
+  const refetchFunction = () => {
+    refetchData({
+      setData: setStaffData,
+      accessToken,
+      endpoint: `/api/staffs`,
+    });
   };
 
   return (
@@ -142,6 +155,7 @@ const StaffManagement = () => {
         onClose={closeViewModal}
         section={currentForm || ""}
         currentItem={currentItem}
+        refetchFunction={refetchFunction}
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">

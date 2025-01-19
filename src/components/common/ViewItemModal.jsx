@@ -30,21 +30,21 @@ ViewContents.propTypes = {
   section: PropTypes.string.isRequired,
 };
 
-const EditContents = ({ section }) => {
+const EditContents = ({ section, refetchFunction }) => {
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4 view_screen">
       {section === "Order" ? (
-        <EditOrder />
+        <EditOrder refetchFunction={refetchFunction} />
       ) : section === "Item" ? (
-        <EditItemForm />
+        <EditItemForm refetchFunction={refetchFunction} />
       ) : section === "Service" ? (
-        <EditServiceForm />
+        <EditServiceForm refetchFunction={refetchFunction} />
       ) : section === "Customer" ? (
-        <EditCustomerForm />
+        <EditCustomerForm refetchFunction={refetchFunction} />
       ) : section === "Branch" ? (
-        <EditBranchForm />
+        <EditBranchForm refetchFunction={refetchFunction} />
       ) : section === "Staff" ? (
-        <EditStaffForm />
+        <EditStaffForm refetchFunction={refetchFunction} />
       ) : null}
     </div>
   );
@@ -55,7 +55,7 @@ EditContents.propTypes = {
   refetchFunction: PropTypes.func.isRequired,
 };
 
-const ViewItemModal = ({ isModalOpen, onClose, section }) => {
+const ViewItemModal = ({ isModalOpen, onClose, section, refetchFunction }) => {
   const { viewModalType, setViewModalType } = useAppContext();
 
   const allowedSections = [
@@ -88,7 +88,7 @@ const ViewItemModal = ({ isModalOpen, onClose, section }) => {
         {viewModalType === "view" ? (
           <ViewContents section={section} />
         ) : (
-          <EditContents section={section} />
+          <EditContents section={section} refetchFunction={refetchFunction} />
         )}
 
         {/* Footer */}
@@ -122,6 +122,7 @@ ViewItemModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
+  refetchFunction: PropTypes.func,
 };
 
 export default ViewItemModal;

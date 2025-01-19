@@ -4,25 +4,28 @@ import { isTokenValid } from "./validateToken";
 export const updateData = async (page, itemId, data, accessToken) => {
   const result = {
     message: {},
-    loading: true,
     data: {},
   };
 
   const endpoints = {
+    staff: "/api/staffs",
     branch: "/api/branches",
-    customer: "/api/customers/update",
+    // service: "/api/services",
+    customer: "/api/customers",
+    item: "/api/service/items",
+    // order: "/api/orders",
   };
 
   const endpoint = endpoints[page];
 
   if (!page || !itemId || !data || !accessToken) {
-    result.message = { type: "error", text: "missing function params" };
+    result.message = { type: "error", text: "Missing function parameters" };
     result.loading = false;
     return result;
   }
 
   if (!endpoint) {
-    result.message = `Invalid page: ${page}`;
+    result.message = { type: "error", text: `Invalid page: ${page}` };
     result.loading = false;
     return result;
   }
@@ -35,43 +38,47 @@ export const updateData = async (page, itemId, data, accessToken) => {
       text: "Token expired. Redirecting to login...",
     };
     return result;
-  } else {
-    try {
-      const response = await axios.put(`${endpoint}/${itemId}`, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      result.data = response?.data;
+  }
+
+  try {
+    const response = await axios.put(`${endpoint}/${itemId}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    result.data = response?.data;
+    result.message = {
+      type: "success",
+      text: response?.data?.message || `${page} updated successfully`,
+    };
+  } catch (error) {
+    if (!error?.response) {
       result.message = {
-        type: "success",
-        text: response?.data?.message || `${page} created successfully`,
+        type: "error",
+        text: "No server response. Please check your connection.",
       };
-    } catch (error) {
-      if (!error?.response) {
-        result.message = {
-          type: "error",
-          text: "No server response. Please check your connection",
-        };
-      } else if (error?.response?.status == 400) {
-        result.message = {
-          type: "error",
-          text: "Missing Input Fields",
-        };
-      } else if (error?.response?.status == 401) {
-        result.message = {
-          type: "error",
-          text: "Unauthorized. Please log in again.",
-        };
-      } else {
-        result.message = {
-          type: "error",
-          text: error.response?.data?.message || error.message,
-        };
-        console.error("Error:", error);
-      }
-    } finally {
-      result.loading = false;
+    } else if (error.response.status === 400) {
+      result.message = {
+        type: "error",
+        text: "Invalid input. Please check the data and try again.",
+      };
+    } else if (error.response.status === 401) {
+      result.message = {
+        type: "error",
+        text: "Unauthorized access. Please log in again.",
+      };
+    } else if (error.response.status === 404) {
+      result.message = {
+        type: "error",
+        text: "Item not found. Please check the item ID and try again.",
+      };
+    } else {
+      result.message = {
+        type: "error",
+        text: error.response?.data?.message || "An unexpected error occurred.",
+      };
+      console.error("Error:", error);
     }
   }
 

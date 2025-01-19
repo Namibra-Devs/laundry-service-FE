@@ -1,16 +1,25 @@
 import CustomButton from "@/components/CustomButton";
-import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import useAppContext from "@/hooks/useAppContext";
 import { useEffect } from "react";
 import { useState } from "react";
+import PropTypes from "prop-types";
+import { useBranchForm } from "@/lib/store/PageForms";
+import { updateData } from "@/lib/utils/updateData";
+import useAuth from "@/hooks/useAuth";
+import StringDropdown from "./StringDropdown";
 
 const EditBranchForm = ({ refetchFunction }) => {
   const [status, setStatus] = useState("");
-
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
   const { currentItem: branch } = useAppContext();
+  const { clearBranchForm } = useBranchForm((state) => state);
 
-  // const { clearBranchForm } = useBranchForm((state) => state);
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   const [formData, setFormData] = useState({
     branchName: "",
@@ -37,52 +46,53 @@ const EditBranchForm = ({ refetchFunction }) => {
     }));
   };
 
-  const handleUpdateBranch = async (e) => {
+  const UpdateBranch = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
     if (!formData?.branchName || !formData?.location || !status) {
+      setMessageType("error");
+      setMessage("All fields are required.");
+      setLoading(false);
       return;
     }
 
-    const newInfo = {
-      name: formData?.branchName,
-      location: formData?.location,
+    const updatedBranch = {
+      name: formData?.branchName.trim(),
+      location: formData?.location.trim(),
       status,
     };
 
-    console.log(newInfo);
+    try {
+      const { data, message } = await updateData(
+        "branch",
+        branch?._id,
+        updatedBranch,
+        accessToken
+      );
 
-    // try {
-    //   const { data, message } = await updateData(
-    //     "branch",
-    //     branch?._id,
-    //     newInfo,
-    //     accessToken
-    //   );
+      if (message) {
+        setMessageType(message?.type);
+        setMessage(message?.text);
+      }
 
-    //   if (message?.type === "success") {
-    //     console.log("Success:", data);
-    //     await refetchFunction();
-    //     setMessageType("success");
-    //     setMessage(message?.text);
-    //     clearBranchForm();
-    //   } else {
-    //     console.error("Error:", message?.text);
-    //     setMessageType("error");
-    //     setMessage(message?.text);
-    //   }
-    // } catch (error) {
-    //   console.error("Unexpected error:", error);
-    //   setMessageType("error");
-    //   setMessage("An unexpected error occurred. Please try again.");
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (data) {
+        clearBranchForm();
+        await refetchFunction();
+      }
+    } catch (error) {
+      console.error("Unexpected error during branch update:", error);
+      setMessageType("error");
+      setMessage(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div>
-      {/* {message && (
+      {message && (
         <p
           className={`${
             messageType === "success" ? "bg-success" : "bg-danger"
@@ -90,14 +100,14 @@ const EditBranchForm = ({ refetchFunction }) => {
         >
           {message}
         </p>
-      )} */}
+      )}
 
       <form className="p-4 my-5">
-        {/* {loading && (
+        {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">
             <div className="h-12 w-12 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
           </div>
-        )} */}
+        )}
         <p>{branch?.location}</p>
         <Input
           label="Name"
@@ -115,7 +125,8 @@ const EditBranchForm = ({ refetchFunction }) => {
           onChange={handleChange}
           type="text"
         />
-        <Dropdown
+
+        <StringDropdown
           options={statusOptions}
           setItem={setStatus}
           item={status}
@@ -126,12 +137,16 @@ const EditBranchForm = ({ refetchFunction }) => {
           <CustomButton
             label="Update Branch"
             variant="contained"
-            onClick={handleUpdateBranch}
+            onClick={UpdateBranch}
           />
         </div>
       </form>
     </div>
   );
+};
+
+EditBranchForm.propTypes = {
+  refetchFunction: PropTypes.func,
 };
 
 export default EditBranchForm;
