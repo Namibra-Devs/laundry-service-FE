@@ -8,9 +8,18 @@ import DeleteAlert from "@/components/common/DeleteAlert";
 import { CustomersTable } from "../components/customers/CustomersTable";
 import { useState } from "react";
 import { useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
+import { createData } from "@/lib/utils/createData";
 
 const Customers = () => {
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   const { customers } = useAppContext();
 
@@ -65,6 +74,37 @@ const Customers = () => {
   };
 
   const createCustomer = async () => {
+    setLoading(true);
+    setMessage("");
+
+    if (
+      !firstName ||
+      !surName ||
+      !email ||
+      !phoneNumber ||
+      !houseNumber ||
+      !branch
+    ) {
+      setMessage("All fields are required");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setMessage("Invalid email address");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (!/^\d{10}$/.test(phoneNumber)) {
+      setMessage("Phone number must be 10 digits");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
     const customerObject = {
       firstName,
       middleName,
@@ -75,12 +115,35 @@ const Customers = () => {
       branch,
     };
 
-    console.log(customerObject);
+    try {
+      const { data, message } = await createData(
+        "customer",
+        customerObject,
+        accessToken
+      );
+
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+
+      if (data) {
+        console.log("Customer created successfully:", data);
+        clearCustomerForm();
+      }
+    } catch (error) {
+      console.error("Error creating customer:", error);
+      setMessage(message?.text);
+      setMessageType(message?.type);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClose = () => {
     closeModal();
     clearCustomerForm();
+    setMessage("");
   };
 
   return (
@@ -97,6 +160,9 @@ const Customers = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createCustomer}
+        message={message}
+        messageType={messageType}
+        loading={loading}
       />
 
       <ViewItemModal

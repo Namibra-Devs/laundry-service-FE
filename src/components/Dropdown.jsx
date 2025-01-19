@@ -37,11 +37,11 @@ const Dropdown = ({ options, item, setItem, label }) => {
                 key={index}
                 className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer w-[10rem]"
                 onClick={() => {
-                  setItem(option);
+                  setItem(option?._id);
                   setIsOpen(false);
                 }}
               >
-                {option}
+                {option?.name}
               </li>
             ))}
           </ul>

@@ -35,7 +35,7 @@ const DashboardCard = ({ icon, label, count, metric }) => {
 DashboardCard.propTypes = {
   icon: PropTypes.element.isRequired,
   label: PropTypes.string.isRequired,
-  count: PropTypes.number.isRequired,
+  count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   metric: PropTypes.number,
 };
 

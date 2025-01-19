@@ -13,10 +13,11 @@ const Input = ({ label, name, id, value, onChange, type }) => {
         <input
           type={inputState}
           id={id}
-          name={name ? name : ""}
+          name={name || ""}
           value={value}
           onChange={onChange}
           required
+          autoComplete="new-password"
           className="mt-1 block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 focus:border-red-500 text-gray-600"
         />
         <button

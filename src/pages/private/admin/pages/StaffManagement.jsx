@@ -8,17 +8,25 @@ import { useState, useCallback } from "react";
 import { StaffTable } from "../components/staff/StaffTable";
 import { useStaffForm } from "../../../../lib/store/PageForms";
 import { useEffect } from "react";
+import { createData } from "@/lib/utils/createData";
+import useAuth from "@/hooks/useAuth";
 
 const StaffManagement = () => {
   const { name, email, password, branch, clearStaffForm } = useStaffForm(
     (state) => state
   );
+
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [messageType, setMessageType] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
   const { branches, staff } = useAppContext();
-  const branchesList = [...new Set(branches.map((branch) => branch.name))];
+  const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
 
   const [staffData, setStaffData] = useState([]);
 
@@ -60,16 +68,48 @@ const StaffManagement = () => {
   );
 
   const createStaff = async () => {
+    setLoading(true);
+    setMessage("");
+
     if (!name || !email || !password || !branch) {
-      setMessageType("error");
       setMessage("All fields are required");
+      setMessageType("error");
+      setLoading(false);
       return;
     }
 
-    setMessageType("");
-    setMessage("");
-    clearStaffForm();
-    console.log({ name, email, password, branch });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setMessage("Invalid email format");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, message } = await createData(
+        "staff",
+        { name, email, password, branch, role: "staff" },
+        accessToken
+      );
+
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+
+      if (data) {
+        console.log("Staff created successfully:", data);
+      }
+
+      clearStaffForm();
+    } catch (error) {
+      console.error("Error creating staff:", error);
+      setMessage("An unexpected error occurred. Please try again later.");
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClose = () => {
@@ -94,6 +134,7 @@ const StaffManagement = () => {
         onSubmit={createStaff}
         message={message}
         messageType={messageType}
+        loading={loading}
       />
 
       <ViewItemModal

@@ -1,11 +1,19 @@
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
+import useAppContext from "@/hooks/useAppContext";
 import { useCustomerForm } from "@/lib/store/PageForms";
 
 const CustomersForm = () => {
   const customer = useCustomerForm((state) => state);
 
-  const branches = ["branch 1", "branch 2"];
+  const { branches } = useAppContext();
+
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
+
+  const getBranchName = (branchId) => {
+    const branch = branches.find((b) => b._id === branchId);
+    return branch?.name || branchId;
+  };
 
   return (
     <>
@@ -65,8 +73,8 @@ const CustomersForm = () => {
         />
 
         <Dropdown
-          options={branches}
-          item={customer?.branch}
+          options={branchesList}
+          item={getBranchName(customer?.branch)}
           setItem={customer?.setCustomerBranch}
           label="Branch"
         />

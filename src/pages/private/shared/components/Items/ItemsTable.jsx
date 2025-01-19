@@ -64,17 +64,17 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       ),
     },
     {
-      accessorKey: "washPrice",
+      accessorKey: "washingPrice",
       header: "Wash Price",
       cell: ({ row }) => (
-        <div className="capitalize">GHC {row.getValue("washPrice")}</div>
+        <div className="capitalize">GHC {row.getValue("washingPrice")}</div>
       ),
     },
     {
-      accessorKey: "ironPrice",
+      accessorKey: "ironingPrice",
       header: "Iron Price",
       cell: ({ row }) => (
-        <div className="capitalize">GHC {row.getValue("ironPrice")}</div>
+        <div className="capitalize">GHC {row.getValue("ironingPrice")}</div>
       ),
     },
     {

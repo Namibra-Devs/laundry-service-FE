@@ -1,5 +1,6 @@
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
+import useAppContext from "@/hooks/useAppContext";
 import { useServiceForm } from "@/lib/store/PageForms";
 
 const ServicesForm = () => {
@@ -7,16 +8,14 @@ const ServicesForm = () => {
     (state) => state
   );
 
-  const branches = ["branch 1", "branch 2"];
+  const { branches } = useAppContext();
 
-  // const { branches } = useAppContext();
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
 
-  // const branchesList = [...new Set(branches?.map((branch) => branch))];
-
-  // const getBranchName = (branchId) => {
-  //   const branch = branches.find((b) => b._id === branchId);
-  //   return branch?.name || branchId;
-  // };
+  const getBranchName = (branchId) => {
+    const branch = branches.find((b) => b._id === branchId);
+    return branch?.name || branchId;
+  };
 
   return (
     <>
@@ -30,8 +29,8 @@ const ServicesForm = () => {
           type="text"
         />
         <Dropdown
-          options={branches}
-          item={branch}
+          options={branchesList}
+          item={getBranchName(branch)}
           setItem={setServiceBranch}
           label="Branch"
         />

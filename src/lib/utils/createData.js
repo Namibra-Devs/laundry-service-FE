@@ -3,81 +3,79 @@ import { isTokenValid } from "./validateToken";
 
 export const createData = async (page, data, accessToken) => {
   const result = {
-    message: {},
+    message: { type: "info", text: "" },
     loading: true,
-    data: {},
+    data: null,
   };
 
   const endpoints = {
+    staff: "/api/auth/register",
     branch: "/api/branches/create",
     service: "/api/services/create",
-    staff: "/api/auth/register",
     customer: "/api/customers/create",
-    // --------------
-    // item: "/api/items/create",
+    item: "/api/service/items/create",
   };
 
-  const endpoint = endpoints[page];
-
+  // Validate input parameters
   if (!page || !data || !accessToken) {
-    result.message = { type: "error", text: "missing function params" };
+    result.message = { type: "error", text: "Missing function parameters" };
     result.loading = false;
     return result;
   }
 
+  const endpoint = endpoints[page];
   if (!endpoint) {
-    result.message = `Invalid page: ${page}`;
+    result.message = { type: "error", text: `Invalid page: ${page}` };
     result.loading = false;
     return result;
   }
 
+  // Validate token
   if (!isTokenValid(accessToken)) {
-    console.log("Token is invalid or expired. Please log in again.");
-    window.location.href = "/";
+    console.warn("Token is invalid or expired. Redirecting to login...");
     result.message = {
       type: "error",
       text: "Token expired. Redirecting to login...",
     };
+    result.loading = false;
+    window.location.href = "/";
     return result;
-  } else {
-    try {
-      const response = await axios.post(endpoint, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      result.data = response?.data;
+  }
+
+  // Make API request
+  try {
+    const response = await axios.post(endpoint, data, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    result.data = response.data;
+    result.message = {
+      type: "success",
+      text: response?.data?.message || `${page} created successfully`,
+    };
+  } catch (error) {
+    const status = error?.response?.status;
+
+    if (!error?.response) {
       result.message = {
-        type: "success",
-        text: response?.data?.message || `${page} created successfully`,
+        type: "error",
+        text: "No server response. Please check your connection.",
       };
-    } catch (error) {
-      if (!error?.response) {
-        result.message = {
-          type: "error",
-          text: "No server response. Please check your connection",
-        };
-      } else if (error?.response?.status == 400) {
-        result.message = {
-          type: "error",
-          text: "Missing Input Fields",
-        };
-      } else if (error?.response?.status == 401) {
-        result.message = {
-          type: "error",
-          text: "Unauthorized. Please log in again.",
-        };
-      } else {
-        result.message = {
-          type: "error",
-          text: "oops! Failed to create data",
-          // text: error.response?.data?.message || error.message,
-        };
-        console.error("Error:", error);
-      }
-    } finally {
-      result.loading = false;
+    } else if (status === 400) {
+      result.message = { type: "error", text: "Missing input fields." };
+    } else if (status === 401) {
+      result.message = {
+        type: "error",
+        text: "Unauthorized. Please log in again.",
+      };
+    } else {
+      result.message = {
+        type: "error",
+        text: error.response?.data?.message || "Oops! Failed to create data.",
+      };
+      console.error("Error:", error);
     }
+  } finally {
+    result.loading = false;
   }
 
   return result;

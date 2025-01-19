@@ -12,7 +12,15 @@ import useAuth from "@/hooks/useAuth";
 import useAppContext from "@/hooks/useAppContext";
 
 const Dashboard = () => {
-  const { staff, branches, services, customers, orders } = useAppContext();
+  const { staff, branches, services, customers, items, orders } =
+    useAppContext();
+
+  console.log("staff", staff);
+  console.log("branches", branches);
+  console.log("services", services);
+  console.log("customers", customers);
+  console.log("items", items);
+  console.log("orders", orders);
 
   const {
     auth: { user },

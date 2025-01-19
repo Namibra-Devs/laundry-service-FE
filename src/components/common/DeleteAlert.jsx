@@ -105,7 +105,7 @@ DeleteAlert.propTypes = {
   setDeleteModal: PropTypes.func.isRequired,
   deleteModal: PropTypes.bool.isRequired,
   itemId: PropTypes.string,
-  refetchFunction: PropTypes.func.isRequired,
+  refetchFunction: PropTypes.func,
 };
 
 export default DeleteAlert;

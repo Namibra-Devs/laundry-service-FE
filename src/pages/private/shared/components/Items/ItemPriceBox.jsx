@@ -2,19 +2,20 @@ import Dropdown from "../../../../../components/Dropdown";
 import { Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
 import { useItemsForm } from "../../../../../lib/store/PageForms";
+import useAppContext from "@/hooks/useAppContext";
 
 const ItemPriceBox = ({ priceItem }) => {
-  const branches = ["Branch 1", "Branch 2", "Branch 3", "Branch 4"];
-  const currencies = ["GH¢", "USD"];
+  const { branches } = useAppContext();
 
-  const {
-    deletePrice,
-    setWashPrice,
-    setIronPrice,
-    setItemBranch,
-    setWashCurrency,
-    setIronCurrency,
-  } = useItemsForm((state) => state);
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
+
+  const getBranchName = (branchId) => {
+    const branch = branches.find((b) => b._id === branchId);
+    return branch?.name || branchId;
+  };
+
+  const { deletePrice, setWashPrice, setIronPrice, setItemBranch } =
+    useItemsForm((state) => state);
 
   return (
     <div className="bg-ash_light p-5 rounded-[10px] mt-5">
@@ -25,8 +26,8 @@ const ItemPriceBox = ({ priceItem }) => {
         <Trash2 className="cursor-pointer active:scale-105" />
       </div>
       <Dropdown
-        options={branches}
-        item={priceItem?.branch || ""}
+        options={branchesList}
+        item={getBranchName(priceItem?.branch)}
         setItem={(selectedBranch) =>
           setItemBranch(priceItem?.id, selectedBranch)
         }
@@ -36,18 +37,12 @@ const ItemPriceBox = ({ priceItem }) => {
       <div className="mt-5">
         <p className="text-sm mb-1">Wash Price</p>
         <div className="flex items-center space-x-3">
-          <div className="w-28">
-            <Dropdown
-              options={currencies}
-              item={priceItem?.washCurrency || "GHC"}
-              setItem={(selectedCurrency) =>
-                setWashCurrency(priceItem?.id, selectedCurrency)
-              }
-            />
+          <div className="w-28 border-2 border-gray-400 rounded-md text-center py-1">
+            GH¢
           </div>
           <input
             type="number"
-            value={priceItem?.washPrice}
+            value={priceItem?.washingPrice}
             onChange={(e) => setWashPrice(priceItem?.id, e.target.value)}
             className="block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 text-dark"
           />
@@ -57,18 +52,19 @@ const ItemPriceBox = ({ priceItem }) => {
       <div className="mt-5">
         <p className="text-sm mb-1">Iron Price</p>
         <div className="flex items-center space-x-3">
-          <div className="w-28">
-            <Dropdown
+          <div className="w-28 border-2 border-gray-400 rounded-md text-center py-1">
+            GH¢
+            {/* <Dropdown
               options={currencies}
-              item={priceItem?.ironCurrency || ""}
+              item={priceItem?.ironCurrency}
               setItem={(selectedCurrency) =>
                 setIronCurrency(priceItem?.id, selectedCurrency)
               }
-            />
+            /> */}
           </div>
           <input
             type="number"
-            value={priceItem?.ironPrice}
+            value={priceItem?.ironingPrice}
             onChange={(e) => setIronPrice(priceItem?.id, e.target.value)}
             className="block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 text-dark"
           />

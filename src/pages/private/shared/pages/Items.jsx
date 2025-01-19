@@ -8,12 +8,21 @@ import DeleteAlert from "@/components/common/DeleteAlert";
 import { useState } from "react";
 import { ItemsTable } from "../components/Items/ItemsTable";
 import { useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
+import { createData } from "@/lib/utils/createData";
 
 const Items = () => {
   const [selectedId, setSelectedId] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   const { branches, items } = useAppContext();
-  const branchesList = [...new Set(branches.map((branch) => branch.name))];
+  const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
 
   const [itemsData, setItemsData] = useState([]);
 
@@ -56,13 +65,79 @@ const Items = () => {
 
   const { itemName, prices, clearItemForm } = useItemsForm((state) => state);
 
-  const createItem = () => {
-    console.log("Item", { name: itemName, prices });
+  const createItem = async () => {
+    setLoading(true);
+    setMessage("");
+
+    if (!itemName) {
+      setMessage("Item name is required");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (prices.length === 0) {
+      setMessage("Add at least one price");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (itemName.length < 3) {
+      setMessage("Item name must be at least 3 characters long");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    const invalidPrices = prices.filter(
+      (price) => !price.washingPrice || !price.ironingPrice || !price.branch
+    );
+
+    if (invalidPrices.length > 0) {
+      setMessage(
+        "Each price entry must have washing price, ironing price, and a branch specified"
+      );
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    const pricing = prices.map((price) => ({
+      washingPrice: price?.washingPrice,
+      ironingPrice: price?.ironingPrice,
+      branch: price?.branch,
+    }));
+
+    try {
+      const { data, message } = await createData(
+        "item",
+        { name: itemName, pricing },
+        accessToken
+      );
+
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+
+      if (data) {
+        console.log("Item created successfully:", data);
+        clearItemForm();
+      }
+    } catch (error) {
+      console.error("Error creating item:", error);
+      setMessage(message?.text);
+      setMessageType(message?.type);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClose = () => {
     closeModal();
     clearItemForm();
+    setMessage("");
   };
 
   return (
@@ -79,6 +154,9 @@ const Items = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createItem}
+        message={message}
+        messageType={messageType}
+        loading={loading}
       />
 
       <ViewItemModal

@@ -8,13 +8,22 @@ import DeleteAlert from "@/components/common/DeleteAlert";
 import { ServicesTable } from "../components/services/ServicesTable";
 import { useState } from "react";
 import { useEffect } from "react";
+import { createData } from "@/lib/utils/createData";
+import useAuth from "@/hooks/useAuth";
 
 const Services = () => {
   const { name, branch, clearServiceForm } = useServiceForm((state) => state);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
   const { branches, services } = useAppContext();
-  const branchesList = [...new Set(branches.map((branch) => branch.name))];
+  const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
 
   const [servicesData, setServicesData] = useState([]);
 
@@ -52,14 +61,50 @@ const Services = () => {
   const onClose = () => {
     closeModal();
     clearServiceForm();
+    setMessage("");
   };
 
   const createService = async () => {
+    setLoading(true);
+    setMessage("");
+
     if (!name || !branch) {
+      setMessage("All fields are required");
+      setMessageType("error");
+      setLoading(false);
       return;
     }
 
-    console.log({ name, branch });
+    if (name.length < 3) {
+      setMessage("Service name must be at least 3 characters long");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, message } = await createData(
+        "service",
+        { name, branch },
+        accessToken
+      );
+
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+
+      if (data) {
+        console.log("Service created successfully:", data);
+        clearServiceForm();
+      }
+    } catch (error) {
+      console.error("Error creating service:", error);
+      setMessage(message?.text);
+      setMessageType(message?.type);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,6 +120,9 @@ const Services = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createService}
+        message={message}
+        messageType={messageType}
+        loading={loading}
       />
 
       <ViewItemModal

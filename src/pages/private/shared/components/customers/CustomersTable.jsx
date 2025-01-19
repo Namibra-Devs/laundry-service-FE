@@ -285,7 +285,7 @@ export function CustomersTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No customers data available
                 </TableCell>
               </TableRow>
             )}

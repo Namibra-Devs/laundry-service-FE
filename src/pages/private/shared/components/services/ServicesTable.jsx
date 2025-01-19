@@ -112,7 +112,6 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
 export function ServicesTable({
   onEditClick,
   onDeleteClick,
-  isFetchLoading,
   services,
   branchesList,
 }) {
@@ -262,9 +261,7 @@ export function ServicesTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {isFetchLoading
-                    ? "Fetching your Data"
-                    : "No Services Data Available"}
+                  No Services Data Available
                 </TableCell>
               </TableRow>
             )}
@@ -302,7 +299,6 @@ export function ServicesTable({
 ServicesTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
-  isFetchLoading: PropTypes.bool.isRequired,
   services: PropTypes.array.isRequired,
   branchesList: PropTypes.array.isRequired,
 };

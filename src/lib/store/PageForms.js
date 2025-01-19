@@ -115,9 +115,7 @@ export const useItemsForm = create((set) => ({
     //   id: 1,
     //   branch: "first branch",
     //   washPrice: 200,
-    //   washCurrency: "GHC",
     //   ironPrice: 230,
-    //   ironCurrency: "USD",
     // },
   ],
 
@@ -128,10 +126,8 @@ export const useItemsForm = create((set) => ({
         {
           id: newId,
           branch: "",
-          washPrice: 0,
-          washCurrency: "GH¢",
-          ironPrice: 0,
-          ironCurrency: "GHC",
+          washingPrice: 0,
+          ironingPrice: 0,
         },
       ],
     }));
@@ -154,34 +150,34 @@ export const useItemsForm = create((set) => ({
   setWashPrice: (id, value) => {
     set((state) => ({
       prices: state.prices.map((item) =>
-        item.id === id ? { ...item, washPrice: value } : item
+        item.id === id ? { ...item, washingPrice: value } : item
       ),
     }));
   },
 
-  setWashCurrency: (id, value) => {
-    set((state) => ({
-      prices: state.prices.map((item) =>
-        item.id === id ? { ...item, washCurrency: value } : item
-      ),
-    }));
-  },
+  // setWashCurrency: (id, value) => {
+  //   set((state) => ({
+  //     prices: state.prices.map((item) =>
+  //       item.id === id ? { ...item, washCurrency: value } : item
+  //     ),
+  //   }));
+  // },
 
   setIronPrice: (id, value) => {
     set((state) => ({
       prices: state.prices.map((item) =>
-        item.id === id ? { ...item, ironPrice: value } : item
+        item.id === id ? { ...item, ironingPrice: value } : item
       ),
     }));
   },
 
-  setIronCurrency: (id, value) => {
-    set((state) => ({
-      prices: state.prices.map((item) =>
-        item.id === id ? { ...item, ironCurrency: value } : item
-      ),
-    }));
-  },
+  // setIronCurrency: (id, value) => {
+  //   set((state) => ({
+  //     prices: state.prices.map((item) =>
+  //       item.id === id ? { ...item, ironCurrency: value } : item
+  //     ),
+  //   }));
+  // },
 
   clearItemForm: () => {
     set(() => ({ itemName: "" }));

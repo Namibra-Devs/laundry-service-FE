@@ -8,13 +8,21 @@ import DeleteAlert from "@/components/common/DeleteAlert";
 import { BranchTable } from "../components/branch/BranchTable";
 import { useState } from "react";
 import { useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
+import { createData } from "@/lib/utils/createData";
 
 const BranchManagement = () => {
   const { name, location, status, clearBranchForm } = useBranchForm(
     (state) => state
   );
+
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
   const { branches } = useAppContext();
@@ -58,21 +66,58 @@ const BranchManagement = () => {
   };
 
   const createBranch = async () => {
+    setLoading(true);
+    setMessage("");
+
     if (!name || !location || !status) {
-      setMessageType("error");
       setMessage("All fields are required");
+      setMessageType("error");
+      setLoading(false);
       return;
     }
 
-    setMessageType("");
-    setMessage("");
-    clearBranchForm();
-    console.log({ name, location, status });
+    const validStatuses = ["active", "inactive"];
+    if (!validStatuses.includes(status)) {
+      setMessage(`Invalid status. Allowed values: ${validStatuses.join(", ")}`);
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, message } = await createData(
+        "branch",
+        { name, location, status },
+        accessToken
+      );
+
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+
+      if (data) {
+        console.log("Branch created successfully:", data);
+      }
+
+      clearBranchForm();
+    } catch (error) {
+      console.error("Error creating branch:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "An unexpected error occurred. Please try again later.";
+      setMessage(errorMessage);
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClose = () => {
     closeModal();
     clearBranchForm();
+    setMessage("");
   };
 
   return (
@@ -90,6 +135,7 @@ const BranchManagement = () => {
         onSubmit={createBranch}
         message={message}
         messageType={messageType}
+        loading={loading}
       />
 
       <ViewItemModal
