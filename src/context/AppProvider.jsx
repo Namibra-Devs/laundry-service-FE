@@ -23,7 +23,7 @@ const AppProvider = ({ children }) => {
     data: { data: staff },
   } = useFetchAllItems({
     resourceType: "staff",
-    customEndpoint: "/api/staff",
+    customEndpoint: "/api/staffs",
   });
   const {
     data: { data: services },
@@ -46,7 +46,7 @@ const AppProvider = ({ children }) => {
     data: { data: orders },
   } = useFetchAllItems({
     resourceType: "orders",
-    customEndpoint: "/api/service/orders",
+    customEndpoint: "/api/orders",
   });
 
   // create item modal actions

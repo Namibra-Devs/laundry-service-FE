@@ -2,33 +2,32 @@ import axios from "@/api/axios";
 import { isTokenValid } from "./validateToken";
 
 export const handleDelete = async (accessToken, page, itemId) => {
+  let responseData = null;
   let message = "";
-  let data = null;
 
   const endpoints = {
-    Branch: "/api/branches",
-    Staff: " /api/staff",
-    Service: " /api/branches",
-    Customer: "/api/customers/delete",
+    branch: "/api/branches",
+    staff: "/api/staffs",
+    service: "/api/services/delete",
+    customer: "/api/customers/delete",
+    item: "/api/service/items/delete",
+    order: "/api/orders",
   };
 
   const endpoint = endpoints[page];
 
   if (!page || !accessToken || !itemId) {
-    return { data, message: "Missing function parameter(s)" };
+    return { data: responseData, message: "Missing required parameter(s)." };
   }
 
   if (!endpoint) {
-    return { data, message: `Invalid page: ${page}` };
+    return { data: responseData, message: `Invalid page: ${page}` };
   }
 
   if (!isTokenValid(accessToken)) {
-    console.log("Token is invalid or expired. Please log in again.");
     message = "Token expired. Redirecting to login...";
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 2000);
-    return { data, message };
+    console.error(message);
+    return { data: responseData, message };
   }
 
   try {
@@ -37,25 +36,30 @@ export const handleDelete = async (accessToken, page, itemId) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    data = response?.data;
-    message = response?.data?.message || "Item deleted successfully!";
+
+    responseData = response?.data;
+    message = response?.data?.message || `${page} deleted successfully!`;
   } catch (error) {
-    switch (error.response?.status) {
-      case 400:
-        message = "Missing parameter";
-        console.log(error.response);
-        break;
-      case 401:
-        message = "Unauthorized. Please log in again.";
-        break;
-      case 404:
-        message = "Item not found.";
-        break;
-      default:
-        message = error.response?.data?.message || "An error occurred.";
-        console.error("Error:", error);
+    if (!error.response) {
+      message = "Network error or no response from the server.";
+    } else {
+      switch (error.response.status) {
+        case 400:
+          message = "Bad request. Missing or invalid parameters.";
+          break;
+        case 401:
+          message = "Unauthorized. Please log in again.";
+          break;
+        case 404:
+          message = `${page} not found.`;
+          break;
+        default:
+          message =
+            error.response?.data?.message || "An unexpected error occurred.";
+      }
     }
+    console.error("Error during deletion:", error);
   }
 
-  return { data, message };
+  return { data: responseData, message };
 };

@@ -18,7 +18,7 @@ const useFetchAllItems = ({ resourceType, customEndpoint }) => {
     services: "/api/services/user",
     customers: "/api/customers",
     items: "/api/service/items",
-    // orders: "/api/customers",
+    orders: "/api/orders",
   };
 
   const endpoint = customEndpoint || `${endpoints[resourceType]}/${user?.id}`;

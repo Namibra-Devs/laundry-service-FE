@@ -11,13 +11,17 @@ import Filters from "../components/Orders/Filters";
 import { useOrders } from "@/lib/store/OrdersStore";
 import DeleteAlert from "@/components/common/DeleteAlert";
 import { useEffect } from "react";
+import { refetchData } from "@/lib/utils/refetchData";
+import useAuth from "@/hooks/useAuth";
 
 const Orders = () => {
   const [orderModal, setOrderModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const {
+    auth: { accessToken, user },
+  } = useAuth();
 
   const { orders } = useAppContext();
-
   const [ordersData, setOrdersData] = useState([]);
 
   useEffect(() => {
@@ -69,13 +73,22 @@ const Orders = () => {
     // clearItemsForm();
   };
 
+  const refetchFunction = () => {
+    refetchData({
+      setData: setOrdersData,
+      accessToken,
+      endpoint: `/api/service/items${user?.id}`,
+    });
+  };
+
   return (
     <>
       <DeleteAlert
-        page="Service"
+        page="order"
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
+        refetchFunction={refetchFunction}
       />
 
       <CreateOrderModal

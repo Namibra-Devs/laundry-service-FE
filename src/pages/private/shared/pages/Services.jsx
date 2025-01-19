@@ -124,10 +124,11 @@ const Services = () => {
   return (
     <div className="h-screen sm:h-fit">
       <DeleteAlert
-        page="Service"
+        page="service"
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
+        refetchFunction={refetchFunction}
       />
       <CreateItemModal
         isModalOpen={isModalOpen}

@@ -10,10 +10,10 @@ export const updateData = async (page, itemId, data, accessToken) => {
   const endpoints = {
     staff: "/api/staffs",
     branch: "/api/branches",
-    // service: "/api/services",
-    customer: "/api/customers",
-    item: "/api/service/items",
-    // order: "/api/orders",
+    service: "/api/services",
+    customer: "/api/customers/update",
+    item: "/api/service/items/update",
+    order: "/api/orders",
   };
 
   const endpoint = endpoints[page];

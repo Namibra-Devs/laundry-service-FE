@@ -138,6 +138,7 @@ const StaffManagement = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
+        refetchFunction={refetchFunction}
       />
 
       <CreateItemModal

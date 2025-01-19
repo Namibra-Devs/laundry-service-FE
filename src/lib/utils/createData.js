@@ -14,6 +14,7 @@ export const createData = async (page, data, accessToken) => {
     service: "/api/services/create",
     customer: "/api/customers/create",
     item: "/api/service/items/create",
+    order: "/api/orders/create",
   };
 
   // Validate input parameters
@@ -70,7 +71,9 @@ export const createData = async (page, data, accessToken) => {
     } else {
       result.message = {
         type: "error",
-        text: error.response?.data?.message || "Oops! Failed to create data.",
+        text:
+          error.response?.data?.message ||
+          `Oops! Failed to new create ${page}.`,
       };
       console.error("Error:", error);
     }

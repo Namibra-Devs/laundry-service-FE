@@ -90,7 +90,7 @@ const Dashboard = () => {
             key={index}
             icon={cardItem?.icon}
             label={cardItem?.label}
-            count={cardItem?.count || "x"}
+            count={cardItem?.count}
             metric={cardItem?.metric}
           />
         ))}
