@@ -10,16 +10,14 @@ const CreateItemForm = () => {
 
   return (
     <div className="sm:px-10">
-      <div>
-        <Input
-          label="Item Name"
-          name="itemName"
-          id="itemName"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          type="text"
-        />
-      </div>
+      <Input
+        label="Item Name"
+        name="itemName"
+        id="itemName"
+        value={itemName}
+        onChange={(e) => setItemName(e.target.value)}
+        type="text"
+      />
 
       <div className="flex items-center justify-end my-5">
         <span

@@ -80,9 +80,10 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
     {
       accessorKey: "branch",
       header: "Branch",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("branch")}</div>
-      ),
+      cell: ({ row }) => {
+        const branch = row.getValue("branch");
+        return <div className="capitalize">{branch?.name || "null"}</div>;
+      },
     },
     {
       accessorKey: "addedBy",

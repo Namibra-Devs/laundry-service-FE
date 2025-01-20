@@ -10,7 +10,6 @@ import { ItemsTable } from "../components/Items/ItemsTable";
 import { useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { createData } from "@/lib/utils/createData";
-import { refetchData } from "@/lib/utils/refetchData";
 
 const Items = () => {
   const [selectedId, setSelectedId] = useState(null);
@@ -19,10 +18,10 @@ const Items = () => {
   const [loading, setLoading] = useState(false);
 
   const {
-    auth: { accessToken, user },
+    auth: { accessToken },
   } = useAuth();
 
-  const { branches, items } = useAppContext();
+  const { branches, items, triggerUpdate } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
 
   const [itemsData, setItemsData] = useState([]);
@@ -125,11 +124,7 @@ const Items = () => {
       if (data) {
         console.log("Item created successfully:", data);
         clearItemForm();
-        refetchData({
-          setData: setItemsData,
-          accessToken,
-          endpoint: `/api/service/items${user?.id}`,
-        });
+        triggerUpdate("item");
       }
     } catch (error) {
       console.error("Error creating item:", error);
@@ -146,14 +141,6 @@ const Items = () => {
     setMessage("");
   };
 
-  const refetchFunction = () => {
-    refetchData({
-      setData: setItemsData,
-      accessToken,
-      endpoint: `/api/service/items${user?.id}`,
-    });
-  };
-
   return (
     <>
       <DeleteAlert
@@ -161,7 +148,6 @@ const Items = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchFunction}
       />
 
       <CreateItemModal

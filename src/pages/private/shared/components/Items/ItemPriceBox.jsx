@@ -65,7 +65,7 @@ const ItemPriceBox = ({ priceItem }) => {
           <input
             type="number"
             value={priceItem?.ironingPrice}
-            onChange={(e) => setIronPrice(priceItem?.id, e.target.value)}
+            onChange={(e) => setIronPrice(priceItem?._id, e.target.value)}
             className="block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 text-dark"
           />
         </div>
