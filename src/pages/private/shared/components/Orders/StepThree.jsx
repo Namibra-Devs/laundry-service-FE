@@ -1,7 +1,8 @@
 import CustomButton from "../../../../../components/CustomButton";
-import Input from "../../../../../components/Input";
 import PropTypes from "prop-types";
 import { Check } from "lucide-react";
+import { useOrderForm } from "@/lib/store/PageForms";
+import useAppContext from "@/hooks/useAppContext";
 
 const FlowTag = () => {
   return (
@@ -31,21 +32,66 @@ const FlowTag = () => {
   );
 };
 
-const StepThree = ({ onBack, onSubmit, onClose }) => {
+const StepThree = ({
+  onBack,
+  onSubmit,
+  onClose,
+  messageType,
+  message,
+  loading,
+}) => {
+  const { data } = useOrderForm();
+
+  const { services, items } = useAppContext();
+
+  const getServiceName = (serviceId) => {
+    const service = services.find((s) => s._id === serviceId);
+    return service?.name || serviceId;
+  };
+
+  const getItemName = (itemId) => {
+    const item = items.find((i) => i._id === itemId);
+    return item?.name || itemId;
+  };
+
   return (
     <>
       <FlowTag />
+      {loading && (
+        <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">
+          <div className="h-12 w-12 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+        </div>
+      )}
 
-      <form className="p-4">
-        <Input
-          label="Three"
-          name="itemName"
-          id="itemName"
-          value=""
-          onChange={() => {}}
-          type="text"
-        />
-      </form>
+      <div className="p-4">
+        {message && (
+          <p
+            className={`${
+              messageType === "success" ? "bg-success" : "bg-danger"
+            } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
+          >
+            {message}
+          </p>
+        )}
+
+        <div>
+          {data?.servicesRendered?.map((item, index) => (
+            <div key={index} className="flex flex-col space-y-2">
+              <span>{getItemName(item?.serviceItem)}</span>
+              <div className="bg-gray-100 p-5 rounded-md">
+                <div className="flex items-center justify-between">
+                  <h1>Quantity</h1>
+                  <p>{item?.quantity}</p>
+                </div>
+                <div className="flex items-center justify-between my-5">
+                  <h1>{getServiceName(item?.service)}</h1>
+                  <p>{item?.quantity}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="absolute bottom-0 left-0 px-6 py-4 border-t border-gray-200 flex items-center justify-between w-full">
         <p onClick={onClose} className="cursor-pointer">
@@ -65,6 +111,9 @@ StepThree.propTypes = {
   onBack: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
+  messageType: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default StepThree;

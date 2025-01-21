@@ -5,13 +5,23 @@ import StepOne from "./Orders/StepOne";
 import StepTwo from "./Orders/StepTwo";
 import StepThree from "./Orders/StepThree";
 import { useOrderForm } from "@/lib/store/PageForms";
+import useAppContext from "@/hooks/useAppContext";
+import { createData } from "@/lib/utils/createData";
+import useAuth from "@/hooks/useAuth";
 
 const CreateOrderModal = ({ isModalOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const { data } = useOrderForm();
+  const { data, resetAll } = useOrderForm();
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { triggerUpdate } = useAppContext();
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   const handleNext = () => {
-    console.log(data);
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
@@ -19,8 +29,55 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
     setCurrentStep((prev) => prev - 1);
   };
 
-  const createOrder = () => {
-    alert("creating order details");
+  const createOrder = async () => {
+    setLoading(true);
+    setMessage("");
+
+    let orderData = {};
+
+    if (data?.customer) {
+      orderData = {
+        branch: data?.branch,
+        customer: data?.customer,
+        servicesRendered: data?.servicesRendered,
+      };
+    } else {
+      orderData = {
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        email: data?.email,
+        phone: data?.phone,
+        houseNumber: data?.houseNumber,
+        branch: data?.branch,
+        servicesRendered: data?.servicesRendered,
+      };
+    }
+
+    try {
+      // console.log(orderData);
+      const { data: responseData, message } = await createData(
+        "order",
+        orderData,
+        accessToken
+      );
+
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+
+      if (responseData) {
+        console.log("Order created successfully:", responseData);
+        resetAll();
+        triggerUpdate("order");
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      setMessage(message?.text);
+      setMessageType(message?.type);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isModalOpen) return null;
@@ -56,6 +113,9 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
               initialData={data}
               onBack={handleBack}
               onSubmit={createOrder}
+              message={message}
+              messageType={messageType}
+              loading={loading}
             />
           )}
         </section>

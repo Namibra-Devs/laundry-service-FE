@@ -194,7 +194,7 @@ export const useItemsForm = create((set) => ({
 export const useOrderForm = create((set) => ({
   data: {
     branch: "",
-    customer: null,
+    customer: "",
     servicesRendered: [],
     firstName: "",
     lastName: "",
@@ -208,18 +208,37 @@ export const useOrderForm = create((set) => ({
       data: { ...state.data, customer },
     })),
 
+  setBranch: (branch) =>
+    set((state) => ({
+      ...state,
+      data: {
+        ...state.data,
+        branch,
+      },
+    })),
+
   updateField: (field, value) =>
     set((state) => ({
       data: { ...state.data, [field]: value },
     })),
 
-  addService: (service) =>
+  addOrderItem: (newId) => {
     set((state) => ({
       data: {
         ...state.data,
-        servicesRendered: [...state.data.servicesRendered, service],
+        servicesRendered: [
+          ...(state.data.servicesRendered || []),
+          {
+            id: newId,
+            serviceItem: "",
+            service: "",
+            quantity: 0,
+            isIroned: false,
+          },
+        ],
       },
-    })),
+    }));
+  },
 
   updateService: (id, updatedService) =>
     set((state) => ({
@@ -230,6 +249,74 @@ export const useOrderForm = create((set) => ({
         ),
       },
     })),
+
+  deleteItem: (itemId) => {
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.filter(
+          (item) => item.id !== itemId
+        ),
+      },
+    }));
+  },
+
+  setServiceItem: (id, name) => {
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.map((item) =>
+          item.id === id ? { ...item, serviceItem: name } : item
+        ),
+      },
+    }));
+  },
+
+  setItemService: (id, newService) => {
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.map((item) =>
+          item.id === id ? { ...item, service: newService } : item
+        ),
+      },
+    }));
+  },
+
+  increaseItemQuantity: (id) => {
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        ),
+      },
+    }));
+  },
+
+  decreaseItemQuantity: (id) => {
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.map((item) =>
+          item.id === id
+            ? { ...item, quantity: Math.max(0, item.quantity - 1) }
+            : item
+        ),
+      },
+    }));
+  },
+
+  updateIronState: (itemId) => {
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.map((item) =>
+          item.id === itemId ? { ...item, isIroned: !item.isIroned } : item
+        ),
+      },
+    }));
+  },
 
   resetAll: () =>
     set({
@@ -256,74 +343,3 @@ export const useOrderForm = create((set) => ({
       },
     }),
 }));
-
-// export const useOrdersItems = create((set) => ({
-//   items: [
-//     {
-//       id: "1",
-//       name: "item one",
-//       service: "",
-//       quantity: 0,
-//       iron: false,
-//     },
-//   ],
-
-//   addNewItem: (newId) => {
-//     set((state) => ({
-//       items: [
-//         ...state.items,
-//         {
-//           id: newId,
-//           name: "",
-//           service: "",
-//           quantity: 0,
-//           iron: false,
-//         },
-//       ],
-//     }));
-//   },
-
-//   setItemService: (id, newService) => {
-//     set((state) => ({
-//       items: state.items.map((item) =>
-//         item.id === id ? { ...item, service: newService } : item
-//       ),
-//     }));
-//   },
-
-//   increaseItemQuantity: (id) => {
-//     set((state) => ({
-//       items: state.items.map((item) =>
-//         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-//       ),
-//     }));
-//   },
-
-//   decreaseItemQuantity: (id) => {
-//     set((state) => ({
-//       items: state.items.map((item) =>
-//         item.id === id
-//           ? { ...item, quantity: item.quantity <= 0 ? 0 : item.quantity - 1 }
-//           : item
-//       ),
-//     }));
-//   },
-
-//   deleteItem: (id) => {
-//     set((state) => ({
-//       items: state.items.filter((item) => item.id !== id),
-//     }));
-//   },
-
-//   updateIronState: (id) => {
-//     set((state) => ({
-//       items: state.items.map((item) =>
-//         item.id === id ? { ...item, iron: !item.iron } : item
-//       ),
-//     }));
-//   },
-
-//   clearOrdersItemForm: () => {
-//     set(() => ({ items: [] }));
-//   },
-// }));

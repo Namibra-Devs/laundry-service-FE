@@ -112,6 +112,7 @@ const StepOne = ({ onClose, onNext }) => {
             onChange={() => {
               setCustomerOption("existing");
               resetCustomerForm();
+              setMessage("");
             }}
             checked={customerOption === "existing"}
           />
@@ -179,6 +180,7 @@ const StepOne = ({ onClose, onNext }) => {
             onChange={() => {
               setCustomerOption("new");
               setCustomer("");
+              setMessage("");
             }}
           />
           <p className="text-[15px]">Add New Customer</p>
