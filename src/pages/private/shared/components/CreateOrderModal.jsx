@@ -4,14 +4,14 @@ import PropTypes from "prop-types";
 import StepOne from "./Orders/StepOne";
 import StepTwo from "./Orders/StepTwo";
 import StepThree from "./Orders/StepThree";
+import { useOrderForm } from "@/lib/store/PageForms";
 
 const CreateOrderModal = ({ isModalOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
-
-  //   const [formData, setFormData] = useState({});
+  const { data } = useOrderForm();
 
   const handleNext = () => {
-    //  setFormData({ ...formData, ...data });
+    console.log(data);
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
@@ -19,8 +19,8 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
     setCurrentStep((prev) => prev - 1);
   };
 
-  const handleSubmit = () => {
-    alert("submitting order details");
+  const createOrder = () => {
+    alert("creating order details");
   };
 
   if (!isModalOpen) return null;
@@ -42,18 +42,20 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
         {/* Content */}
         <section className="flex-1 overflow-y-auto px-6 py-4 view_screen">
           {currentStep === 1 ? (
-            <StepOne onClose={onClose} onNext={handleNext} />
+            <StepOne onClose={onClose} onNext={handleNext} initialData={data} />
           ) : currentStep === 2 ? (
             <StepTwo
               onClose={onClose}
+              initialData={data}
               onNext={handleNext}
               onBack={handleBack}
             />
           ) : (
             <StepThree
               onClose={onClose}
+              initialData={data}
               onBack={handleBack}
-              onSubmit={handleSubmit}
+              onSubmit={createOrder}
             />
           )}
         </section>

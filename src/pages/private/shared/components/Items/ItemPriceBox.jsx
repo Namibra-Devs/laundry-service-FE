@@ -19,11 +19,11 @@ const ItemPriceBox = ({ priceItem }) => {
 
   return (
     <div className="bg-ash_light p-5 rounded-[10px] mt-5">
-      <div
-        className="flex justify-end mb-3"
-        onClick={() => deletePrice(priceItem?.id)}
-      >
-        <Trash2 className="cursor-pointer active:scale-105" />
+      <div className="flex justify-end mb-3">
+        <Trash2
+          className="cursor-pointer active:scale-105"
+          onClick={() => deletePrice(priceItem?.id)}
+        />
       </div>
       <Dropdown
         options={branchesList}

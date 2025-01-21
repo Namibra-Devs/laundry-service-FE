@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { LucideEyeClosed, LucideEye } from "lucide-react";
 import { useState } from "react";
 
-const Input = ({ label, name, id, value, onChange, type }) => {
+const Input = ({ label, name, id, value, onChange, type, disabled }) => {
   const [inputState, setInputState] = useState(type);
   return (
     <div className="mb-4">
@@ -18,7 +18,10 @@ const Input = ({ label, name, id, value, onChange, type }) => {
           onChange={onChange}
           required
           autoComplete="new-password"
-          className="mt-1 block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 focus:border-red-500 text-gray-600"
+          disabled={disabled}
+          className={`mt-1 block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 focus:border-red-500 text-gray-600 ${
+            disabled ? "cursor-not-allowed" : "cursor-text"
+          }`}
         />
         <button
           type="button"
@@ -41,6 +44,7 @@ Input.propTypes = {
   value: PropTypes.any,
   type: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.func,
 };
 
 export default Input;

@@ -4,11 +4,14 @@ import { useEffect } from "react";
 import { useState } from "react";
 // import ItemPriceBox from "./ItemPriceBox";
 import CustomButton from "@/components/CustomButton";
+import { useItemsForm } from "@/lib/store/PageForms";
 
 const EditItemForm = () => {
   const { currentItem: item } = useAppContext();
   const [itemName, setItemName] = useState("");
   const [pricing, setPricing] = useState([]);
+
+  const { updateWashPrice } = useItemsForm((state) => state);
 
   useEffect(() => {
     setItemName(item?.name || "");
@@ -34,9 +37,17 @@ const EditItemForm = () => {
         />
 
         <div>
-          {item?.pricing?.map((priceItem) => (
+          {item?.pricing?.map((priceItem, index) => (
             // <ItemPriceBox key={priceItem?._id} priceItem={priceItem} />
-            <p key={priceItem?.id}>Washing Price: {priceItem?.washingPrice}</p>
+            // <p key={priceItem?.id}>Washing Price: {priceItem?.washingPrice}</p>
+            <div key={priceItem?._id}>
+              <p>WashPrice for {index}</p>
+              <input
+                type="text"
+                value={priceItem?.washingPrice}
+                onChange={(e) => updateWashPrice(index, e.target.value)}
+              />
+            </div>
           ))}
         </div>
 

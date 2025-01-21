@@ -155,6 +155,12 @@ export const useItemsForm = create((set) => ({
     }));
   },
 
+  updateWashPrice: (index, value) => {
+    set((state) => ({
+      prices: state.prices.map((item, i) => (i === index ? value : item)),
+    }));
+  },
+
   // setWashCurrency: (id, value) => {
   //   set((state) => ({
   //     prices: state.prices.map((item) =>
@@ -184,3 +190,140 @@ export const useItemsForm = create((set) => ({
     set(() => ({ prices: [] }));
   },
 }));
+
+export const useOrderForm = create((set) => ({
+  data: {
+    branch: "",
+    customer: null,
+    servicesRendered: [],
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    houseNumber: "",
+  },
+
+  setCustomer: (customer) =>
+    set((state) => ({
+      data: { ...state.data, customer },
+    })),
+
+  updateField: (field, value) =>
+    set((state) => ({
+      data: { ...state.data, [field]: value },
+    })),
+
+  addService: (service) =>
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: [...state.data.servicesRendered, service],
+      },
+    })),
+
+  updateService: (id, updatedService) =>
+    set((state) => ({
+      data: {
+        ...state.data,
+        servicesRendered: state.data.servicesRendered.map((service) =>
+          service.id === id ? updatedService : service
+        ),
+      },
+    })),
+
+  resetAll: () =>
+    set({
+      data: {
+        branch: "",
+        customer: null,
+        servicesRendered: [],
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        houseNumber: "",
+      },
+    }),
+
+  resetCustomerForm: () =>
+    set({
+      data: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        houseNumber: "",
+      },
+    }),
+}));
+
+// export const useOrdersItems = create((set) => ({
+//   items: [
+//     {
+//       id: "1",
+//       name: "item one",
+//       service: "",
+//       quantity: 0,
+//       iron: false,
+//     },
+//   ],
+
+//   addNewItem: (newId) => {
+//     set((state) => ({
+//       items: [
+//         ...state.items,
+//         {
+//           id: newId,
+//           name: "",
+//           service: "",
+//           quantity: 0,
+//           iron: false,
+//         },
+//       ],
+//     }));
+//   },
+
+//   setItemService: (id, newService) => {
+//     set((state) => ({
+//       items: state.items.map((item) =>
+//         item.id === id ? { ...item, service: newService } : item
+//       ),
+//     }));
+//   },
+
+//   increaseItemQuantity: (id) => {
+//     set((state) => ({
+//       items: state.items.map((item) =>
+//         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+//       ),
+//     }));
+//   },
+
+//   decreaseItemQuantity: (id) => {
+//     set((state) => ({
+//       items: state.items.map((item) =>
+//         item.id === id
+//           ? { ...item, quantity: item.quantity <= 0 ? 0 : item.quantity - 1 }
+//           : item
+//       ),
+//     }));
+//   },
+
+//   deleteItem: (id) => {
+//     set((state) => ({
+//       items: state.items.filter((item) => item.id !== id),
+//     }));
+//   },
+
+//   updateIronState: (id) => {
+//     set((state) => ({
+//       items: state.items.map((item) =>
+//         item.id === id ? { ...item, iron: !item.iron } : item
+//       ),
+//     }));
+//   },
+
+//   clearOrdersItemForm: () => {
+//     set(() => ({ items: [] }));
+//   },
+// }));
