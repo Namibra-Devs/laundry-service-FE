@@ -83,6 +83,10 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
     {
       accessorKey: "status",
       header: "Status",
+      filterFn: (row, columnId, filterValue) => {
+        const status = row.getValue(columnId);
+        return status.toLowerCase() === filterValue.toLowerCase(); // Case-insensitive match
+      },
       cell: ({ row }) => {
         const value = row.getValue("status");
         return (
@@ -145,6 +149,16 @@ export function BranchTable({
 
   const columns = generateColumns({ onEditClick, onDeleteClick });
 
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const globalFilterFn = (row, columnId, filterValue) => {
+    const name = row.original.name?.toLowerCase() ?? "";
+    const location = row.original.location?.toLowerCase() ?? "";
+    const searchValue = filterValue.toLowerCase();
+
+    return name.includes(searchValue) || location.includes(searchValue);
+  };
+
   const table = useReactTable({
     data: branches,
     columns,
@@ -156,12 +170,15 @@ export function BranchTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
+    globalFilterFn,
   });
 
   const [selectedStatus, setSelectedStatus] = useState("Status");
@@ -173,13 +190,12 @@ export function BranchTable({
         <div>...</div>
         <div className="flex items-center space-x-5">
           <Input
-            placeholder="Search names..."
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
-            }
+            placeholder="Search name or location ..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-48"
           />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -216,12 +232,12 @@ export function BranchTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Active", "Inactive"]?.map((status) => (
+              {["Active", "Inactive"].map((status) => (
                 <DropdownMenuItem
                   key={status}
                   onClick={() => {
                     setSelectedStatus(status);
-                    table.getColumn("status")?.setFilterValue(status);
+                    table.getColumn("status")?.setFilterValue(status); // Sets the exact value
                   }}
                 >
                   {status}
@@ -230,7 +246,7 @@ export function BranchTable({
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedStatus("Status");
-                  table.getColumn("status")?.setFilterValue(""); // Clear the filter to show all staff
+                  table.getColumn("status")?.setFilterValue(""); // Clear filter
                 }}
               >
                 Clear Filter
