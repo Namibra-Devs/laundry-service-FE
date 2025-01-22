@@ -85,6 +85,10 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
         const branch = row.getValue("branch");
         return <p>{branch?.name}</p>;
       },
+      filterFn: (row, columnId, filterValue) => {
+        const branch = row.getValue(columnId);
+        return branch?.name?.toLowerCase().includes(filterValue.toLowerCase());
+      },
     },
     {
       id: "actions",
@@ -130,6 +134,16 @@ export function StaffTable({
   const [rowSelection, setRowSelection] = useState({});
 
   const columns = generateColumns({ onEditClick, onDeleteClick });
+  const [selectedBranch, setSelectedBranch] = useState("Assigned Branches");
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const globalFilterFn = (row, columnId, filterValue) => {
+    const name = row.original.name?.toLowerCase() ?? "";
+    const email = row.original.email?.toLowerCase() ?? "";
+    const searchValue = filterValue.toLowerCase();
+
+    return name.includes(searchValue) || email.includes(searchValue);
+  };
 
   const table = useReactTable({
     data: staff,
@@ -142,31 +156,33 @@ export function StaffTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
+    globalFilterFn,
   });
 
   return (
     <div className="w-full">
       <div className="flex items-center py-4 justify-between">
-        <div>...</div>
+        <div></div>
         <div className="flex items-center space-x-5">
           <Input
-            placeholder="Search emails..."
-            value={table.getColumn("email")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
-            }
+            placeholder="Search name or email..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-48"
           />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Assigned Branches <ChevronDown />
+                {selectedBranch || "Assigned Branches"} <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -174,7 +190,8 @@ export function StaffTable({
                 <DropdownMenuItem
                   key={branch?._id}
                   onClick={() => {
-                    table.getColumn("branch")?.setFilterValue(branch?.name);
+                    table.getColumn("branch")?.setFilterValue(branch?.name); // Pass branch name
+                    setSelectedBranch(branch?.name);
                   }}
                 >
                   {branch?.name}
@@ -182,7 +199,8 @@ export function StaffTable({
               ))}
               <DropdownMenuItem
                 onClick={() => {
-                  table.getColumn("branch")?.setFilterValue(""); // Clear the filter to show all staff
+                  setSelectedBranch("Assigned Branches");
+                  table.getColumn("branch")?.setFilterValue(""); // Clear the filter
                 }}
               >
                 Clear Filter
