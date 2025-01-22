@@ -13,6 +13,7 @@ import DeleteAlert from "@/components/common/DeleteAlert";
 import { useEffect } from "react";
 import { refetchData } from "@/lib/utils/refetchData";
 import useAuth from "@/hooks/useAuth";
+import { useOrderForm } from "@/lib/store/PageForms";
 
 const Orders = () => {
   const [orderModal, setOrderModal] = useState(false);
@@ -23,6 +24,8 @@ const Orders = () => {
 
   const { orders } = useAppContext();
   const [ordersData, setOrdersData] = useState([]);
+
+  const { resetAll } = useOrderForm();
 
   useEffect(() => {
     if (Array.isArray(orders)) {
@@ -70,7 +73,7 @@ const Orders = () => {
 
   const onClose = () => {
     setOrderModal(false);
-    // clearItemsForm();
+    resetAll();
   };
 
   const refetchFunction = () => {

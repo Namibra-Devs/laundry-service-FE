@@ -33,6 +33,7 @@ import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
 import { iconDictionary } from "@/lib/data/IconsDictionary";
 import ViewToggle from "../OrdersViewToggle";
+import { formatDate } from "@/lib/utils/formatDate";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
@@ -59,44 +60,62 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       enableHiding: false,
     },
     {
-      accessorKey: "customerName",
+      accessorKey: "customer",
       header: "Customer Name",
-      cell: ({ row }) => (
-        <p className="capitalize">{row.getValue("customerName")}</p>
-      ),
-    },
-    {
-      accessorKey: "items",
-      header: "Items",
       cell: ({ row }) => {
-        const items = row.getValue("items");
-        const uniques = [];
-        for (let i of items) {
-          if (!uniques.includes(i)) uniques.push(i);
-        }
+        const customer = row.getValue("customer");
         return (
-          <div className="flex items-center">
-            {uniques?.map((item, index) => (
-              <img
-                key={index}
-                src={iconDictionary[item]}
-                alt={item}
-                width={20}
-              />
-            ))}
-          </div>
+          <p className="capitalize">
+            {customer?.firstName + " " + customer?.lastName}
+          </p>
         );
       },
     },
+    // {
+    //   accessorKey: "servicesRendered",
+    //   header: "Items",
+    //   cell: ({ row }) => {
+    //     // const servicesItems = row.getValue("servicesRendered");
+    //     // for (let i of servicesItems) {
+    //     //   items.push(i?.name)
+    //     // }
+    //     // const items = row.getValue("items");
+    //     // const uniques = [];
+    //     // for (let i of items) {
+    //     //   if (!uniques.includes(i)) uniques.push(i);
+    //     // }
+    //     return (
+    //       <div className="flex items-center">
+    //         hello
+    //         {/* {uniques?.map((item, index) => (
+    //           <img
+    //             key={index}
+    //             src={iconDictionary[item]}
+    //             alt={item}
+    //             width={20}
+    //           />
+    //         ))} */}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
-      accessorKey: "dateCreated",
+      accessorKey: "createdAt",
       header: "Order Date",
-      cell: ({ row }) => <p>{row.getValue("dateCreated")}</p>,
+      cell: ({ row }) => <p>{formatDate(row.getValue("createdAt"))}</p>,
     },
     {
-      accessorKey: "quantity",
+      accessorKey: "servicesRendered",
       header: "Quantity",
-      cell: ({ row }) => <p className="">{row.getValue("quantity")}</p>,
+      cell: ({ row }) => {
+        const items = row.getValue("servicesRendered");
+        let total = 0;
+        for (let i of items) {
+          total += i.quantity;
+        }
+        return <p>{total}</p>;
+      },
+      // <p className="">{}</p>,
     },
     {
       accessorKey: "status",
@@ -115,13 +134,6 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
           </div>
         );
       },
-    },
-    {
-      accessorKey: "attendedBy",
-      header: "Attended By",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("attendedBy")}</div>
-      ),
     },
     {
       id: "actions",
@@ -202,14 +214,25 @@ export function OrdersTable({
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search customers..."
-            value={table.getColumn("customerName")?.getFilterValue() ?? ""}
+            value={table.getColumn("customer")?.getFilterValue() ?? ""}
             onChange={(event) =>
               table
-                .getColumn("customerName")
-                ?.setFilterValue(event.target.value)
+                .getColumn("customer")
+                ?.setFilterValue(event.target.value.toLowerCase())
             }
             className="max-w-48"
           />
+
+          {/* <Input
+            placeholder="Search customers..."
+            value={
+              table.getColumn("customer")?.getFilterValue()?.firstName ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("customer")?.setFilterValue(event.target.value)
+            }
+            className="max-w-48"
+          /> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
