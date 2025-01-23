@@ -62,6 +62,27 @@ const Dashboard = () => {
     },
   ];
 
+  const data = [
+    { name: "Jan", orders: 0 },
+    { name: "Feb", orders: 0 },
+    { name: "Mar", orders: 0 },
+    { name: "Apr", orders: 0 },
+    { name: "May", orders: 0 },
+    { name: "Jun", orders: 0 },
+    { name: "Jul", orders: 0 },
+    { name: "Aug", orders: 0 },
+    { name: "Sep", orders: 0 },
+    { name: "Oct", orders: 0 },
+    { name: "Nov", orders: 0 },
+    { name: "Dec", orders: 0 },
+  ];
+
+  orders.forEach((order) => {
+    const date = new Date(order.createdAt);
+    const monthIndex = date.getMonth();
+    data[monthIndex].orders += 1;
+  });
+
   const exportData = () => {
     alert("exporting data");
   };
@@ -99,7 +120,7 @@ const Dashboard = () => {
       <div className="custom_box_shadow py-5 sm:p-5 rounded-lg">
         <p className="text-xl mb-5 px-2 sm:p-0">Orders per month</p>
         <div className="graphContainer w-[390px] sm:w-full h-[500px] overflow-x-scroll">
-          <OverviewGraph />
+          <OverviewGraph data={data} />
         </div>
       </div>
     </>

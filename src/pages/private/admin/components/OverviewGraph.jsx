@@ -1,4 +1,3 @@
-// import React from "react";
 import {
   AreaChart,
   Area,
@@ -8,24 +7,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import PropTypes from "prop-types";
 
-// Sample data for the graph
-const data = [
-  { name: "Jan", orders: 700 },
-  { name: "Feb", orders: 900 },
-  { name: "Mar", orders: 1000 },
-  { name: "Apr", orders: 900 },
-  { name: "May", orders: 1100 },
-  { name: "Jun", orders: 1300 },
-  { name: "Jul", orders: 600 },
-  { name: "Aug", orders: 700 },
-  { name: "Sep", orders: 600 },
-  { name: "Oct", orders: 700 },
-  { name: "Nov", orders: 1000 },
-  { name: "Dec", orders: 500 },
-];
-
-const OverviewGraph = () => {
+const OverviewGraph = ({ data }) => {
   return (
     <div className="w-[500px] sm:w-[1200px] lg:w-full h-[95%]">
       <ResponsiveContainer>
@@ -44,7 +28,6 @@ const OverviewGraph = () => {
             </linearGradient>
           </defs>
 
-          {/* <CartesianGrid strokeDasharray="3 3" /> */}
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
@@ -58,5 +41,9 @@ const OverviewGraph = () => {
       </ResponsiveContainer>
     </div>
   );
+};
+
+OverviewGraph.propTypes = {
+  data: PropTypes.array.isRequired,
 };
 export default OverviewGraph;
