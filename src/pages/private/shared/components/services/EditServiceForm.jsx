@@ -3,7 +3,6 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import useAppContext from "@/hooks/useAppContext";
 import useAuth from "@/hooks/useAuth";
-import { useServiceForm } from "@/lib/store/PageForms";
 import { updateData } from "@/lib/utils/updateData";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -13,7 +12,6 @@ const EditServiceForm = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
-  const { clearServiceForm } = useServiceForm((state) => state);
   const [serviceName, setServiceName] = useState("");
   const [serviceBranch, setServiceBranch] = useState("");
 
@@ -59,7 +57,6 @@ const EditServiceForm = () => {
       }
 
       if (data) {
-        clearServiceForm();
         triggerUpdate("service");
       }
     } catch (error) {

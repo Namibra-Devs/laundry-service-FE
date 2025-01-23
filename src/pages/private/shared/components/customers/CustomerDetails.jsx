@@ -33,7 +33,7 @@ const CustomerDetails = () => {
         {active === "info" ? (
           <div>
             <div className="flex items-center justify-between bg-gray-100 p-3 rounded-md">
-              <h1>Quantity</h1>
+              <h1>Customer Name</h1>
               <p className="font-semibold">{customer?.firstName}</p>
             </div>
             <div className="flex items-center justify-between bg-gray-100 p-3 rounded-md my-3">
