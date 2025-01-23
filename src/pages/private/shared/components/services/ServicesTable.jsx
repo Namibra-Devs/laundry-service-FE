@@ -31,8 +31,10 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
+import { formatDate } from "@/lib/utils/formatDate";
 
-const generateColumns = ({ onEditClick, onDeleteClick }) => {
+const generateColumns = ({ onEditClick, onDeleteClick, getBranchName }) => {
   return [
     {
       id: "select",
@@ -66,8 +68,22 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
     {
       accessorKey: "branch",
       header: "Branch",
+      cell: ({ row }) => {
+        const branch = row.getValue("branch");
+        return <p>{getBranchName(branch)}</p>;
+      },
+      filterFn: (row, columnId, filterValue) => {
+        const branch = row.getValue(columnId);
+        return branch?.includes(filterValue.toLowerCase());
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Date Created",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("branch")}</div>
+        <div className="capitalize">
+          {formatDate(row.getValue("createdAt"))}
+        </div>
       ),
     },
     {
@@ -109,18 +125,36 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
   ];
 };
 
-export function ServicesTable({
-  onEditClick,
-  onDeleteClick,
-  services,
-  branchesList,
-}) {
+export function ServicesTable({ onEditClick, onDeleteClick, services }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns = generateColumns({ onEditClick, onDeleteClick });
+  const { branches } = useAppContext();
+
+  const getBranchName = (branchId) => {
+    const branch = branches.find((b) => b._id === branchId);
+    return branch?.name || branchId;
+  };
+
+  const uniqueBranchIds = Array.from(
+    new Set(services.map((service) => service?.branch))
+  );
+
+  const uniqueDates = Array.from(
+    new Set(services.map((service) => service?.createdAt))
+  );
+
+  const uniquePersons = Array.from(
+    new Set(services.map((service) => service?.addBy))
+  );
+
+  const columns = generateColumns({
+    onEditClick,
+    onDeleteClick,
+    getBranchName,
+  });
 
   const table = useReactTable({
     data: services,
@@ -161,19 +195,46 @@ export function ServicesTable({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
+                Date <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {uniqueDates?.map((date) => (
+                <DropdownMenuItem
+                  key={date}
+                  onClick={() => {
+                    table.getColumn("createdAt")?.setFilterValue(date);
+                  }}
+                >
+                  {formatDate(date, true)}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem
+                onClick={() => {
+                  table.getColumn("createdAt")?.setFilterValue(""); // Clear the filter to show all staff
+                }}
+              >
+                Clear Filter
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
                 {selectedBranch} <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {branchesList?.map((branch) => (
+              {uniqueBranchIds?.map((branchItem, index) => (
                 <DropdownMenuItem
-                  key={branch}
+                  key={index}
                   onClick={() => {
-                    setSelectedBranch(branch);
-                    table.getColumn("branch")?.setFilterValue(branch);
+                    setSelectedBranch(getBranchName(branchItem));
+                    table.getColumn("branch")?.setFilterValue(branchItem);
                   }}
                 >
-                  {branch}
+                  {getBranchName(branchItem)}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
@@ -195,12 +256,12 @@ export function ServicesTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Sara Smith"]?.map((person) => (
+              {uniquePersons?.map((person, index) => (
                 <DropdownMenuItem
-                  key={person}
+                  key={index}
                   onClick={() => {
                     setSelectedAddedBy(person);
-                    table.getColumn("addedBy")?.setFilterValue(person);
+                    table.getColumn("addBy")?.setFilterValue(person);
                   }}
                 >
                   {person}
@@ -209,7 +270,7 @@ export function ServicesTable({
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedAddedBy("Added By");
-                  table.getColumn("addedBy")?.setFilterValue(""); // Clear the filter to show all staff
+                  table.getColumn("addBy")?.setFilterValue(""); // Clear the filter to show all staff
                 }}
               >
                 Clear Filter
@@ -300,5 +361,4 @@ ServicesTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
   services: PropTypes.array.isRequired,
-  branchesList: PropTypes.array.isRequired,
 };

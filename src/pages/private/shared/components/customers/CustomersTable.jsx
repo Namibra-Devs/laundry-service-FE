@@ -86,7 +86,11 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       header: "Branch",
       cell: ({ row }) => {
         const branch = row.getValue("branch");
-        return <div className="capitalize">{branch?.name}</div>;
+        return <p>{branch?.name}</p>;
+      },
+      filterFn: (row, columnId, filterValue) => {
+        const branch = row.getValue(columnId);
+        return branch?.name?.toLowerCase().includes(filterValue.toLowerCase());
       },
     },
     {
@@ -145,6 +149,34 @@ export function CustomersTable({
 
   const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const globalFilterFn = (row, columnId, filterValue) => {
+    const name = row.original.firstName?.toLowerCase() ?? "";
+    const email = row.original.email?.toLowerCase() ?? "";
+    const phone = row.original.phone?.toLowerCase() ?? "";
+    const houseNumber = row.original.houseNumber?.toLowerCase() ?? "";
+    const searchValue = filterValue.toLowerCase();
+
+    return (
+      name.includes(searchValue) ||
+      email.includes(searchValue) ||
+      phone.includes(searchValue) ||
+      houseNumber.includes(searchValue)
+    );
+  };
+
+  const uniqueBranches = Array.from(
+    new Set(customers.map((customerItem) => customerItem?.branch?._id)).values()
+  ).map(
+    (branchId) =>
+      customers.find((staff) => staff.branch._id === branchId).branch
+  );
+
+  const uniquePersons = Array.from(
+    new Set(customers.map((customer) => customer?.addedBy))
+  );
+
   const table = useReactTable({
     data: customers,
     columns,
@@ -156,12 +188,15 @@ export function CustomersTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
+    globalFilterFn,
   });
 
   const [selectedBranch, setSelectedBranch] = useState("Branch");
@@ -173,11 +208,9 @@ export function CustomersTable({
         <div>...</div>
         <div className="flex items-center space-x-5">
           <Input
-            placeholder="Search names..."
-            value={table.getColumn("firstName")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("firstName")?.setFilterValue(event.target.value)
-            }
+            placeholder="Search name, email, phone and house-number ..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-48"
           />
           <DropdownMenu>
@@ -187,15 +220,15 @@ export function CustomersTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Accra"]?.map((branch) => (
+              {uniqueBranches?.map((branch) => (
                 <DropdownMenuItem
-                  key={branch}
+                  key={branch?._id}
                   onClick={() => {
-                    setSelectedBranch(branch);
-                    table.getColumn("branch")?.setFilterValue(branch);
+                    setSelectedBranch(branch?.name);
+                    table.getColumn("branch")?.setFilterValue(branch?.name);
                   }}
                 >
-                  {branch}
+                  {branch?.name}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
@@ -217,7 +250,7 @@ export function CustomersTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Sara Smith"]?.map((person) => (
+              {uniquePersons?.map((person) => (
                 <DropdownMenuItem
                   key={person}
                   onClick={() => {

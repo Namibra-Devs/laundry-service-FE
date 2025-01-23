@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState, useCallback } from "react";
 import useAuth from "./useAuth";
 import axios from "@/api/axios";
+import { isTokenValid } from "@/lib/utils/validateToken";
 
 const useFetchAllItems = ({ resourceType, customEndpoint }) => {
   const [data, setData] = useState([]);
@@ -24,13 +25,18 @@ const useFetchAllItems = ({ resourceType, customEndpoint }) => {
   const endpoint = customEndpoint || `${endpoints[resourceType]}/${user?.id}`;
 
   const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
     if (!resourceType || !endpoint) {
       setError("Resource type not specified or invalid");
       return;
     }
 
-    setLoading(true);
-    setError("");
+    if (!isTokenValid(accessToken)) {
+      window.location.href = "/";
+      return;
+    }
 
     try {
       const response = await axios.get(endpoint, {

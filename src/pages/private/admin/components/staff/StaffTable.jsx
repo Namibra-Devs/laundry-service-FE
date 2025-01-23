@@ -126,7 +126,7 @@ export function StaffTable({
   onEditClick,
   onDeleteClick,
   staff,
-  branchesList,
+  // branchesList,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -144,6 +144,12 @@ export function StaffTable({
 
     return name.includes(searchValue) || email.includes(searchValue);
   };
+
+  const uniqueBranches = Array.from(
+    new Set(staff.map((staffItem) => staffItem.branch._id)).values()
+  ).map(
+    (branchId) => staff.find((staff) => staff.branch._id === branchId).branch
+  );
 
   const table = useReactTable({
     data: staff,
@@ -186,7 +192,7 @@ export function StaffTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {branchesList?.map((branch) => (
+              {uniqueBranches?.map((branch) => (
                 <DropdownMenuItem
                   key={branch?._id}
                   onClick={() => {
@@ -291,5 +297,4 @@ StaffTable.propTypes = {
   onEditClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
   staff: PropTypes.array.isRequired,
-  branchesList: PropTypes.array.isRequired,
 };

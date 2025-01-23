@@ -23,7 +23,7 @@ const Services = () => {
   } = useAuth();
 
   const { branches, services, triggerUpdate } = useAppContext();
-  const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
+  const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const [servicesData, setServicesData] = useState([]);
 
