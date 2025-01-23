@@ -77,7 +77,7 @@ const Dashboard = () => {
     { name: "Dec", orders: 0 },
   ];
 
-  orders.forEach((order) => {
+  orders?.forEach((order) => {
     const date = new Date(order.createdAt);
     const monthIndex = date.getMonth();
     data[monthIndex].orders += 1;
