@@ -54,18 +54,11 @@ const ItemPriceBox = ({ priceItem }) => {
         <div className="flex items-center space-x-3">
           <div className="w-28 border-2 border-gray-400 rounded-md text-center py-1">
             GH¢
-            {/* <Dropdown
-              options={currencies}
-              item={priceItem?.ironCurrency}
-              setItem={(selectedCurrency) =>
-                setIronCurrency(priceItem?.id, selectedCurrency)
-              }
-            /> */}
           </div>
           <input
             type="number"
             value={priceItem?.ironingPrice}
-            onChange={(e) => setIronPrice(priceItem?._id, e.target.value)}
+            onChange={(e) => setIronPrice(priceItem?.id, e.target.value)}
             className="block w-full p-2 border-2 rounded-md border-gray-300 focus:ring-red-500 text-dark"
           />
         </div>

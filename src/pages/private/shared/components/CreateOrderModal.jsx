@@ -36,11 +36,18 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
 
     let orderData = {};
 
+    let servicesRendered = data?.servicesRendered?.map(({ id, ...rest }) => ({
+      serviceItem: rest?.serviceItem,
+      service: rest?.service,
+      isIroned: rest?.isIroned,
+      quantity: rest?.quantity,
+    }));
+
     if (data?.customer) {
       orderData = {
         branch: data?.branch,
         customer: data?.customer,
-        servicesRendered: data?.servicesRendered,
+        servicesRendered,
       };
     } else {
       orderData = {
@@ -50,12 +57,12 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
         phone: data?.phone,
         houseNumber: data?.houseNumber,
         branch: data?.branch,
-        servicesRendered: data?.servicesRendered,
+        servicesRendered,
       };
     }
 
     try {
-      // console.log(orderData);
+      console.log(orderData);
       const { data: responseData, message } = await createData(
         "order",
         orderData,

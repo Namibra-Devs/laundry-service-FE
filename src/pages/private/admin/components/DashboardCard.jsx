@@ -37,7 +37,7 @@ DashboardCard.propTypes = {
   icon: PropTypes.element.isRequired,
   label: PropTypes.string.isRequired,
   count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  metric: PropTypes.number,
+  metric: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default DashboardCard;
