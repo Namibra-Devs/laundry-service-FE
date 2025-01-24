@@ -22,6 +22,7 @@ const Sidebar = () => {
 
   const {
     auth: { user },
+    setAuth,
   } = useAuth();
 
   return (
@@ -172,7 +173,13 @@ const Sidebar = () => {
             <div className="w-10 h-10 bg-custom_yellow rounded-md"></div>
             <p>{user?.role}</p>
           </div>
-          <LogOutIcon className="cursor-pointer" />
+          <LogOutIcon
+            className="cursor-pointer"
+            onClick={() => {
+              setAuth({});
+              window.location = "/";
+            }}
+          />
         </div>
       </div>
     </div>

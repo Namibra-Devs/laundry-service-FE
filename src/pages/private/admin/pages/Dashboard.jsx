@@ -16,7 +16,7 @@ const Dashboard = () => {
 
   const today = new Date().toISOString().split("T")[0];
   const todayOrders = orders?.filter((order) => {
-    const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
+    const orderDate = new Date(order?.createdAt).toISOString().split("T")[0];
     return orderDate === today;
   });
 
@@ -30,7 +30,7 @@ const Dashboard = () => {
     );
     const lastDayOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    const previousMonthItems = data.filter((item) => {
+    const previousMonthItems = data?.filter((item) => {
       const createdAtDate = new Date(item?.createdAt);
       return (
         createdAtDate >= firstDayOfPrevMonth &&
@@ -52,14 +52,13 @@ const Dashboard = () => {
   // console.log("services", services);
   // console.log("customers", customers);
   // console.log("items", items);
-  console.log("orders", orders);
+  // console.log("orders", orders);
 
   const {
     auth: { user },
   } = useAuth();
 
   function calculateMetric(currentValue, previousValue) {
-    // if (!previousValue || previousValue === 0) return "0";
     if (!previousValue || previousValue === 0) {
       return currentValue > 0 ? "100" : "0";
     }

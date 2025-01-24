@@ -187,7 +187,7 @@ export function BranchTable({
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <div>...</div>
+        <div></div>
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search name or location ..."

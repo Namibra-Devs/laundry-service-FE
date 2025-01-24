@@ -1,17 +1,23 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import SuspenseLayout from "./components/common/SuspenseLayout";
 
-import Login from "./pages/Login";
-import Unauthorized from "./pages/Unauthorized";
-import Dashboard from "./pages/private/admin/pages/Dashboard";
-import Orders from "./pages/private/shared/pages/Orders";
-import Items from "./pages/private/shared/pages/Items";
-import Customers from "./pages/private/shared/pages/Customers";
-import Services from "./pages/private/shared/pages/Services";
-import BranchManagement from "./pages/private/admin/pages/BranchManagement";
-import StaffManagement from "./pages/private/admin/pages/StaffManagement";
-import ErrorPage from "./pages/ErrorPage";
-import RequireAuth from "./components/common/RequireAuth";
-import AdminProtected from "./components/common/AdminProtected";
+const Login = lazy(() => import("./pages/Login"));
+const Unauthorized = lazy(() => import("./pages/Unauthorized"));
+const Dashboard = lazy(() => import("./pages/private/admin/pages/Dashboard"));
+const Orders = lazy(() => import("./pages/private/shared/pages/Orders"));
+const Items = lazy(() => import("./pages/private/shared/pages/Items"));
+const Customers = lazy(() => import("./pages/private/shared/pages/Customers"));
+const Services = lazy(() => import("./pages/private/shared/pages/Services"));
+const BranchManagement = lazy(() =>
+  import("./pages/private/admin/pages/BranchManagement")
+);
+const StaffManagement = lazy(() =>
+  import("./pages/private/admin/pages/StaffManagement")
+);
+const ErrorPage = lazy(() => import("./pages/ErrorPage"));
+const RequireAuth = lazy(() => import("./components/common/RequireAuth"));
+const AdminProtected = lazy(() => import("./components/common/AdminProtected"));
 
 const router = createBrowserRouter([
   {
@@ -28,47 +34,73 @@ const router = createBrowserRouter([
 
   {
     path: "dashboard",
-    element: <RequireAuth />,
+    element: (
+      <Suspense fallback={<SuspenseLayout />}>
+        <RequireAuth />
+      </Suspense>
+    ),
     errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: (
-          <AdminProtected>
-            <Dashboard />
-          </AdminProtected>
+          <Suspense fallback={<SuspenseLayout />}>
+            <AdminProtected>
+              <Dashboard />
+            </AdminProtected>
+          </Suspense>
         ),
       },
       {
         path: "orders",
-        element: <Orders />,
+        element: (
+          <Suspense fallback={<SuspenseLayout />}>
+            <Orders />
+          </Suspense>
+        ),
       },
       {
         path: "items",
-        element: <Items />,
+        element: (
+          <Suspense fallback={<SuspenseLayout />}>
+            <Items />
+          </Suspense>
+        ),
       },
       {
         path: "customers",
-        element: <Customers />,
+        element: (
+          <Suspense fallback={<SuspenseLayout />}>
+            <Customers />
+          </Suspense>
+        ),
       },
       {
         path: "services",
-        element: <Services />,
+        element: (
+          <Suspense fallback={<SuspenseLayout />}>
+            <Services />
+          </Suspense>
+        ),
       },
       {
         path: "manage-branch",
         element: (
-          <AdminProtected>
-            <BranchManagement />
-          </AdminProtected>
+          <Suspense fallback={<SuspenseLayout />}>
+            <AdminProtected>
+              <BranchManagement />
+            </AdminProtected>
+          </Suspense>
         ),
       },
       {
         path: "manage-staff",
         element: (
-          <AdminProtected>
-            <StaffManagement />
-          </AdminProtected>
+          <Suspense fallback={<SuspenseLayout />}>
+            <AdminProtected>
+              <StaffManagement />
+            </AdminProtected>
+          </Suspense>
         ),
       },
     ],
