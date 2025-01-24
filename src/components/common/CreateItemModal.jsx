@@ -6,6 +6,7 @@ import BranchForm from "../../pages/private/admin/components/branch/BranchForm";
 import StaffForm from "../../pages/private/admin/components/staff/StaffForm";
 import ServicesForm from "../../pages/private/shared/components/services/ServicesForm";
 import CustomersForm from "../../pages/private/shared/components/customers/CustomersForm";
+import ReactDOM from "react-dom";
 
 const CreateItemModal = ({
   isModalOpen,
@@ -19,7 +20,7 @@ const CreateItemModal = ({
   const allowedSections = ["Item", "Service", "Customer", "Branch", "Staff"];
   if (!isModalOpen || !allowedSections.includes(section)) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-screen sm:max-h-[80vh] flex flex-col relative">
         {loading && (
@@ -69,7 +70,8 @@ const CreateItemModal = ({
           <CustomButton label="Submit" variant="contained" onClick={onSubmit} />
         </div>
       </div>
-    </div>
+    </div>,
+    document.getElementById("modal")
   );
 };
 

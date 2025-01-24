@@ -73,7 +73,7 @@ export const createData = async (page, data, accessToken) => {
         type: "error",
         text:
           error.response?.data?.message ||
-          `Oops! Failed to new create ${page}.`,
+          `Oops! Failed to create new ${page}.`,
       };
       console.error("Error:", error);
     }

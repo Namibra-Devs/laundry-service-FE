@@ -18,11 +18,12 @@ const DashboardCard = ({ icon, label, count, metric }) => {
           <div className="flex items-center space-x-3">
             <div
               className={`flex items-center ${
-                Number(metric) > 0 ? "text-success" : "text-danger"
+                metric > 0 ? "text-success" : "text-danger"
               }`}
             >
-              <span>{Number(metric) < 0 ? <ArrowDown /> : <ArrowUp />}</span>
-              <span>{metric}%</span>
+              <span>{metric <= 0 ? <ArrowDown /> : <ArrowUp />}</span>
+              {/* <span>{metric}</span> */}
+              <span>{`${metric > 0 ? "+" : ""}${metric}%`}</span>
             </div>
             <small className="text-gray-400">vs Last Month</small>
           </div>

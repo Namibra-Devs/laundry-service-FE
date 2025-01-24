@@ -5,6 +5,9 @@ import { useOrders } from "../../../../../lib/store/OrdersStore";
 import { useMemo } from "react";
 // import OptionsDropDown from "./OptionsDropDown";
 import { useState } from "react";
+import useAppContext from "@/hooks/useAppContext";
+import { updateOrderState } from "@/lib/utils/updateOrderState";
+import useAuth from "@/hooks/useAuth";
 
 const OptionsDropDown = ({ isOpen }) => {
   return (
@@ -59,10 +62,12 @@ const Column = ({ state }) => {
     },
   };
 
-  const orders = useOrders((store) => store.orders);
+  // const orders = useOrders((store) => store.orders);
+
+  const { orders, triggerUpdate } = useAppContext();
 
   const filteredOrders = useMemo(
-    () => orders.filter((order) => order.state === state),
+    () => orders?.filter((order) => order.status === state),
     [orders, state]
   );
 
@@ -71,6 +76,10 @@ const Column = ({ state }) => {
   const { draggedOrder, setDraggedOrder, moveOrder } = useOrders(
     (state) => state
   );
+
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   return (
     <div
@@ -88,8 +97,10 @@ const Column = ({ state }) => {
       onDrop={() => {
         setDraggedOrder(null);
         setDrop(false);
-        moveOrder(draggedOrder, state);
-        // console.log(`${draggedOrder?.customerName} moved to ${state}`);
+        // moveOrder(draggedOrder, state);
+        updateOrderState(accessToken, draggedOrder?._id, state);
+        triggerUpdate("item");
+        // console.log(`${draggedOrder?.customer?.firstName} moved to ${state}`);
       }}
     >
       <div className="flex items-center justify-between">
@@ -102,7 +113,7 @@ const Column = ({ state }) => {
           <div
             className={`w-6 h-6 rounded-full text-[12px] text-white flex items-center justify-center ${main}`}
           >
-            {filteredOrders.length > 9 ? "9+" : filteredOrders.length}
+            {filteredOrders?.length > 9 ? "9+" : filteredOrders?.length}
           </div>
         </div>
 
@@ -118,7 +129,7 @@ const Column = ({ state }) => {
 
       <div className="order_column h-[70vh] overflow-y-auto">
         {filteredOrders?.map((order) => (
-          <OrderItem key={order?.id} order={order} state={state} />
+          <OrderItem key={order?._id} order={order} state={state} />
         ))}
       </div>
     </div>

@@ -12,53 +12,99 @@ import useAuth from "@/hooks/useAuth";
 import useAppContext from "@/hooks/useAppContext";
 
 const Dashboard = () => {
-  const { staff, branches, services, customers, items, orders } =
-    useAppContext();
+  const { staff, branches, services, customers, orders } = useAppContext();
 
-  console.log("staff", staff);
-  console.log("branches", branches);
-  console.log("services", services);
-  console.log("customers", customers);
-  console.log("items", items);
+  const today = new Date().toISOString().split("T")[0];
+  const todayOrders = orders?.filter((order) => {
+    const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
+    return orderDate === today;
+  });
+
+  function getPreviousMonthItems(data) {
+    const now = new Date();
+
+    const firstDayOfPrevMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      1
+    );
+    const lastDayOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const previousMonthItems = data.filter((item) => {
+      const createdAtDate = new Date(item?.createdAt);
+      return (
+        createdAtDate >= firstDayOfPrevMonth &&
+        createdAtDate <= lastDayOfPrevMonth
+      );
+    });
+
+    return previousMonthItems;
+  }
+
+  const preStaff = getPreviousMonthItems(staff);
+  const preBranches = getPreviousMonthItems(branches);
+  const preServices = getPreviousMonthItems(services);
+  const preCustomers = getPreviousMonthItems(customers);
+  const preOrders = getPreviousMonthItems(orders);
+
+  // console.log("staff", staff);
+  // console.log("branches", branches);
+  // console.log("services", services);
+  // console.log("customers", customers);
+  // console.log("items", items);
   console.log("orders", orders);
 
   const {
     auth: { user },
   } = useAuth();
+
+  function calculateMetric(currentValue, previousValue) {
+    // if (!previousValue || previousValue === 0) return "0";
+    if (!previousValue || previousValue === 0) {
+      return currentValue > 0 ? "100" : "0";
+    }
+    const change = ((currentValue - previousValue) / previousValue) * 100;
+    return change.toFixed(1);
+  }
+
   const cardDetails = [
     {
       label: "total orders",
       icon: <ShoppingCart />,
       count: orders?.length,
-      metric: +21,
+      metric: calculateMetric(orders?.length || 0, preOrders?.length || 0),
     },
     {
       label: "total customers",
       icon: <Users />,
       count: customers?.length,
-      metric: +21,
+      metric: calculateMetric(
+        customers?.length || 0,
+        preCustomers?.length || 0
+      ),
     },
     {
       label: "total branches",
       icon: <Building2 />,
       count: branches?.length,
-      metric: +21,
+      metric: calculateMetric(branches?.length || 0, preBranches?.length || 0),
     },
     {
       label: "total staff",
       icon: <Users />,
       count: staff?.length,
-      metric: +21,
+      metric: calculateMetric(staff?.length || 0, preStaff?.length || 0),
     },
     {
       label: "total services",
       icon: <HeartHandshakeIcon />,
       count: services?.length,
+      metric: calculateMetric(services?.length || 0, preServices?.length || 0),
     },
     {
       label: "today's orders",
       icon: <ShoppingCart />,
-      count: orders?.length,
+      count: todayOrders?.length,
     },
   ];
 

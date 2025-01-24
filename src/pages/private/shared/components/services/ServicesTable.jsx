@@ -89,6 +89,7 @@ const generateColumns = ({ onEditClick, onDeleteClick, getBranchName }) => {
     {
       accessorKey: "addBy",
       header: "Added By",
+      filterFn: "equals",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("addBy")}</div>
       ),
@@ -191,7 +192,6 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
             }
             className="max-w-48"
           />
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -218,7 +218,6 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -247,7 +246,6 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -270,13 +268,14 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedAddedBy("Added By");
-                  table.getColumn("addBy")?.setFilterValue(""); // Clear the filter to show all staff
+                  table.getColumn("addBy")?.setFilterValue(""); // Clear the filter
                 }}
               >
                 Clear Filter
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          ;
         </div>
       </div>
       <div className="rounded-md border">

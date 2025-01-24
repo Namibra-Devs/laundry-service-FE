@@ -8,6 +8,7 @@ import { useOrderForm } from "@/lib/store/PageForms";
 import useAppContext from "@/hooks/useAppContext";
 import { createData } from "@/lib/utils/createData";
 import useAuth from "@/hooks/useAuth";
+import ReactDOM from "react-dom";
 
 const CreateOrderModal = ({ isModalOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -82,7 +83,7 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
 
   if (!isModalOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[90vh] flex flex-col relative">
         {/* Header */}
@@ -120,7 +121,8 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
           )}
         </section>
       </div>
-    </div>
+    </div>,
+    document.getElementById("modal")
   );
 };
 

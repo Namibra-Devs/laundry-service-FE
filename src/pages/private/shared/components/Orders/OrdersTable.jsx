@@ -71,34 +71,28 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
         );
       },
     },
-    // {
-    //   accessorKey: "servicesRendered",
-    //   header: "Items",
-    //   cell: ({ row }) => {
-    //     // const servicesItems = row.getValue("servicesRendered");
-    //     // for (let i of servicesItems) {
-    //     //   items.push(i?.name)
-    //     // }
-    //     // const items = row.getValue("items");
-    //     // const uniques = [];
-    //     // for (let i of items) {
-    //     //   if (!uniques.includes(i)) uniques.push(i);
-    //     // }
-    //     return (
-    //       <div className="flex items-center">
-    //         hello
-    //         {/* {uniques?.map((item, index) => (
-    //           <img
-    //             key={index}
-    //             src={iconDictionary[item]}
-    //             alt={item}
-    //             width={20}
-    //           />
-    //         ))} */}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: "servicesRendered",
+      header: "Items",
+      cell: ({ row }) => {
+        const services = row.getValue("servicesRendered");
+        const items = [
+          ...new Set(services.flatMap((service) => service?.serviceItem?.name)),
+        ];
+        return (
+          <div className="flex items-center">
+            {items?.map((item, index) => (
+              <img
+                key={`${item}-${index}`}
+                src={iconDictionary[item.toLowerCase()]}
+                alt={item}
+                width={20}
+              />
+            ))}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: "createdAt",
       header: "Order Date",
@@ -115,7 +109,6 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
         }
         return <p>{total}</p>;
       },
-      // <p className="">{}</p>,
     },
     {
       accessorKey: "status",
@@ -223,17 +216,6 @@ export function OrdersTable({
             className="max-w-48"
           />
 
-          {/* <Input
-            placeholder="Search customers..."
-            value={
-              table.getColumn("customer")?.getFilterValue()?.firstName ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn("customer")?.setFilterValue(event.target.value)
-            }
-            className="max-w-48"
-          /> */}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -241,17 +223,19 @@ export function OrdersTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["Canceled", "Delivered"]?.map((status) => (
-                <DropdownMenuItem
-                  key={status}
-                  onClick={() => {
-                    setSelectedStatus(status);
-                    table.getColumn("status")?.setFilterValue(status);
-                  }}
-                >
-                  {status}
-                </DropdownMenuItem>
-              ))}
+              {["pending", "in progress", "completed", "delivered"]?.map(
+                (status, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    onClick={() => {
+                      setSelectedStatus(status);
+                      table.getColumn("status")?.setFilterValue(status);
+                    }}
+                  >
+                    {status}
+                  </DropdownMenuItem>
+                )
+              )}
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedStatus("Status");

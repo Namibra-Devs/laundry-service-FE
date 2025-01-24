@@ -11,6 +11,7 @@ import EditCustomerForm from "@/pages/private/shared/components/customers/EditCu
 import EditServiceForm from "@/pages/private/shared/components/services/EditServiceForm";
 import ItemDetails from "@/pages/private/shared/components/Items/ItemDetails";
 import EditItemForm from "@/pages/private/shared/components/Items/EditItemForm";
+import ReactDOM from "react-dom";
 
 const ViewContents = ({ section }) => {
   return (
@@ -67,7 +68,7 @@ const ViewItemModal = ({ isModalOpen, onClose, section }) => {
   ];
   if (!isModalOpen || !allowedSections.includes(section)) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-end bg-black bg-opacity-50 sm:pr-2">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-screen flex flex-col z-20 relative">
         {/* Header */}
@@ -113,7 +114,8 @@ const ViewItemModal = ({ isModalOpen, onClose, section }) => {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.getElementById("modal")
   );
 };
 

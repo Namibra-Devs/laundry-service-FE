@@ -4,21 +4,23 @@ import { iconDictionary } from "../../../../../lib/data/IconsDictionary";
 import { Ellipsis } from "lucide-react";
 import useAppContext from "../../../../../hooks/useAppContext";
 import { useOrders } from "@/lib/store/OrdersStore";
+import { formatDate } from "@/lib/utils/formatDate";
+import { updateOrderState } from "@/lib/utils/updateOrderState";
+import useAuth from "@/hooks/useAuth";
 
 const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
-  const { viewItem, editItem, setCurrentItemId } = useAppContext();
+  const { viewItem, setCurrentItemId, triggerUpdate } = useAppContext();
 
-  const { updateOrderState } = useOrders((state) => state);
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
+  // const { updateOrderState } = useOrders((state) => state);
 
   const onViewClick = (id) => {
     viewItem("Order");
     setCurrentItemId(id);
   };
-
-  //   const onEditClick = (id) => {
-  //     editItem("Order");
-  //     setCurrentItemId(id);
-  //   };
 
   const toMappings = {
     pending: "in_progress",
@@ -43,8 +45,11 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
           <button
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             onClick={() => {
-              updateOrderState(order, toMappings[state]);
-              console.log(`moving to: ${toMappings[state]}`);
+              // updateOrderState(order, toMappings[state]);
+              updateOrderState(accessToken, order?._id, toMappings[state]);
+              triggerUpdate("item");
+              // console.log(`${order?.customer?.firstName} moved to ${state}`);
+              // console.log(`moving to: ${toMappings[state]}`);
             }}
           >
             To{" "}
@@ -96,6 +101,15 @@ const OrderItem = ({ order, state }) => {
   const { color } = stateColors[state] || "";
   const { setDraggedOrder } = useOrders((state) => state);
 
+  const time = formatDate(order?.date, true).slice(-8);
+  const items = order?.servicesRendered || [];
+  let totalQuantity = 0;
+  for (let i of items) {
+    totalQuantity += i.quantity;
+  }
+
+  // console.log(order);
+
   return (
     <div
       className={`bg-white p-3 rounded-[10px] my-2 border-2 border-transparent ${color} transition-all duration-300 cursor-move relative`}
@@ -104,7 +118,7 @@ const OrderItem = ({ order, state }) => {
     >
       {/* header */}
       <div className="flex items-center justify-between">
-        <small>{order?.customerName}</small>
+        <small>{order?.customer?.firstName}</small>
         <Ellipsis
           className="cursor-pointer"
           onClick={() => setIsOpen((prev) => !prev)}
@@ -121,20 +135,24 @@ const OrderItem = ({ order, state }) => {
       </div>
       {/* body */}
       <div className="flex items-center justify-between text-gray-400 my-1">
-        <small>{order?.customerPhoneNumber}</small>
+        <small>{order?.customer?.phone}</small>
         <small>WR</small>
       </div>
       <div className="flex items-center justify-between text-gray-400 my-1">
-        <small>{order?.customerEmail}</small>
+        <small>{order?.customer?.email}</small>
         {/* <small>WR</small> */}
       </div>
       <div className="my-2 flex items-center">
-        {order?.items?.map((item, index) => (
+        {order?.servicesRendered?.map((item, index) => (
           <div
             key={index}
             className="w-10 h-10 rounded-full bg-ash_light flex items-center justify-center"
           >
-            <img src={iconDictionary[item]} alt={item} width={25} />
+            <img
+              src={iconDictionary[item?.serviceItem?.name.toLowerCase()]}
+              alt={item?.serviceItem?.name}
+              width={25}
+            />
           </div>
         ))}
       </div>
@@ -142,17 +160,17 @@ const OrderItem = ({ order, state }) => {
       <div className="py-1 px-2 bg-ash_light rounded-[10px]">
         <div className="flex items-center justify-between">
           <small className="text-gray-500">Time</small>
-          <small className="font-semibold text-gray-700">{order?.time}</small>
+          <small className="font-semibold text-gray-700">{time}</small>
         </div>
         <div className="flex items-center justify-between mt-2">
           <small className="text-gray-500">Day</small>
-          <small className="font-semibold text-gray-700">{order?.day}</small>
+          <small className="font-semibold text-gray-700">
+            {formatDate(order?.date)}
+          </small>
         </div>
         <div className="flex items-center justify-between mt-2">
           <small className="text-gray-500">Quantity</small>
-          <small className="font-semibold text-gray-700">
-            {order?.quantity}
-          </small>
+          <small className="font-semibold text-gray-700">{totalQuantity}</small>
         </div>
         <div className="flex items-center justify-between mt-2">
           <small className="text-gray-500">Price</small>
