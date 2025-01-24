@@ -203,7 +203,7 @@ export function CustomersTable({
   const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
 
   return (
-    <div className="w-full">
+    <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
         <div>...</div>
         <div className="flex items-center space-x-5">

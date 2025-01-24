@@ -189,12 +189,14 @@ const Customers = () => {
         />
       </div>
 
-      <CustomersTable
-        onViewClick={onViewClick}
-        onEditClick={onEditClick}
-        onDeleteClick={onDeleteClick}
-        customers={customersData}
-      />
+      <div className="w-screen sm:w-full overflow-auto">
+        <CustomersTable
+          onViewClick={onViewClick}
+          onEditClick={onEditClick}
+          onDeleteClick={onDeleteClick}
+          customers={customersData}
+        />
+      </div>
     </>
   );
 };

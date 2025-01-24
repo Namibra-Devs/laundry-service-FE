@@ -157,7 +157,7 @@ const StaffManagement = () => {
         />
       </div>
 
-      <div>
+      <div className="w-screen sm:w-full overflow-auto">
         <StaffTable
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}

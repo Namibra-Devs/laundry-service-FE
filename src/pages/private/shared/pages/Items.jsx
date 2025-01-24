@@ -183,13 +183,15 @@ const Items = () => {
         />
       </div>
 
-      <ItemsTable
-        onViewClick={onViewClick}
-        onEditClick={onEditClick}
-        onDeleteClick={onDeleteClick}
-        items={itemsData}
-        branchesList={branchesList}
-      />
+      <div className="w-screen sm:w-full overflow-auto">
+        <ItemsTable
+          onViewClick={onViewClick}
+          onEditClick={onEditClick}
+          onDeleteClick={onDeleteClick}
+          items={itemsData}
+          branchesList={branchesList}
+        />
+      </div>
     </>
   );
 };
