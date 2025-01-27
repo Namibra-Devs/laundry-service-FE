@@ -30,7 +30,6 @@ const EditItemForm = () => {
     e.preventDefault();
     setMessage("");
     setLoading(true);
-    // console.log(item);
 
     const updatedItem = {
       name: itemName,
@@ -40,18 +39,21 @@ const EditItemForm = () => {
     if (!itemName) {
       setMessage("Item name is required");
       setMessageType("error");
+      setLoading(false);
       return;
     }
 
     if (itemName.length < 3) {
       setMessage("Item name must be at least 3 characters long");
       setMessageType("error");
+      setLoading(false);
       return;
     }
 
     if (updatedItem?.pricing.length === 0) {
       setMessage("Add at least one price");
       setMessageType("error");
+      setLoading(false);
       return;
     }
 
@@ -59,11 +61,13 @@ const EditItemForm = () => {
       if (!priceItem.branch) {
         setMessage("Branch name is required for all price entries");
         setMessageType("error");
+        setLoading(false);
         return;
       }
       if (!priceItem.washingPrice) {
         setMessage("Please set the washing price for all price entries");
         setMessageType("error");
+        setLoading(false);
         return;
       }
       if (Number(priceItem.washingPrice) === 0) {
@@ -71,11 +75,13 @@ const EditItemForm = () => {
           "Washing price must be greater than 0 for all price entries"
         );
         setMessageType("error");
+        setLoading(false);
         return;
       }
       if (!priceItem.ironingPrice) {
         setMessage("Please set the ironing price for all price entries");
         setMessageType("error");
+        setLoading(false);
         return;
       }
       if (Number(priceItem.ironingPrice) === 0) {
@@ -83,6 +89,7 @@ const EditItemForm = () => {
           "Ironing price must be greater than 0 for all price entries"
         );
         setMessageType("error");
+        setLoading(false);
         return;
       }
     }
@@ -178,7 +185,7 @@ const EditItemForm = () => {
         </div>
 
         <div>
-          {pricing.map((priceItem) => (
+          {pricing?.map((priceItem) => (
             <EditItemBox
               key={priceItem?._id}
               priceItem={priceItem}

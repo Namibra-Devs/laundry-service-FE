@@ -110,6 +110,7 @@ const Items = () => {
     }));
 
     try {
+      console.log(pricing);
       const { data, message } = await createData(
         "item",
         { name: itemName, pricing },
@@ -184,13 +185,13 @@ const Items = () => {
       </div>
 
       <div className="w-screen sm:w-full overflow-auto">
-        {/* <ItemsTable
+        <ItemsTable
           onViewClick={onViewClick}
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
           items={itemsData}
           branchesList={branchesList}
-        /> */}
+        />
       </div>
     </>
   );

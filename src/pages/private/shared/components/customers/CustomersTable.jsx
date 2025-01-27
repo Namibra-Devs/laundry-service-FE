@@ -31,6 +31,9 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
+import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
+import useAuth from "@/hooks/useAuth";
+import useAppContext from "@/hooks/useAppContext";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
@@ -57,29 +60,41 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       enableHiding: false,
     },
     {
-      accessorKey: "firstName",
+      accessorFn: (row) => {
+        const firstName = row.firstName || "unavailable";
+        const middleName = row.middleName || "unavailable";
+        const lastName = row.lastName || "unavailable";
+        return `${firstName} ${middleName} ${lastName}`;
+      },
+      id: "fullName",
       header: "Name",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("firstName")}</div>
-      ),
+      cell: ({ getValue }) => <div className="capitalize">{getValue()}</div>,
     },
     {
       accessorKey: "email",
       header: "Email",
       cell: ({ row }) => {
         const email = row.getValue("email");
-        return <div>{email.slice(0, email.indexOf("@") + 1) + "..."}</div>;
+        return (
+          <div>
+            {email
+              ? email.slice(0, email.indexOf("@") + 1) + "..."
+              : "unavailable"}
+          </div>
+        );
       },
     },
     {
       accessorKey: "phone",
       header: "Phone",
-      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+      cell: ({ row }) => <div>{row.getValue("phone") || "unavailable"}</div>,
     },
     {
       accessorKey: "houseNumber",
       header: "House Number",
-      cell: ({ row }) => <div>{row.getValue("houseNumber")}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue("houseNumber") || "unavailable"}</div>
+      ),
     },
     {
       accessorKey: "branch",
@@ -90,14 +105,18 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       },
       filterFn: (row, columnId, filterValue) => {
         const branch = row.getValue(columnId);
-        return branch?.name?.toLowerCase().includes(filterValue.toLowerCase());
+        return branch
+          ? branch?.name?.toLowerCase().includes(filterValue.toLowerCase())
+          : "unavailable";
       },
     },
     {
       accessorKey: "addedBy",
       header: "Added By",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("addedBy")}</div>
+        <div className="capitalize">
+          {row.getValue("addedBy") || "unavailable"}
+        </div>
       ),
     },
     {
@@ -151,15 +170,20 @@ export function CustomersTable({
 
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const globalFilterFn = (row, columnId, filterValue) => {
-    const name = row.original.firstName?.toLowerCase() ?? "";
+  const { triggerUpdate } = useAppContext();
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
+  const globalFilterFn = (row, filterValue) => {
+    const fullName = row.original.fullName?.toLowerCase() ?? "";
     const email = row.original.email?.toLowerCase() ?? "";
     const phone = row.original.phone?.toLowerCase() ?? "";
     const houseNumber = row.original.houseNumber?.toLowerCase() ?? "";
     const searchValue = filterValue.toLowerCase();
 
     return (
-      name.includes(searchValue) ||
+      fullName.includes(searchValue) ||
       email.includes(searchValue) ||
       phone.includes(searchValue) ||
       houseNumber.includes(searchValue)
@@ -201,11 +225,96 @@ export function CustomersTable({
 
   const [selectedBranch, setSelectedBranch] = useState("Branch");
   const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleDeleteAll = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original._id);
+
+    try {
+      const { data, message } = await deleteSelectedItems(
+        accessToken,
+        "customer",
+        selectedIds
+      );
+
+      if (message) {
+        console.log(message);
+        setMessage(message);
+      }
+
+      if (data) {
+        console.log("Data: ", data);
+        setIsConfirmDialogOpen(false);
+        setMessage("");
+        triggerUpdate("customer");
+      }
+    } catch (error) {
+      console.log("Error deleting customers: ", error);
+      setMessage("Failed to delete selected items. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <div>...</div>
+        <Button
+          variant="destructive"
+          disabled={table.getSelectedRowModel().rows.length === 0}
+          onClick={handleDeleteAll}
+        >
+          Delete Selected
+        </Button>
+
+        {/* Confirmation Dialog */}
+        <div
+          className={`${
+            isConfirmDialogOpen ? "block" : "hidden"
+          } fixed top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-md z-20`}
+        >
+          {/* dialog header */}
+          <div>
+            <h3 className="bg-danger px-5 py-2 text-white text-center rounded-t-md">
+              Delete Selected Data
+            </h3>
+            <p className="p-5">
+              {message ||
+                "Are you sure you want to delete all selected data? This action cannot be undone."}
+            </p>
+          </div>
+
+          {/* dialog footer */}
+          <div className="p-5 flex items-center space-x-5">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConfirmDialogOpen(false);
+                setMessage("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              {loading ? "Deleting..." : "Yes, Delete"}
+            </Button>
+          </div>
+        </div>
+
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search name, email, phone and house-number ..."

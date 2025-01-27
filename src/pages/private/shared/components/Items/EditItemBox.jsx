@@ -2,6 +2,7 @@ import Dropdown from "@/components/Dropdown";
 import useAppContext from "@/hooks/useAppContext";
 import { Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 
 const EditItemBox = ({
   priceItem,
@@ -11,6 +12,7 @@ const EditItemBox = ({
   onDelete,
 }) => {
   const { branches } = useAppContext();
+  const [itemBranch, setItemBranch] = useState();
 
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
@@ -18,6 +20,14 @@ const EditItemBox = ({
     const branch = branches.find((b) => b._id === branchId);
     return branch?.name || branchId;
   };
+
+  useEffect(() => {
+    if (priceItem?.branch && typeof priceItem.branch === "object") {
+      setItemBranch(priceItem.branch._id);
+    } else {
+      setItemBranch(priceItem?.branch);
+    }
+  }, [priceItem]);
 
   return (
     <div className="bg-ash_light p-5 rounded-[10px] mt-5">
@@ -27,12 +37,14 @@ const EditItemBox = ({
           onClick={onDelete}
         />
       </div>
+
       <Dropdown
         options={branchesList}
-        item={getBranchName(priceItem?.branch)}
+        item={getBranchName(itemBranch)}
         setItem={onBranchChange}
         label="Branch"
       />
+
       <div className="mt-5">
         <p className="text-sm mb-1">Wash Price</p>
         <div className="flex items-center space-x-3">

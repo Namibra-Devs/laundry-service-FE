@@ -107,7 +107,6 @@ const EditBranchForm = () => {
             <div className="h-12 w-12 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
           </div>
         )}
-        <p>{branch?.location}</p>
         <Input
           label="Name"
           name="branchName"

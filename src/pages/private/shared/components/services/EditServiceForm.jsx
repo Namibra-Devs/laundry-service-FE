@@ -22,13 +22,13 @@ const EditServiceForm = () => {
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const getBranchName = (branchId) => {
-    const branch = branches.find((b) => b._id === branchId);
+    const branch = branchesList.find((b) => b._id === branchId);
     return branch?.name || branchId;
   };
 
   useEffect(() => {
     setServiceName(service?.name);
-    setServiceBranch(service?.branch);
+    setServiceBranch(service?.branch?._id);
   }, [service]);
 
   const UpdateService = async (e) => {
@@ -101,7 +101,7 @@ const EditServiceForm = () => {
           label="Branch"
         />
 
-        <div className="mt-10">
+        <div className="mt-24">
           <CustomButton
             label="Update Branch"
             variant="contained"

@@ -5,7 +5,7 @@ import Socks from "../../assets/icons/socks.png";
 
 export const iconDictionary = {
   jeans: Jeans,
-  t_shirt: T_Shirt,
+  "t-shirt": T_Shirt,
   shorts: Shorts,
   socks: Socks,
 };

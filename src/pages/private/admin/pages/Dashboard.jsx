@@ -12,7 +12,8 @@ import useAuth from "@/hooks/useAuth";
 import useAppContext from "@/hooks/useAppContext";
 
 const Dashboard = () => {
-  const { staff, branches, services, customers, orders } = useAppContext();
+  const { staff, branches, services, customers, items, orders } =
+    useAppContext();
 
   const today = new Date().toISOString().split("T")[0];
   const todayOrders = orders?.filter((order) => {
@@ -47,12 +48,12 @@ const Dashboard = () => {
   const preCustomers = getPreviousMonthItems(customers);
   const preOrders = getPreviousMonthItems(orders);
 
-  // console.log("staff", staff);
-  // console.log("branches", branches);
-  // console.log("services", services);
-  // console.log("customers", customers);
-  // console.log("items", items);
-  // console.log("orders", orders);
+  console.log("staff", staff);
+  console.log("branches", branches);
+  console.log("services", services);
+  console.log("customers", customers);
+  console.log("items", items);
+  console.log("orders", orders);
 
   const {
     auth: { user },
@@ -70,13 +71,13 @@ const Dashboard = () => {
     {
       label: "total orders",
       icon: <ShoppingCart />,
-      count: orders?.length,
+      count: orders?.length ?? "-",
       metric: calculateMetric(orders?.length || 0, preOrders?.length || 0),
     },
     {
       label: "total customers",
       icon: <Users />,
-      count: customers?.length,
+      count: customers?.length ?? "-",
       metric: calculateMetric(
         customers?.length || 0,
         preCustomers?.length || 0
@@ -85,25 +86,25 @@ const Dashboard = () => {
     {
       label: "total branches",
       icon: <Building2 />,
-      count: branches?.length,
+      count: branches?.length ?? "-",
       metric: calculateMetric(branches?.length || 0, preBranches?.length || 0),
     },
     {
       label: "total staff",
       icon: <Users />,
-      count: staff?.length,
+      count: staff?.length ?? "-",
       metric: calculateMetric(staff?.length || 0, preStaff?.length || 0),
     },
     {
       label: "total services",
       icon: <HeartHandshakeIcon />,
-      count: services?.length,
+      count: services?.length ?? "-",
       metric: calculateMetric(services?.length || 0, preServices?.length || 0),
     },
     {
       label: "today's orders",
       icon: <ShoppingCart />,
-      count: todayOrders?.length,
+      count: todayOrders?.length ?? "-",
     },
   ];
 

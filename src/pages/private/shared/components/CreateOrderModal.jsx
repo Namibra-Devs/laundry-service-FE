@@ -1,26 +1,22 @@
 import { X } from "lucide-react";
-import { useState } from "react";
 import PropTypes from "prop-types";
 import StepOne from "./Orders/StepOne";
 import StepTwo from "./Orders/StepTwo";
 import StepThree from "./Orders/StepThree";
 import { useOrderForm } from "@/lib/store/PageForms";
-import useAppContext from "@/hooks/useAppContext";
-import { createData } from "@/lib/utils/createData";
-import useAuth from "@/hooks/useAuth";
 import ReactDOM from "react-dom";
 
-const CreateOrderModal = ({ isModalOpen, onClose }) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const { data, resetAll } = useOrderForm();
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const { triggerUpdate } = useAppContext();
-  const {
-    auth: { accessToken },
-  } = useAuth();
+const CreateOrderModal = ({
+  isModalOpen,
+  onClose,
+  message,
+  messageType,
+  loading,
+  createOrder,
+  currentStep,
+  setCurrentStep,
+}) => {
+  const { data } = useOrderForm();
 
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -28,64 +24,6 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
 
   const handleBack = () => {
     setCurrentStep((prev) => prev - 1);
-  };
-
-  const createOrder = async () => {
-    setLoading(true);
-    setMessage("");
-
-    let orderData = {};
-
-    let servicesRendered = data?.servicesRendered?.map(({ id, ...rest }) => ({
-      serviceItem: rest?.serviceItem,
-      service: rest?.service,
-      isIroned: rest?.isIroned,
-      quantity: rest?.quantity,
-    }));
-
-    if (data?.customer) {
-      orderData = {
-        branch: data?.branch,
-        customer: data?.customer,
-        servicesRendered,
-      };
-    } else {
-      orderData = {
-        firstName: data?.firstName,
-        lastName: data?.lastName,
-        email: data?.email,
-        phone: data?.phone,
-        houseNumber: data?.houseNumber,
-        branch: data?.branch,
-        servicesRendered,
-      };
-    }
-
-    try {
-      console.log(orderData);
-      const { data: responseData, message } = await createData(
-        "order",
-        orderData,
-        accessToken
-      );
-
-      if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
-      }
-
-      if (responseData) {
-        console.log("Order created successfully:", responseData);
-        resetAll();
-        triggerUpdate("order");
-      }
-    } catch (error) {
-      console.error("Error creating order:", error);
-      setMessage(message?.text);
-      setMessageType(message?.type);
-    } finally {
-      setLoading(false);
-    }
   };
 
   if (!isModalOpen) return null;
@@ -105,7 +43,7 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <section className="flex-1 overflow-y-auto px-6 py-4 view_screen">
+        <section className="flex-1 overflow-y-auto px-6 py-4">
           {currentStep === 1 ? (
             <StepOne onClose={onClose} onNext={handleNext} initialData={data} />
           ) : currentStep === 2 ? (
@@ -136,6 +74,12 @@ const CreateOrderModal = ({ isModalOpen, onClose }) => {
 CreateOrderModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  messageType: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
+  createOrder: PropTypes.func.isRequired,
+  setCurrentStep: PropTypes.func.isRequired,
+  currentStep: PropTypes.number.isRequired,
 };
 
 export default CreateOrderModal;

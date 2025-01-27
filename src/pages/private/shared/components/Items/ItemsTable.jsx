@@ -31,6 +31,10 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
+import useAppContext from "@/hooks/useAppContext";
+import useAuth from "@/hooks/useAuth";
+import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
+import { iconDictionary } from "@/lib/data/IconsDictionary";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
@@ -59,38 +63,89 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
     {
       accessorKey: "name",
       header: "Item Name",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
-      ),
+      cell: ({ row }) => {
+        const name = row.original.name;
+        return (
+          <div className="flex items-center space-x-1">
+            {iconDictionary[name.toLowerCase()] ? (
+              <img
+                src={iconDictionary[name.toLowerCase()]}
+                alt={name}
+                width={20}
+              />
+            ) : (
+              <p className="text-2xl">📦</p>
+            )}
+            <p className="capitalize">{name}</p>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "washingPrice",
-      header: "Wash Price",
-      cell: ({ row }) => (
-        <div className="capitalize">GHC {row.getValue("washingPrice")}</div>
-      ),
+      header: "Wash Price (GHC)",
+      cell: ({ row }) => {
+        const prices = row.original.pricing;
+        if (!prices || prices?.length === 0) return "N/A";
+
+        return (
+          <ul>
+            {prices?.map((price, index) => (
+              <li key={index} className="mt-1">
+                {price?.branch?.name}: {price.washingPrice}
+              </li>
+            ))}
+          </ul>
+        );
+      },
     },
     {
       accessorKey: "ironingPrice",
-      header: "Iron Price",
-      cell: ({ row }) => (
-        <div className="capitalize">GHC {row.getValue("ironingPrice")}</div>
-      ),
+      header: "Ironing Price (GHC)",
+      cell: ({ row }) => {
+        const prices = row.original.pricing;
+        if (!prices || prices?.length === 0) return "N/A";
+
+        return (
+          <ul>
+            {prices?.map((price, index) => (
+              <li key={index} className="mt-1">
+                {price?.branch?.name}: {price.ironingPrice}
+              </li>
+            ))}
+          </ul>
+        );
+      },
     },
     {
-      accessorKey: "branch",
+      accessorKey: "pricing",
       header: "Branch",
+      filterFn: (row, id, filterValue) => {
+        const prices = row.getValue(id); // `id` is "pricing"
+        if (!prices || prices.length === 0) return false;
+        return prices.some((price) => price?.branch?.name === filterValue);
+      },
       cell: ({ row }) => {
-        const branch = row.getValue("branch");
-        return <div className="capitalize">{branch?.name || "null"}</div>;
+        const prices = row.getValue("pricing");
+        if (!prices || prices?.length === 0) return "none";
+        return (
+          <ul>
+            {prices?.map((price, index) => (
+              <li key={index} className="mt-1">
+                {price?.branch?.name}
+              </li>
+            ))}
+          </ul>
+        );
       },
     },
     {
       accessorKey: "addedBy",
       header: "Added By",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("addedBy")}</div>
-      ),
+      cell: ({ row }) => {
+        const person = row.getValue("addedBy");
+        return <div className="capitalize">{person?.name}</div>;
+      },
     },
     {
       id: "actions",
@@ -140,6 +195,11 @@ export function ItemsTable({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
+  const { triggerUpdate } = useAppContext();
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
   const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
   const table = useReactTable({
@@ -162,11 +222,96 @@ export function ItemsTable({
   });
 
   const [selectedBranch, setSelectedBranch] = useState("Branch");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleDeleteAll = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original._id);
+
+    try {
+      const { data, message } = await deleteSelectedItems(
+        accessToken,
+        "item",
+        selectedIds
+      );
+
+      if (message) {
+        console.log(message);
+        setMessage(message);
+      }
+
+      if (data) {
+        console.log("Data: ", data);
+        setIsConfirmDialogOpen(false);
+        setMessage("");
+        triggerUpdate("item");
+      }
+    } catch (error) {
+      console.log("Error deleting items: ", error);
+      setMessage("Failed to delete selected items. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <div>...</div>
+        <Button
+          variant="destructive"
+          disabled={table.getSelectedRowModel().rows.length === 0}
+          onClick={handleDeleteAll}
+        >
+          Delete Selected
+        </Button>
+
+        {/* Confirmation Dialog */}
+        <div
+          className={`${
+            isConfirmDialogOpen ? "block" : "hidden"
+          } fixed top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-md z-20`}
+        >
+          {/* dialog header */}
+          <div>
+            <h3 className="bg-danger px-5 py-2 text-white text-center rounded-t-md">
+              Delete Selected Data
+            </h3>
+            <p className="p-5">
+              {message ||
+                "Are you sure you want to delete all selected data? This action cannot be undone."}
+            </p>
+          </div>
+
+          {/* dialog footer */}
+          <div className="p-5 flex items-center space-x-5">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConfirmDialogOpen(false);
+                setMessage("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              {loading ? "Deleting..." : "Yes, Delete"}
+            </Button>
+          </div>
+        </div>
+
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search names..."
@@ -184,12 +329,12 @@ export function ItemsTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {branchesList?.map((branch) => (
+              {branchesList?.map((branch, index) => (
                 <DropdownMenuItem
-                  key={branch}
+                  key={index}
                   onClick={() => {
                     setSelectedBranch(branch);
-                    table.getColumn("branch")?.setFilterValue(branch);
+                    table.getColumn("pricing")?.setFilterValue(branch);
                   }}
                 >
                   {branch}
@@ -197,8 +342,8 @@ export function ItemsTable({
               ))}
               <DropdownMenuItem
                 onClick={() => {
-                  setSelectedBranch("Branch");
-                  table.getColumn("branch")?.setFilterValue(""); // Clear the filter to show all staff
+                  setSelectedBranch("");
+                  table.getColumn("pricing")?.setFilterValue(""); // Clear the filter
                 }}
               >
                 Clear Filter

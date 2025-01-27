@@ -33,8 +33,10 @@ import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
 import useAppContext from "@/hooks/useAppContext";
 import { formatDate } from "@/lib/utils/formatDate";
+import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
+import useAuth from "@/hooks/useAuth";
 
-const generateColumns = ({ onEditClick, onDeleteClick, getBranchName }) => {
+const generateColumns = ({ onEditClick, onDeleteClick }) => {
   return [
     {
       id: "select",
@@ -62,19 +64,21 @@ const generateColumns = ({ onEditClick, onDeleteClick, getBranchName }) => {
       accessorKey: "name",
       header: "Service Name",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
+        <div className="capitalize">
+          {row.getValue("name") || "unavailable"}
+        </div>
       ),
     },
     {
       accessorKey: "branch",
       header: "Branch",
-      cell: ({ row }) => {
-        const branch = row.getValue("branch");
-        return <p>{getBranchName(branch)}</p>;
-      },
       filterFn: (row, columnId, filterValue) => {
         const branch = row.getValue(columnId);
-        return branch?.includes(filterValue.toLowerCase());
+        return branch?._id === filterValue;
+      },
+      cell: ({ row }) => {
+        const branch = row.getValue("branch");
+        return <p>{branch ? branch?.name : "unavailable"}</p>;
       },
     },
     {
@@ -82,17 +86,23 @@ const generateColumns = ({ onEditClick, onDeleteClick, getBranchName }) => {
       header: "Date Created",
       cell: ({ row }) => (
         <div className="capitalize">
-          {formatDate(row.getValue("createdAt"))}
+          {formatDate(row.getValue("createdAt")) || "unavailable"}
         </div>
       ),
     },
     {
       accessorKey: "addBy",
       header: "Added By",
-      filterFn: "equals",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("addBy")}</div>
-      ),
+      filterFn: (row, columnId, filterValue) => {
+        const person = row.getValue(columnId);
+        return person?._id === filterValue;
+      },
+      cell: ({ row }) => {
+        const person = row.getValue("addBy");
+        return (
+          <div className="capitalize">{person?.name || "unavailable"}</div>
+        );
+      },
     },
     {
       id: "actions",
@@ -132,15 +142,36 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const { branches } = useAppContext();
+  const { branches, triggerUpdate } = useAppContext();
+  const {
+    auth: { accessToken },
+  } = useAuth();
 
   const getBranchName = (branchId) => {
     const branch = branches.find((b) => b._id === branchId);
     return branch?.name || branchId;
   };
 
+  // const uniqueBranchIds = Array.from(
+  //   new Set(services.map((service) => service?.branch))
+  // );
+
   const uniqueBranchIds = Array.from(
-    new Set(services.map((service) => service?.branch))
+    services
+      .reduce((map, service) => {
+        if (service?.branch) {
+          const branch = Array.isArray(service.branch)
+            ? service.branch
+            : [service.branch];
+          branch.forEach((branchItem) => {
+            if (branchItem?._id && !map.has(branchItem._id)) {
+              map.set(branchItem._id, branchItem);
+            }
+          });
+        }
+        return map;
+      }, new Map())
+      .values()
   );
 
   const uniqueDates = Array.from(
@@ -148,7 +179,21 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
   );
 
   const uniquePersons = Array.from(
-    new Set(services.map((service) => service?.addBy))
+    services
+      .reduce((map, service) => {
+        if (service?.addBy) {
+          const addBy = Array.isArray(service.addBy)
+            ? service.addBy
+            : [service.addBy];
+          addBy.forEach((person) => {
+            if (person?._id && !map.has(person._id)) {
+              map.set(person._id, person);
+            }
+          });
+        }
+        return map;
+      }, new Map())
+      .values()
   );
 
   const columns = generateColumns({
@@ -178,11 +223,96 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
 
   const [selectedBranch, setSelectedBranch] = useState("Branch");
   const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleDeleteAll = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original._id);
+
+    try {
+      const { data, message } = await deleteSelectedItems(
+        accessToken,
+        "service",
+        selectedIds
+      );
+
+      if (message) {
+        console.log(message);
+        setMessage(message);
+      }
+
+      if (data) {
+        console.log("Data: ", data);
+        setIsConfirmDialogOpen(false);
+        setMessage("");
+        triggerUpdate("service");
+      }
+    } catch (error) {
+      console.log("Error deleting services: ", error);
+      setMessage("Failed to delete selected items. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <div>...</div>
+        <Button
+          variant="destructive"
+          disabled={table.getSelectedRowModel().rows.length === 0}
+          onClick={handleDeleteAll}
+        >
+          Delete Selected
+        </Button>
+
+        {/* Confirmation Dialog */}
+        <div
+          className={`${
+            isConfirmDialogOpen ? "block" : "hidden"
+          } fixed top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-md z-20`}
+        >
+          {/* dialog header */}
+          <div>
+            <h3 className="bg-danger px-5 py-2 text-white text-center rounded-t-md">
+              Delete Selected Data
+            </h3>
+            <p className="p-5">
+              {message ||
+                "Are you sure you want to delete all selected data? This action cannot be undone."}
+            </p>
+          </div>
+
+          {/* dialog footer */}
+          <div className="p-5 flex items-center space-x-5">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConfirmDialogOpen(false);
+                setMessage("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              {loading ? "Deleting..." : "Yes, Delete"}
+            </Button>
+          </div>
+        </div>
+
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search names..."
@@ -225,15 +355,15 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {uniqueBranchIds?.map((branchItem, index) => (
+              {uniqueBranchIds?.map((branchItem) => (
                 <DropdownMenuItem
-                  key={index}
+                  key={branchItem?._id}
                   onClick={() => {
-                    setSelectedBranch(getBranchName(branchItem));
-                    table.getColumn("branch")?.setFilterValue(branchItem);
+                    setSelectedBranch(getBranchName(branchItem?.name));
+                    table.getColumn("branch")?.setFilterValue(branchItem?._id);
                   }}
                 >
-                  {getBranchName(branchItem)}
+                  {branchItem?.name}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
@@ -254,15 +384,15 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {uniquePersons?.map((person, index) => (
+              {uniquePersons?.map((person) => (
                 <DropdownMenuItem
-                  key={index}
+                  key={person._id}
                   onClick={() => {
-                    setSelectedAddedBy(person);
-                    table.getColumn("addBy")?.setFilterValue(person);
+                    setSelectedAddedBy(person?.name);
+                    table.getColumn("addBy")?.setFilterValue(person._id);
                   }}
                 >
-                  {person}
+                  {person?.name}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem

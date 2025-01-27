@@ -28,12 +28,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogFooter,
+// } from "@/components/ui/dialog";
+
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
 import { iconDictionary } from "@/lib/data/IconsDictionary";
 import ViewToggle from "../OrdersViewToggle";
 import { formatDate } from "@/lib/utils/formatDate";
+import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
+import useAuth from "@/hooks/useAuth";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
@@ -72,7 +82,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
       },
     },
     {
-      accessorKey: "servicesRendered",
+      accessorKey: "s",
       header: "Items",
       cell: ({ row }) => {
         const services = row.getValue("servicesRendered");
@@ -81,18 +91,33 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
         ];
         return (
           <div className="flex items-center">
-            {items?.map((item, index) => (
-              <img
-                key={`${item}-${index}`}
-                src={iconDictionary[item.toLowerCase()]}
-                alt={item}
-                width={20}
-              />
-            ))}
+            {items?.map((item, index) =>
+              iconDictionary[item.toLowerCase()] ? (
+                <img
+                  key={index}
+                  src={iconDictionary[item.toLowerCase()]}
+                  alt={item}
+                  width={20}
+                />
+              ) : (
+                <p key={index} className="text-2xl">
+                  📦
+                </p>
+              )
+            )}
           </div>
         );
       },
     },
+    // {iconDictionary[name.toLowerCase()] ? (
+    //           <img
+    //             src={iconDictionary[name.toLowerCase()]}
+    //             alt={name}
+    //             width={20}
+    //           />
+    //         ) : (
+
+    //         )}
     {
       accessorKey: "createdAt",
       header: "Order Date",
@@ -175,6 +200,10 @@ export function OrdersTable({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
   const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
   const table = useReactTable({
@@ -197,12 +226,65 @@ export function OrdersTable({
   });
 
   const [selectedStatus, setSelectedStatus] = useState("Status");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+  const handleDeleteAll = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original._id);
+    deleteSelectedItems(accessToken, "order", selectedIds);
+    setIsConfirmDialogOpen(false);
+  };
 
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <div className="sm:block hidden">
-          <ViewToggle />
+        <div className="flex items-center space-x-2">
+          <div className="sm:block hidden">
+            <ViewToggle />
+          </div>
+          <Button
+            variant="destructive"
+            disabled={table.getSelectedRowModel().rows.length === 0}
+            onClick={handleDeleteAll}
+          >
+            Delete Selected
+          </Button>
+        </div>
+
+        {/* Confirmation Dialog */}
+        <div
+          className={`${
+            isConfirmDialogOpen ? "block" : "hidden"
+          } fixed top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-md z-20`}
+        >
+          {/* dialog header */}
+          <div>
+            <h3 className="bg-danger px-5 py-2 text-white text-center rounded-t-md">
+              Delete Selected Data
+            </h3>
+            <p className="p-5">
+              Are you sure you want to delete all selected data? This action
+              cannot be undone.
+            </p>
+          </div>
+
+          {/* dialog footer */}
+          <div className="p-5 flex items-center space-x-5">
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirmDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Yes, Delete
+            </Button>
+          </div>
         </div>
         <div className="flex items-center space-x-5">
           <Input
@@ -291,7 +373,7 @@ export function OrdersTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No orders data available.
                 </TableCell>
               </TableRow>
             )}

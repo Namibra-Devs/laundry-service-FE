@@ -3,30 +3,37 @@ import { Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
 import useAppContext from "@/hooks/useAppContext";
 import { useOrderForm } from "@/lib/store/PageForms";
+import { useState } from "react";
 
 const ItemBox = ({ item }) => {
   const {
     deleteItem,
     setItemService,
-    setServiceItem,
+    setOrderItem,
     updateIronState,
     decreaseItemQuantity,
     increaseItemQuantity,
   } = useOrderForm();
 
   const { services, items } = useAppContext();
-  const servicesList = [...new Set(services?.map((service) => service))];
-  const itemsList = [...new Set(items?.map((item) => item))];
+  const servicesList = Array.from(
+    new Map(services?.map((service) => [service._id, service])).values()
+  );
+  const itemsList = Array.from(
+    new Map(items?.map((item) => [item._id, item])).values()
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const getServiceName = (serviceId) => {
     const service = services.find((s) => s._id === serviceId);
     return service?.name || serviceId;
   };
 
-  const getItemName = (itemId) => {
-    const item = items.find((i) => i._id === itemId);
-    return item?.name || itemId;
-  };
+  // const getItemName = (itemId) => {
+  //   const item = items.find((i) => i._id === itemId);
+  //   return item?.name || itemId;
+  // };
 
   return (
     <div className="bg-ash_light p-5 rounded-[10px] mt-5">
@@ -37,12 +44,57 @@ const ItemBox = ({ item }) => {
         />
       </div>
 
-      <Dropdown
+      {/*  */}
+      <div>
+        <label className="text-sm mb-1">Item</label>
+        <div className="relative text-dark cursor-pointer">
+          <div
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex items-center justify-between border-2 border-gray-300 rounded-md px-4 py-2 w-full text-sm"
+          >
+            {item?.orderItem?.name ?? "-- select --"}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+          {isOpen && (
+            <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-fit">
+              {itemsList?.map((option, index) => (
+                <li
+                  key={index}
+                  className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer w-[10rem]"
+                  onClick={() => {
+                    setOrderItem(item?.id, option);
+                    setIsOpen(false);
+                  }}
+                >
+                  {option?.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/*  */}
+
+      {/* <Dropdown
         options={itemsList}
         item={getItemName(item?.serviceItem)}
         setItem={(selectedItem) => setServiceItem(item?.id, selectedItem)}
         label="Item Name"
-      />
+      /> */}
 
       <Dropdown
         options={servicesList}

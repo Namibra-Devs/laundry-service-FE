@@ -48,8 +48,6 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
     return branch?.name || branchId;
   };
 
-  // const [branch, setBranch] = useState("");
-
   const handleNext = () => {
     if (!data?.branch) {
       setMessage("Please select a branch");
@@ -88,7 +86,7 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
                 setMessageType("error");
                 return;
               } else setMessage("");
-              addOrderItem((data?.servicesRendered?.length || 0) + 1);
+              addOrderItem(new Date().getTime());
             }}
           >
             <Plus size={20} />
@@ -99,6 +97,7 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
         <div>
           {data?.servicesRendered?.map((item, index) => (
             <ItemBox key={index} item={item} />
+            // <p key={index}>{item?.id}</p>
           ))}
         </div>
       </div>

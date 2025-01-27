@@ -11,21 +11,27 @@ import Filters from "../components/Orders/Filters";
 import { useOrders } from "@/lib/store/OrdersStore";
 import DeleteAlert from "@/components/common/DeleteAlert";
 import { useEffect } from "react";
-import { refetchData } from "@/lib/utils/refetchData";
 import useAuth from "@/hooks/useAuth";
 import { useOrderForm } from "@/lib/store/PageForms";
+import { createData } from "@/lib/utils/createData";
 
 const Orders = () => {
   const [orderModal, setOrderModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const { data, resetAll } = useOrderForm();
+  const { triggerUpdate } = useAppContext();
+
   const {
-    auth: { accessToken, user },
+    auth: { accessToken },
   } = useAuth();
 
   const { orders } = useAppContext();
   const [ordersData, setOrdersData] = useState([]);
-
-  const { resetAll } = useOrderForm();
 
   useEffect(() => {
     if (Array.isArray(orders)) {
@@ -67,21 +73,68 @@ const Orders = () => {
     setOrderModal(true);
   };
 
-  const createItem = async () => {
-    console.log("items data");
+  const createOrder = async () => {
+    setLoading(true);
+    setMessage("");
+
+    let orderData = {};
+
+    let servicesRendered = data?.servicesRendered?.map(({ id, ...rest }) => ({
+      serviceItem: rest?.orderItem?._id,
+      service: rest?.service,
+      isIroned: rest?.isIroned,
+      quantity: rest?.quantity,
+    }));
+
+    if (data?.customer) {
+      orderData = {
+        branch: data?.branch,
+        customer: data?.customer,
+        servicesRendered,
+      };
+    } else {
+      orderData = {
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        email: data?.email,
+        phone: data?.phone,
+        houseNumber: data?.houseNumber,
+        branch: data?.branch,
+        servicesRendered,
+      };
+    }
+
+    try {
+      // console.log(orderData);
+      const { data: responseData, message } = await createData(
+        "order",
+        orderData,
+        accessToken
+      );
+      if (message) {
+        setMessage(message.text);
+        setMessageType(message.type);
+      }
+      if (responseData) {
+        console.log("Order created successfully:", responseData);
+        resetAll();
+        setCurrentStep(1);
+        triggerUpdate("order");
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      setMessage(message?.text);
+      setMessageType(message?.type);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClose = () => {
     setOrderModal(false);
     resetAll();
-  };
-
-  const refetchFunction = () => {
-    refetchData({
-      setData: setOrdersData,
-      accessToken,
-      endpoint: `/api/service/items${user?.id}`,
-    });
+    setMessage("");
+    setCurrentStep(1);
   };
 
   return (
@@ -91,14 +144,18 @@ const Orders = () => {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         itemId={selectedId}
-        refetchFunction={refetchFunction}
       />
 
       <CreateOrderModal
         isModalOpen={orderModal}
         onClose={onClose}
         section={currentForm || ""}
-        onSubmit={createItem}
+        createOrder={createOrder}
+        message={message}
+        messageType={messageType}
+        loading={loading}
+        setCurrentStep={setCurrentStep}
+        currentStep={currentStep}
       />
 
       <ViewItemModal
@@ -135,7 +192,7 @@ const Orders = () => {
             onViewClick={onViewClick}
             onEditClick={onEditClick}
             onDeleteClick={onDeleteClick}
-            orders={ordersData}
+            orders={ordersData || []}
           />
         ) : (
           <OrdersContainers />

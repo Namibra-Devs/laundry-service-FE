@@ -32,6 +32,9 @@ import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import PropTypes from "prop-types";
 import { formatDate } from "@/lib/utils/formatDate";
+import useAppContext from "@/hooks/useAppContext";
+import useAuth from "@/hooks/useAuth";
+import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
 
 const generateColumns = ({ onEditClick, onDeleteClick }) => {
   return [
@@ -61,14 +64,18 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
+        <div className="capitalize">
+          {row.getValue("name") || "unavailable"}
+        </div>
       ),
     },
     {
       accessorKey: "location",
       header: "Location",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("location")}</div>
+        <div className="capitalize">
+          {row.getValue("location") || "unavailable"}
+        </div>
       ),
     },
     {
@@ -76,7 +83,7 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
       header: "Date Created",
       cell: ({ row }) => (
         <div className="capitalize">
-          {formatDate(row.getValue("createdAt"))}
+          {formatDate(row.getValue("createdAt")) || "unavailable"}
         </div>
       ),
     },
@@ -89,7 +96,7 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
       },
       cell: ({ row }) => {
         const value = row.getValue("status");
-        return (
+        return value ? (
           <div
             className={`capitalize w-fit py-2 px-3 rounded-md ${
               value === "active"
@@ -99,6 +106,8 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
           >
             {value}
           </div>
+        ) : (
+          <div>unavailable</div>
         );
       },
     },
@@ -147,6 +156,11 @@ export function BranchTable({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
+  const { triggerUpdate } = useAppContext();
+  const {
+    auth: { accessToken },
+  } = useAuth();
+
   const columns = generateColumns({ onEditClick, onDeleteClick });
 
   const [globalFilter, setGlobalFilter] = useState("");
@@ -183,11 +197,96 @@ export function BranchTable({
 
   const [selectedStatus, setSelectedStatus] = useState("Status");
   const [selectedLocation, setSelectedLocation] = useState("Location");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleDeleteAll = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+
+    const selectedIds = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original._id);
+
+    try {
+      const { data, message } = await deleteSelectedItems(
+        accessToken,
+        "branch",
+        selectedIds
+      );
+
+      if (message) {
+        console.log(message);
+        setMessage(message);
+      }
+
+      if (data) {
+        console.log("Data: ", data);
+        setIsConfirmDialogOpen(false);
+        setMessage("");
+        triggerUpdate("branch");
+      }
+    } catch (error) {
+      console.log("Error deleting branches: ", error);
+      setMessage("Failed to delete selected items. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <div></div>
+        <Button
+          variant="destructive"
+          disabled={table.getSelectedRowModel().rows.length === 0}
+          onClick={handleDeleteAll}
+        >
+          Delete Selected
+        </Button>
+
+        {/* Confirmation Dialog */}
+        <div
+          className={`${
+            isConfirmDialogOpen ? "block" : "hidden"
+          } fixed top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-md z-20`}
+        >
+          {/* dialog header */}
+          <div>
+            <h3 className="bg-danger px-5 py-2 text-white text-center rounded-t-md">
+              Delete Selected Data
+            </h3>
+            <p className="p-5">
+              {message ||
+                "Are you sure you want to delete all selected data? This action cannot be undone."}
+            </p>
+          </div>
+
+          {/* dialog footer */}
+          <div className="p-5 flex items-center space-x-5">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConfirmDialogOpen(false);
+                setMessage("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              {loading ? "Deleting..." : "Yes, Delete"}
+            </Button>
+          </div>
+        </div>
+
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search name or location ..."

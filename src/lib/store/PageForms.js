@@ -230,7 +230,7 @@ export const useOrderForm = create((set) => ({
           ...(state.data.servicesRendered || []),
           {
             id: newId,
-            serviceItem: "",
+            orderItem: {},
             service: "",
             quantity: 0,
             isIroned: false,
@@ -240,15 +240,15 @@ export const useOrderForm = create((set) => ({
     }));
   },
 
-  updateService: (id, updatedService) =>
-    set((state) => ({
-      data: {
-        ...state.data,
-        servicesRendered: state.data.servicesRendered.map((service) =>
-          service.id === id ? updatedService : service
-        ),
-      },
-    })),
+  // updateService: (id, updatedService) =>
+  //   set((state) => ({
+  //     data: {
+  //       ...state.data,
+  //       servicesRendered: state.data.servicesRendered.map((service) =>
+  //         service.id === id ? updatedService : service
+  //       ),
+  //     },
+  //   })),
 
   deleteItem: (itemId) => {
     set((state) => ({
@@ -261,12 +261,12 @@ export const useOrderForm = create((set) => ({
     }));
   },
 
-  setServiceItem: (id, name) => {
+  setOrderItem: (id, itemObj) => {
     set((state) => ({
       data: {
         ...state.data,
         servicesRendered: state.data.servicesRendered.map((item) =>
-          item.id === id ? { ...item, serviceItem: name } : item
+          item.id === id ? { ...item, orderItem: itemObj } : item
         ),
       },
     }));

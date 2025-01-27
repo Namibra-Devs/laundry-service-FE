@@ -113,7 +113,11 @@ const Column = ({ state }) => {
           <div
             className={`w-6 h-6 rounded-full text-[12px] text-white flex items-center justify-center ${main}`}
           >
-            {filteredOrders?.length > 9 ? "9+" : filteredOrders?.length}
+            {filteredOrders
+              ? filteredOrders.length > 9
+                ? "9+"
+                : filteredOrders.length
+              : 0}
           </div>
         </div>
 

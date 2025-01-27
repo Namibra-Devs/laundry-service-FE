@@ -111,6 +111,7 @@ const EditOrder = () => {
     };
 
     try {
+      console.log(orderData);
       const { data, message } = await updateData(
         "order",
         order?._id,
