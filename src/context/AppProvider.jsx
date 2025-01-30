@@ -17,6 +17,11 @@ const AppProvider = ({ children }) => {
   const [dataVersion, setDataVersion] = useState(0); // Trigger updates
   const [modifiedResource, setModifiedResource] = useState(null);
 
+  const [alert, setAlert] = useState({
+    message: "",
+    type: "",
+  });
+
   // fetch data
   const {
     data: { data: branches },
@@ -155,6 +160,8 @@ const AppProvider = ({ children }) => {
     setDeleteModal,
     deleteModal,
     triggerUpdate,
+    alert,
+    setAlert,
   };
 
   return (

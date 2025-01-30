@@ -9,8 +9,6 @@ import ReactDOM from "react-dom";
 const CreateOrderModal = ({
   isModalOpen,
   onClose,
-  message,
-  messageType,
   loading,
   createOrder,
   currentStep,
@@ -29,7 +27,7 @@ const CreateOrderModal = ({
   if (!isModalOpen) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[90vh] flex flex-col relative">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -59,8 +57,6 @@ const CreateOrderModal = ({
               initialData={data}
               onBack={handleBack}
               onSubmit={createOrder}
-              message={message}
-              messageType={messageType}
               loading={loading}
             />
           )}
@@ -74,8 +70,6 @@ const CreateOrderModal = ({
 CreateOrderModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  messageType: PropTypes.string.isRequired,
-  message: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   createOrder: PropTypes.func.isRequired,
   setCurrentStep: PropTypes.func.isRequired,

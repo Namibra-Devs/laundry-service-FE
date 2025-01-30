@@ -20,8 +20,6 @@ const BranchManagement = () => {
     auth: { accessToken },
   } = useAuth();
 
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
@@ -65,21 +63,28 @@ const BranchManagement = () => {
     setDeleteModal(true);
   };
 
+  const { setAlert } = useAppContext();
+
   const createBranch = async () => {
     setLoading(true);
-    setMessage("");
 
     if (!name || !location || !status) {
-      setMessage("All fields are required");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     const validStatuses = ["active", "inactive"];
     if (!validStatuses.includes(status)) {
-      setMessage(`Invalid status. Allowed values: ${validStatuses.join(", ")}`);
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: `Invalid status. Allowed values: ${validStatuses.join(", ")}`,
+        type: "error",
+      }));
       setLoading(false);
       return;
     }
@@ -92,14 +97,17 @@ const BranchManagement = () => {
       );
 
       if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
+        setAlert((prev) => ({
+          ...prev,
+          message: message.text,
+          type: message.type,
+        }));
       }
 
       if (data) {
-        console.log("Branch created successfully:", data);
         clearBranchForm();
         triggerUpdate("branch");
+        onClose();
       }
     } catch (error) {
       console.error("Error creating branch:", error);
@@ -107,8 +115,11 @@ const BranchManagement = () => {
       const errorMessage =
         error.response?.data?.message ||
         "An unexpected error occurred. Please try again later.";
-      setMessage(errorMessage);
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: errorMessage,
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -117,7 +128,6 @@ const BranchManagement = () => {
   const onClose = () => {
     closeModal();
     clearBranchForm();
-    setMessage("");
   };
 
   return (
@@ -133,8 +143,6 @@ const BranchManagement = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createBranch}
-        message={message}
-        messageType={messageType}
         loading={loading}
       />
 

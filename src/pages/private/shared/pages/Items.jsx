@@ -13,15 +13,13 @@ import { createData } from "@/lib/utils/createData";
 
 const Items = () => {
   const [selectedId, setSelectedId] = useState(null);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
 
   const {
     auth: { accessToken },
   } = useAuth();
 
-  const { branches, items, triggerUpdate } = useAppContext();
+  const { branches, items, triggerUpdate, setAlert } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch?.name))];
 
   const [itemsData, setItemsData] = useState([]);
@@ -67,25 +65,33 @@ const Items = () => {
 
   const createItem = async () => {
     setLoading(true);
-    setMessage("");
 
     if (!itemName) {
-      setMessage("Item name is required");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Item Name is required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (prices.length === 0) {
-      setMessage("Add at least one price");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Add at least one price",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (itemName.length < 3) {
-      setMessage("Item name must be at least 3 characters long");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Name must have at least 3 characters",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -95,10 +101,11 @@ const Items = () => {
     );
 
     if (invalidPrices.length > 0) {
-      setMessage(
-        "Each price entry must have washing price, ironing price, and a branch specified"
-      );
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Missing item identities",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -110,7 +117,6 @@ const Items = () => {
     }));
 
     try {
-      console.log(pricing);
       const { data, message } = await createData(
         "item",
         { name: itemName, pricing },
@@ -118,19 +124,31 @@ const Items = () => {
       );
 
       if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
-        console.log("Item created successfully:", data);
+        console.log("Item created:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Item Created",
+          type: "success",
+        }));
+        onClose();
         clearItemForm();
         triggerUpdate("item");
       }
     } catch (error) {
       console.error("Error creating item:", error);
-      setMessage(message?.text);
-      setMessageType(message?.type);
+      setAlert((prev) => ({
+        ...prev,
+        message: "An error occurred",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -139,7 +157,6 @@ const Items = () => {
   const onClose = () => {
     closeModal();
     clearItemForm();
-    setMessage("");
   };
 
   return (
@@ -156,8 +173,6 @@ const Items = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createItem}
-        message={message}
-        messageType={messageType}
         loading={loading}
       />
 

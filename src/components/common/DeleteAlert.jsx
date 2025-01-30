@@ -11,9 +11,7 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
     auth: { accessToken },
   } = useAuth();
 
-  const { triggerUpdate } = useAppContext();
-
-  const [message, setMessage] = useState("");
+  const { triggerUpdate, setAlert } = useAppContext();
   const [loading, setLoading] = useState(false);
 
   const deleteItem = async () => {
@@ -22,18 +20,25 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
       const { data, message } = await handleDelete(accessToken, page, itemId);
 
       if (message) {
-        setMessage(message);
-        console.log("Message:", message);
+        setAlert((prev) => ({ ...prev, message }));
       }
 
       if (data) {
-        console.log("Deletion successful:", data);
-        setMessage(`${page} deleted successfully`);
+        setAlert((prev) => ({
+          ...prev,
+          message: `${page} deleted successfully`,
+          type: "success",
+        }));
+        setDeleteModal(false);
         triggerUpdate(page);
       }
     } catch (error) {
       console.error("Error during deletion:", error.message || error);
-      setMessage("An error occurred while deleting the item.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Couldn't delete item",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -44,7 +49,7 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
       className={`w-full h-[100vh] fixed left-0 top-0 ${
         deleteModal ? "block" : "hidden"
       } 
-          flex items-start justify-center bg-black bg-opacity-50 z-50 pt-5 top-0`}
+          flex items-start justify-center bg-black bg-opacity-50 z-20 pt-5 top-0`}
     >
       <div className="w-[90%] sm:w-[30rem] max-w-md bg-white rounded-lg shadow-lg relative">
         {loading && (
@@ -58,7 +63,10 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
           <button
             onClick={() => {
               setDeleteModal(false);
-              setMessage("");
+              setAlert((prev) => ({
+                ...prev,
+                message: "",
+              }));
             }}
             className=""
             aria-label="Close Modal"
@@ -67,15 +75,9 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
           </button>
         </div>
 
-        {message ? (
-          <p className="p-5 text-base text-gray-600 border-b-2 border-gray-200">
-            {message}
-          </p>
-        ) : (
-          <p className="p-5 text-base text-gray-600 border-b-2 border-gray-200">
-            Are you sure you want to delete {page} details with ID ({itemId})
-          </p>
-        )}
+        <p className="p-5 text-base text-gray-600 border-b-2 border-gray-200">
+          Deleting {page} item with ID ({itemId})
+        </p>
 
         <div className="flex justify-end gap-2 m-3">
           <CustomButton
@@ -83,7 +85,10 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
             variant="outlined"
             onClick={() => {
               setDeleteModal(false);
-              setMessage("");
+              setAlert((prev) => ({
+                ...prev,
+                message: "",
+              }));
             }}
           />
           <CustomButton

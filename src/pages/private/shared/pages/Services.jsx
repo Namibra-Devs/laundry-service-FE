@@ -13,8 +13,6 @@ import useAuth from "@/hooks/useAuth";
 
 const Services = () => {
   const { name, branch, clearServiceForm } = useServiceForm((state) => state);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
@@ -22,7 +20,7 @@ const Services = () => {
     auth: { accessToken },
   } = useAuth();
 
-  const { branches, services, triggerUpdate } = useAppContext();
+  const { branches, services, triggerUpdate, setAlert } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const [servicesData, setServicesData] = useState([]);
@@ -33,8 +31,6 @@ const Services = () => {
       setServicesData(reversed);
     }
   }, [services]);
-
-  // const { data } = useFetchOne()
 
   const {
     editItem,
@@ -63,23 +59,27 @@ const Services = () => {
   const onClose = () => {
     closeModal();
     clearServiceForm();
-    setMessage("");
   };
 
   const createService = async () => {
     setLoading(true);
-    setMessage("");
 
     if (!name || !branch) {
-      setMessage("All fields are required");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (name.length < 3) {
-      setMessage("Service name must be at least 3 characters long");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Service name must have at least 3 characters",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -92,19 +92,31 @@ const Services = () => {
       );
 
       if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
         console.log("Service created successfully:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Service created successfully",
+          type: "success",
+        }));
+        onClose();
         clearServiceForm();
         triggerUpdate("service");
       }
     } catch (error) {
       console.error("Error creating service:", error);
-      setMessage(message?.text);
-      setMessageType(message?.type);
+      setAlert((prev) => ({
+        ...prev,
+        message: "An error occurred",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -123,8 +135,6 @@ const Services = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createService}
-        message={message}
-        messageType={messageType}
         loading={loading}
       />
 

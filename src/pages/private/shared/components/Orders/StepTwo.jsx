@@ -2,7 +2,6 @@ import CustomButton from "../../../../../components/CustomButton";
 import PropTypes from "prop-types";
 import { Check } from "lucide-react";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import ItemBox from "./ItemBox";
 import Dropdown from "@/components/Dropdown";
 import useAppContext from "@/hooks/useAppContext";
@@ -38,10 +37,8 @@ const FlowTag = () => {
 
 const StepTwo = ({ onClose, onNext, onBack }) => {
   const { data, setBranch, addOrderItem } = useOrderForm();
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const { branches, setAlert } = useAppContext();
 
-  const { branches } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch))];
   const getBranchName = (branchId) => {
     const branch = branches.find((b) => b._id === branchId);
@@ -50,25 +47,47 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
 
   const handleNext = () => {
     if (!data?.branch) {
-      setMessage("Please select a branch");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Branch is required.",
+        type: "warning",
+      }));
       return;
     }
+
+    if (!data?.servicesRendered || data?.servicesRendered?.length === 0) {
+      setAlert((prev) => ({
+        ...prev,
+        message: "Add at least one item",
+        type: "warning",
+      }));
+      return;
+    }
+
+    const invalidItems = data?.servicesRendered?.filter(
+      (item) =>
+        !item?.orderItem ||
+        !item?.quantity ||
+        item?.quantity === 0 ||
+        !item?.service
+    );
+
+    if (invalidItems.length > 0) {
+      setAlert((prev) => ({
+        ...prev,
+        message: "Missing item identities",
+        type: "warning",
+      }));
+      return;
+    }
+
     onNext();
   };
 
   return (
     <>
       <FlowTag />
-      {message && (
-        <p
-          className={`${
-            messageType === "success" ? "bg-success" : "bg-danger"
-          } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-        >
-          {message}
-        </p>
-      )}
+
       <div className="sm:px-10 mt-3 mb-20">
         <Dropdown
           options={branchesList}
@@ -82,10 +101,17 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
             className="flex items-center space-x-1 cursor-pointer"
             onClick={() => {
               if (!data?.branch) {
-                setMessage("Branch is required");
-                setMessageType("error");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "Branch is required.",
+                  type: "warning",
+                }));
                 return;
-              } else setMessage("");
+              } else
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               addOrderItem(new Date().getTime());
             }}
           >
@@ -97,7 +123,6 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
         <div>
           {data?.servicesRendered?.map((item, index) => (
             <ItemBox key={index} item={item} />
-            // <p key={index}>{item?.id}</p>
           ))}
         </div>
       </div>

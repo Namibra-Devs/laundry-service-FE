@@ -28,13 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogFooter,
-// } from "@/components/ui/dialog";
 
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight } from "lucide-react";
@@ -44,6 +37,7 @@ import ViewToggle from "../OrdersViewToggle";
 import { formatDate } from "@/lib/utils/formatDate";
 import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
 import useAuth from "@/hooks/useAuth";
+import useAppContext from "@/hooks/useAppContext";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   return [
@@ -109,15 +103,6 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
         );
       },
     },
-    // {iconDictionary[name.toLowerCase()] ? (
-    //           <img
-    //             src={iconDictionary[name.toLowerCase()]}
-    //             alt={name}
-    //             width={20}
-    //           />
-    //         ) : (
-
-    //         )}
     {
       accessorKey: "createdAt",
       header: "Order Date",
@@ -178,7 +163,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
                 Edit Order
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onDeleteClick(Order?.id)}>
+              <DropdownMenuItem onClick={() => onDeleteClick(Order?._id)}>
                 Delete Order
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -227,17 +212,54 @@ export function OrdersTable({
 
   const [selectedStatus, setSelectedStatus] = useState("Status");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { setAlert, triggerUpdate } = useAppContext();
 
   const handleDeleteAll = () => {
     setIsConfirmDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+
     const selectedIds = table
       .getSelectedRowModel()
       .rows.map((row) => row.original._id);
-    deleteSelectedItems(accessToken, "order", selectedIds);
-    setIsConfirmDialogOpen(false);
+
+    try {
+      const { data, message } = await deleteSelectedItems(
+        accessToken,
+        "order",
+        selectedIds
+      );
+
+      if (message) {
+        setAlert((prev) => ({
+          ...prev,
+          message: message,
+          type: "warning",
+        }));
+      }
+
+      if (data) {
+        setIsConfirmDialogOpen(false);
+        setAlert((prev) => ({
+          ...prev,
+          message: "orders deleted successfully",
+          type: "success",
+        }));
+        triggerUpdate("item");
+      }
+    } catch (error) {
+      console.log("Error deleting orders: ", error);
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to delete orders",
+        type: "error",
+      }));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -268,8 +290,7 @@ export function OrdersTable({
               Delete Selected Data
             </h3>
             <p className="p-5">
-              Are you sure you want to delete all selected data? This action
-              cannot be undone.
+              Deleting all selected data? This action cannot be reversed.
             </p>
           </div>
 
@@ -277,15 +298,26 @@ export function OrdersTable({
           <div className="p-5 flex items-center space-x-5">
             <Button
               variant="outline"
-              onClick={() => setIsConfirmDialogOpen(false)}
+              onClick={() => {
+                setIsConfirmDialogOpen(false);
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
+              }}
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleConfirmDelete}>
-              Yes, Delete
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              {loading ? "Deleting..." : "Yes, Delete"}
             </Button>
           </div>
         </div>
+
         <div className="flex items-center space-x-5">
           <Input
             placeholder="Search customers..."

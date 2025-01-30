@@ -10,10 +10,13 @@ import StringDropdown from "./StringDropdown";
 
 const EditBranchForm = () => {
   const [status, setStatus] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
-  const { currentItem: branch, triggerUpdate } = useAppContext();
+  const {
+    currentItem: branch,
+    triggerUpdate,
+    setAlert,
+    closeViewModal,
+  } = useAppContext();
   const { clearBranchForm } = useBranchForm((state) => state);
 
   const {
@@ -48,11 +51,13 @@ const EditBranchForm = () => {
   const UpdateBranch = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     if (!formData?.branchName || !formData?.location || !status) {
-      setMessageType("error");
-      setMessage("All fields are required.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -72,18 +77,25 @@ const EditBranchForm = () => {
       );
 
       if (message) {
-        setMessageType(message?.type);
-        setMessage(message?.text);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
         clearBranchForm();
+        closeViewModal();
         triggerUpdate("branch");
       }
     } catch (error) {
       console.error("Unexpected error during branch update:", error);
-      setMessageType("error");
-      setMessage(error);
+      setAlert((prev) => ({
+        ...prev,
+        message: error,
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -91,16 +103,6 @@ const EditBranchForm = () => {
 
   return (
     <div>
-      {message && (
-        <p
-          className={`${
-            messageType === "success" ? "bg-success" : "bg-danger"
-          } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-        >
-          {message}
-        </p>
-      )}
-
       <form className="p-4 my-5">
         {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">

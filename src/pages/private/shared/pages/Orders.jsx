@@ -18,19 +18,16 @@ import { createData } from "@/lib/utils/createData";
 const Orders = () => {
   const [orderModal, setOrderModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
   const { data, resetAll } = useOrderForm();
-  const { triggerUpdate } = useAppContext();
+  const { orders, triggerUpdate, setAlert } = useAppContext();
 
   const {
     auth: { accessToken },
   } = useAuth();
 
-  const { orders } = useAppContext();
   const [ordersData, setOrdersData] = useState([]);
 
   useEffect(() => {
@@ -75,7 +72,6 @@ const Orders = () => {
 
   const createOrder = async () => {
     setLoading(true);
-    setMessage("");
 
     let orderData = {};
 
@@ -105,26 +101,36 @@ const Orders = () => {
     }
 
     try {
-      // console.log(orderData);
       const { data: responseData, message } = await createData(
         "order",
         orderData,
         accessToken
       );
       if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
       if (responseData) {
         console.log("Order created successfully:", responseData);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Item Created",
+          type: "success",
+        }));
+        onClose();
         resetAll();
-        setCurrentStep(1);
         triggerUpdate("order");
       }
     } catch (error) {
       console.error("Error creating order:", error);
-      setMessage(message?.text);
-      setMessageType(message?.type);
+      setAlert((prev) => ({
+        ...prev,
+        message: "An error occurred",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -133,7 +139,6 @@ const Orders = () => {
   const onClose = () => {
     setOrderModal(false);
     resetAll();
-    setMessage("");
     setCurrentStep(1);
   };
 
@@ -151,8 +156,6 @@ const Orders = () => {
         onClose={onClose}
         section={currentForm || ""}
         createOrder={createOrder}
-        message={message}
-        messageType={messageType}
         loading={loading}
         setCurrentStep={setCurrentStep}
         currentStep={currentStep}

@@ -182,8 +182,8 @@ export function StaffTable({
   });
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setAlert } = useAppContext();
 
   const handleDeleteAll = () => {
     setIsConfirmDialogOpen(true);
@@ -205,18 +205,30 @@ export function StaffTable({
 
       if (message) {
         console.log(message);
-        setMessage(message);
+        setAlert((prev) => ({
+          ...prev,
+          message: message,
+          type: "warning",
+        }));
       }
 
       if (data) {
         console.log("Data: ", data);
         setIsConfirmDialogOpen(false);
-        setMessage("");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Data deleted successfully",
+          type: "success",
+        }));
         triggerUpdate("staff");
       }
     } catch (error) {
       console.log("Error deleting staff: ", error);
-      setMessage("Failed to delete selected items. Please try again.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to delete items",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -245,8 +257,7 @@ export function StaffTable({
               Delete Selected Data
             </h3>
             <p className="p-5">
-              {message ||
-                "Are you sure you want to delete all selected data? This action cannot be undone."}
+              Deleting all selected data? This action cannot be reversed.
             </p>
           </div>
 
@@ -256,7 +267,10 @@ export function StaffTable({
               variant="outline"
               onClick={() => {
                 setIsConfirmDialogOpen(false);
-                setMessage("");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               }}
             >
               Cancel

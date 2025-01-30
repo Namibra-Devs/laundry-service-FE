@@ -12,8 +12,6 @@ import useAuth from "@/hooks/useAuth";
 import { createData } from "@/lib/utils/createData";
 
 const Customers = () => {
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
@@ -21,7 +19,7 @@ const Customers = () => {
     auth: { accessToken },
   } = useAuth();
 
-  const { customers, triggerUpdate } = useAppContext();
+  const { customers, triggerUpdate, setAlert } = useAppContext();
 
   const [customersData, setCustomersData] = useState([]);
 
@@ -73,34 +71,50 @@ const Customers = () => {
     setDeleteModal(true);
   };
 
+  const onClose = () => {
+    closeModal();
+    clearCustomerForm();
+  };
+
   const createCustomer = async () => {
     setLoading(true);
-    setMessage("");
 
     if (!firstName || !surName || !email || !phoneNumber || !houseNumber) {
-      setMessage("All fields are required");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (!branch) {
-      setMessageType("error");
-      setMessage("Branch is required.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Branch is required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setMessage("Invalid email address");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Invalid email address",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (!/^\d{10}$/.test(phoneNumber)) {
-      setMessage("Phone number must be 10 digits");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Phone number must be 10 digits",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -123,28 +137,34 @@ const Customers = () => {
       );
 
       if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
-        console.log("Customer created successfully:", data);
+        console.log("Customer created:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Customer Created",
+          type: "success",
+        }));
+        onClose();
         clearCustomerForm();
         triggerUpdate("customer");
       }
     } catch (error) {
       console.error("Error creating customer:", error);
-      setMessage(message?.text);
-      setMessageType(message?.type);
+      setAlert((prev) => ({
+        ...prev,
+        message: "An error occurred",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
-  };
-
-  const onClose = () => {
-    closeModal();
-    clearCustomerForm();
-    setMessage("");
   };
 
   return (
@@ -161,8 +181,6 @@ const Customers = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createCustomer}
-        message={message}
-        messageType={messageType}
         loading={loading}
       />
 

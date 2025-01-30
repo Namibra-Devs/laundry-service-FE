@@ -195,7 +195,6 @@ export function ItemsTable({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const { triggerUpdate } = useAppContext();
   const {
     auth: { accessToken },
   } = useAuth();
@@ -223,8 +222,8 @@ export function ItemsTable({
 
   const [selectedBranch, setSelectedBranch] = useState("Branch");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setAlert, triggerUpdate } = useAppContext();
 
   const handleDeleteAll = () => {
     setIsConfirmDialogOpen(true);
@@ -245,19 +244,29 @@ export function ItemsTable({
       );
 
       if (message) {
-        console.log(message);
-        setMessage(message);
+        setAlert((prev) => ({
+          ...prev,
+          message: message,
+          type: "warning",
+        }));
       }
 
       if (data) {
-        console.log("Data: ", data);
         setIsConfirmDialogOpen(false);
-        setMessage("");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Items deleted successfully",
+          type: "success",
+        }));
         triggerUpdate("item");
       }
     } catch (error) {
       console.log("Error deleting items: ", error);
-      setMessage("Failed to delete selected items. Please try again.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to delete items",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -286,8 +295,7 @@ export function ItemsTable({
               Delete Selected Data
             </h3>
             <p className="p-5">
-              {message ||
-                "Are you sure you want to delete all selected data? This action cannot be undone."}
+              Deleting all selected data? This action cannot be reversed.
             </p>
           </div>
 
@@ -297,7 +305,10 @@ export function ItemsTable({
               variant="outline"
               onClick={() => {
                 setIsConfirmDialogOpen(false);
-                setMessage("");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               }}
             >
               Cancel

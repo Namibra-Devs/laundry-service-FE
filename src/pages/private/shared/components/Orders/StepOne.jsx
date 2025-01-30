@@ -37,19 +37,30 @@ const StepOne = ({ onClose, onNext }) => {
   const { data, updateField, setCustomer, resetCustomerForm } = useOrderForm();
   const [isOpen, setIsOpen] = useState(false);
   const [customerOption, setCustomerOption] = useState("existing");
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const { setAlert, customers } = useAppContext();
+
+  const customersList = [...new Set(customers?.map((customer) => customer))];
+  const getCustomerName = (customerId) => {
+    const customer = customers.find((c) => c._id === customerId);
+    return customer?.firstName + " " + customer?.lastName || customerId;
+  };
 
   const validateForm = () => {
     if (!data.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setMessage("Invalid email format");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Item Created",
+        type: "error",
+      }));
       return false;
     }
 
     if (!data.phone.match(/^\d{10}$/)) {
-      setMessage("Phone number must be 10 digits");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Phone number must be 10 digits",
+        type: "warning",
+      }));
       return false;
     }
 
@@ -66,8 +77,11 @@ const StepOne = ({ onClose, onNext }) => {
         !data.phone ||
         !data.houseNumber
       ) {
-        setMessage("All fields are required");
-        setMessageType("error");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Missing customer information",
+          type: "warning",
+        }));
         return;
       }
     }
@@ -75,34 +89,20 @@ const StepOne = ({ onClose, onNext }) => {
     if (customerOption === "new" && !validateForm()) return;
 
     if (customerOption === "existing" && !data?.customer) {
-      setMessage("Please select a customer");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Customer is required.",
+        type: "warning",
+      }));
       return;
     }
 
     onNext();
   };
 
-  const { customers } = useAppContext();
-  const customersList = [...new Set(customers?.map((customer) => customer))];
-  const getCustomerName = (customerId) => {
-    const customer = customers.find((c) => c._id === customerId);
-    return customer?.firstName + " " + customer?.lastName || customerId;
-  };
-
   return (
     <>
       <FlowTag />
-
-      {message && (
-        <p
-          className={`${
-            messageType === "success" ? "bg-success" : "bg-danger"
-          } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-        >
-          {message}
-        </p>
-      )}
 
       <div className="my-5">
         <div className="flex items-center space-x-2 mb-2">
@@ -112,7 +112,10 @@ const StepOne = ({ onClose, onNext }) => {
             onChange={() => {
               setCustomerOption("existing");
               resetCustomerForm();
-              setMessage("");
+              setAlert((prev) => ({
+                ...prev,
+                message: "",
+              }));
             }}
             checked={customerOption === "existing"}
           />
@@ -180,7 +183,10 @@ const StepOne = ({ onClose, onNext }) => {
             onChange={() => {
               setCustomerOption("new");
               setCustomer("");
-              setMessage("");
+              setAlert((prev) => ({
+                ...prev,
+                message: "",
+              }));
             }}
           />
           <p className="text-[15px]">Add New Customer</p>

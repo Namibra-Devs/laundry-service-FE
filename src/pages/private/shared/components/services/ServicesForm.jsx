@@ -13,7 +13,7 @@ const ServicesForm = () => {
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const getBranchName = (branchId) => {
-    const branch = branches.find((b) => b._id === branchId);
+    const branch = branches?.find((b) => b._id === branchId);
     return branch?.name || branchId;
   };
 

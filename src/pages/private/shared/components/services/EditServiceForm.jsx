@@ -8,9 +8,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 const EditServiceForm = () => {
-  const { currentItem: service, branches, triggerUpdate } = useAppContext();
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const {
+    currentItem: service,
+    branches,
+    triggerUpdate,
+    setAlert,
+    closeViewModal,
+  } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [serviceName, setServiceName] = useState("");
   const [serviceBranch, setServiceBranch] = useState("");
@@ -34,11 +38,13 @@ const EditServiceForm = () => {
   const UpdateService = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     if (!serviceName || !serviceBranch) {
-      setMessageType("error");
-      setMessage("All fields are required.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -52,17 +58,30 @@ const EditServiceForm = () => {
       );
 
       if (message) {
-        setMessageType(message?.type);
-        setMessage(message?.text);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
+        console.log("Service updated:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Service updated",
+          type: "success",
+        }));
+        closeViewModal();
         triggerUpdate("service");
       }
     } catch (error) {
       console.error("Unexpected error during branch update:", error);
-      setMessageType("error");
-      setMessage(error);
+      setAlert((prev) => ({
+        ...prev,
+        message: "Couldn't update service",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -70,16 +89,6 @@ const EditServiceForm = () => {
 
   return (
     <div>
-      {message && (
-        <p
-          className={`${
-            messageType === "success" ? "bg-success" : "bg-danger"
-          } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-        >
-          {message}
-        </p>
-      )}
-
       <form className="p-4 my-5">
         {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">

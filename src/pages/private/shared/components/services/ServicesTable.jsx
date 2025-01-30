@@ -224,8 +224,8 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
   const [selectedBranch, setSelectedBranch] = useState("Branch");
   const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setAlert } = useAppContext();
 
   const handleDeleteAll = () => {
     setIsConfirmDialogOpen(true);
@@ -247,18 +247,30 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
 
       if (message) {
         console.log(message);
-        setMessage(message);
+        setAlert((prev) => ({
+          ...prev,
+          message: message,
+          type: "warning",
+        }));
       }
 
       if (data) {
         console.log("Data: ", data);
         setIsConfirmDialogOpen(false);
-        setMessage("");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Services deleted successfully",
+          type: "success",
+        }));
         triggerUpdate("service");
       }
     } catch (error) {
       console.log("Error deleting services: ", error);
-      setMessage("Failed to delete selected items. Please try again.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to delete services",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -287,8 +299,7 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               Delete Selected Data
             </h3>
             <p className="p-5">
-              {message ||
-                "Are you sure you want to delete all selected data? This action cannot be undone."}
+              Deleting all selected data? This action cannot be reversed.
             </p>
           </div>
 
@@ -298,7 +309,10 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
               variant="outline"
               onClick={() => {
                 setIsConfirmDialogOpen(false);
-                setMessage("");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               }}
             >
               Cancel

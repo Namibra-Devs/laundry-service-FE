@@ -1,6 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import SuspenseLayout from "./components/common/SuspenseLayout";
+import Alert from "./components/common/Alert";
+import useAppContext from "./hooks/useAppContext";
+import { useEffect } from "react";
 
 const Login = lazy(() => import("./pages/Login"));
 const Unauthorized = lazy(() => import("./pages/Unauthorized"));
@@ -108,7 +111,24 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  const { alert, setAlert } = useAppContext();
+
+  useEffect(() => {
+    if (!alert.message) return;
+
+    const timeoutId = setTimeout(() => {
+      setAlert((prev) => ({ ...prev, message: "" }));
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [alert.message, setAlert]);
+
+  return (
+    <>
+      {alert.message && <Alert message={alert.message} type={alert.type} />}
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;

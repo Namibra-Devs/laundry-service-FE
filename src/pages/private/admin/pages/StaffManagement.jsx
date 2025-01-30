@@ -20,12 +20,10 @@ const StaffManagement = () => {
     auth: { accessToken },
   } = useAuth();
 
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messageType, setMessageType] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  const { branches, staff, triggerUpdate } = useAppContext();
+  const { branches, staff, triggerUpdate, setAlert } = useAppContext();
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const [staffData, setStaffData] = useState([]);
@@ -69,19 +67,28 @@ const StaffManagement = () => {
 
   const createStaff = async () => {
     setLoading(true);
-    setMessage("");
+    setAlert((prev) => ({
+      ...prev,
+      message: "",
+    }));
 
     if (!name || !email || !password || !branch) {
-      setMessage("All fields are required");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setMessage("Invalid email format");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Invalid email format",
+        type: "error",
+      }));
       setLoading(false);
       return;
     }
@@ -94,19 +101,31 @@ const StaffManagement = () => {
       );
 
       if (message) {
-        setMessage(message.text);
-        setMessageType(message.type);
+        setAlert((prev) => ({
+          ...prev,
+          message: message.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
         console.log("Staff created successfully:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Staff created successfully",
+          type: "success",
+        }));
+        onClose();
         triggerUpdate("staff");
         clearStaffForm();
       }
     } catch (error) {
       console.error("Error creating staff:", error);
-      setMessage("An unexpected error occurred. Please try again later.");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "An unexpected error occurred. Please try again later.",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -115,7 +134,6 @@ const StaffManagement = () => {
   const onClose = () => {
     closeModal();
     clearStaffForm();
-    setMessage("");
   };
 
   return (
@@ -132,8 +150,6 @@ const StaffManagement = () => {
         onClose={onClose}
         section={currentForm || ""}
         onSubmit={createStaff}
-        message={message}
-        messageType={messageType}
         loading={loading}
       />
 

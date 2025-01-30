@@ -8,18 +8,21 @@ import { updateData } from "@/lib/utils/updateData";
 import useAuth from "@/hooks/useAuth";
 
 const EditOrder = () => {
-  const { currentItem: order, triggerUpdate } = useAppContext();
+  const {
+    currentItem: order,
+    customers,
+    branches,
+    triggerUpdate,
+    setAlert,
+    closeViewModal,
+  } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
   // const { updateField, resetCustomerForm } = useOrderForm();
 
   const {
     auth: { accessToken },
   } = useAuth();
-
-  const { customers, branches } = useAppContext();
 
   const customersList = [...new Set(customers?.map((customer) => customer))];
   const branchesList = [...new Set(branches?.map((branch) => branch))];
@@ -33,8 +36,6 @@ const EditOrder = () => {
     const branch = branches.find((b) => b._id === branchId);
     return branch?.name || branchId;
   };
-
-  // const statusOptions = ["pending", "in_progress", "completed", "delivered"];
 
   const [branch, setBranch] = useState(order?.branch?._id || "");
   const [customer, setCustomer] = useState(order?.customer?._id || "");
@@ -62,25 +63,33 @@ const EditOrder = () => {
 
   const updateOrder = async () => {
     setLoading(true);
-    setMessage("");
 
     if (!branch) {
-      setMessage("Branch is required.");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Branch is required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (!customer) {
-      setMessage("Customer is required.");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Customer is required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (servicesRendered === undefined || servicesRendered.length === 0) {
-      setMessage("Add at least 1 item.");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Add at least 1 item",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -91,8 +100,11 @@ const EditOrder = () => {
     );
 
     if (invalidServices.length > 0) {
-      setMessage("Some items have invalid or missing data:", invalidServices);
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Missing item values",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -120,17 +132,30 @@ const EditOrder = () => {
       );
 
       if (message) {
-        setMessageType(message?.type);
-        setMessage(message?.text);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
+        console.log("Order updated successfully:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Order updated",
+          type: "success",
+        }));
+        closeViewModal();
         triggerUpdate("order");
       }
     } catch (error) {
       console.error("Unexpected error during order update:", error);
-      setMessageType("error");
-      setMessage(error);
+      setAlert((prev) => ({
+        ...prev,
+        message: "Couldn't update order",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -194,35 +219,22 @@ const EditOrder = () => {
           label="Branch"
         />
 
-        {/* <div className="my-5">
-          <p className="block text-sm">Order Date</p>
-          <input
-            type="date"
-            id="date"
-            name="tripDate"
-            value={order?.createdAt?.split("T")[0] || ""}
-            required
-            onChange={() => {}}
-            className="mt-1 block w-full p-2 border-2 rounded-md border-gray-300"
-          />
-        </div> */}
-
-        {/* <StringDropdown
-          options={statusOptions}
-          item={status}
-          setItem={setStatus}
-          label="Status"
-        /> */}
-
         <div className="flex items-center justify-end my-5">
           <span
             className="flex items-center space-x-1 cursor-pointer"
             onClick={() => {
               if (!order?.branch) {
-                setMessage("Branch is required");
-                setMessageType("error");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "Branch is required",
+                  type: "warning",
+                }));
                 return;
-              } else setMessage("");
+              } else
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               addOrderItem(new Date().getTime());
             }}
           >
@@ -253,16 +265,6 @@ const EditOrder = () => {
             onClick={updateOrder}
           />
         </div>
-
-        {message && (
-          <p
-            className={`${
-              messageType === "success" ? "bg-success" : "bg-danger"
-            } text-white px-5 py-3 rounded-md text-center w-[90%] sm:w-[40%] mx-auto mt-2 fixed top-0 left-1/2 -translate-x-1/2`}
-          >
-            {message}
-          </p>
-        )}
       </form>
     </>
   );

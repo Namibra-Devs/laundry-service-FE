@@ -25,11 +25,16 @@ export default {
       },
       animation: {
         bounce: "bounce 1.5s ease-in-out infinite",
+        fadeInScaleUp: "fadeInScaleUp 0.3s ease-out",
       },
       keyframes: {
         bounce: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-0.75rem)" },
+        },
+        fadeInScaleUp: {
+          "0%": { opacity: 0, transform: "scale(0.9)" },
+          "100%": { opacity: 1, transform: "scale(1)" },
         },
       },
     },

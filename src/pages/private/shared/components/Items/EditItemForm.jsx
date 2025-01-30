@@ -8,11 +8,14 @@ import useAuth from "@/hooks/useAuth";
 import { updateData } from "@/lib/utils/updateData";
 
 const EditItemForm = () => {
-  const { currentItem: item, triggerUpdate } = useAppContext();
+  const {
+    currentItem: item,
+    triggerUpdate,
+    setAlert,
+    closeViewModal,
+  } = useAppContext();
   const [itemName, setItemName] = useState("");
   const [pricing, setPricing] = useState([]);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
 
   const {
@@ -28,7 +31,6 @@ const EditItemForm = () => {
 
   const updateItem = async (e) => {
     e.preventDefault();
-    setMessage("");
     setLoading(true);
 
     const updatedItem = {
@@ -37,65 +39,67 @@ const EditItemForm = () => {
     };
 
     if (!itemName) {
-      setMessage("Item name is required");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Item Name is required.",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (itemName.length < 3) {
-      setMessage("Item name must be at least 3 characters long");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Name must have at least 3 characters",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     if (updatedItem?.pricing.length === 0) {
-      setMessage("Add at least one price");
-      setMessageType("error");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Add at least one price",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
 
     for (const priceItem of updatedItem.pricing) {
       if (!priceItem.branch) {
-        setMessage("Branch name is required for all price entries");
-        setMessageType("error");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Branch name is required",
+          type: "warning",
+        }));
         setLoading(false);
         return;
       }
-      if (!priceItem.washingPrice) {
-        setMessage("Please set the washing price for all price entries");
-        setMessageType("error");
+      if (!priceItem.washingPrice || Number(priceItem.washingPrice) === 0) {
+        setAlert((prev) => ({
+          ...prev,
+          message: "Washing Price required",
+          type: "warning",
+        }));
         setLoading(false);
         return;
       }
-      if (Number(priceItem.washingPrice) === 0) {
-        setMessage(
-          "Washing price must be greater than 0 for all price entries"
-        );
-        setMessageType("error");
-        setLoading(false);
-        return;
-      }
-      if (!priceItem.ironingPrice) {
-        setMessage("Please set the ironing price for all price entries");
-        setMessageType("error");
-        setLoading(false);
-        return;
-      }
-      if (Number(priceItem.ironingPrice) === 0) {
-        setMessage(
-          "Ironing price must be greater than 0 for all price entries"
-        );
-        setMessageType("error");
+
+      if (!priceItem.ironingPrice || Number(priceItem.ironingPrice) === 0) {
+        setAlert((prev) => ({
+          ...prev,
+          message: "Ironing Price required",
+          type: "warning",
+        }));
         setLoading(false);
         return;
       }
     }
 
     try {
-      // console.log("Updated Item:", updatedItem);
       const { data, message } = await updateData(
         "item",
         item?._id,
@@ -104,17 +108,30 @@ const EditItemForm = () => {
       );
 
       if (message) {
-        setMessageType(message?.type);
-        setMessage(message?.text);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
+        console.log("Item updated successfully:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Item updated",
+          type: "success",
+        }));
+        closeViewModal();
         triggerUpdate("item");
       }
     } catch (error) {
       console.error("Unexpected error during item update:", error);
-      setMessageType("error");
-      setMessage(error);
+      setAlert((prev) => ({
+        ...prev,
+        message: "Couldn't update item",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -149,16 +166,6 @@ const EditItemForm = () => {
 
   return (
     <>
-      {message && (
-        <p
-          className={`${
-            messageType === "success" ? "bg-success" : "bg-danger"
-          } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-        >
-          {message}
-        </p>
-      )}
-
       <form>
         {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">

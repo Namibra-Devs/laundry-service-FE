@@ -198,8 +198,8 @@ export function BranchTable({
   const [selectedStatus, setSelectedStatus] = useState("Status");
   const [selectedLocation, setSelectedLocation] = useState("Location");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setAlert } = useAppContext();
 
   const handleDeleteAll = () => {
     setIsConfirmDialogOpen(true);
@@ -221,18 +221,30 @@ export function BranchTable({
 
       if (message) {
         console.log(message);
-        setMessage(message);
+        setAlert((prev) => ({
+          ...prev,
+          message: message,
+          type: "warning",
+        }));
       }
 
       if (data) {
         console.log("Data: ", data);
         setIsConfirmDialogOpen(false);
-        setMessage("");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Data deleted successfully",
+          type: "success",
+        }));
         triggerUpdate("branch");
       }
     } catch (error) {
       console.log("Error deleting branches: ", error);
-      setMessage("Failed to delete selected items. Please try again.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to delete items",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -261,8 +273,7 @@ export function BranchTable({
               Delete Selected Data
             </h3>
             <p className="p-5">
-              {message ||
-                "Are you sure you want to delete all selected data? This action cannot be undone."}
+              Deleting selected data? This action cannot be reversed.
             </p>
           </div>
 
@@ -272,7 +283,10 @@ export function BranchTable({
               variant="outline"
               onClick={() => {
                 setIsConfirmDialogOpen(false);
-                setMessage("");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               }}
             >
               Cancel

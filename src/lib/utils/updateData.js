@@ -4,7 +4,7 @@ import { isTokenValid } from "./validateToken";
 export const updateData = async (page, itemId, data, accessToken) => {
   const result = {
     message: {},
-    data: {},
+    data: null,
   };
 
   const endpoints = {

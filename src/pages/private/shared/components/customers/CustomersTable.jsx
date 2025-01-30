@@ -169,8 +169,6 @@ export function CustomersTable({
   const columns = generateColumns({ onViewClick, onEditClick, onDeleteClick });
 
   const [globalFilter, setGlobalFilter] = useState("");
-
-  const { triggerUpdate } = useAppContext();
   const {
     auth: { accessToken },
   } = useAuth();
@@ -226,8 +224,8 @@ export function CustomersTable({
   const [selectedBranch, setSelectedBranch] = useState("Branch");
   const [selectedAddedBy, setSelectedAddedBy] = useState("Added By");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setAlert, triggerUpdate } = useAppContext();
 
   const handleDeleteAll = () => {
     setIsConfirmDialogOpen(true);
@@ -248,19 +246,29 @@ export function CustomersTable({
       );
 
       if (message) {
-        console.log(message);
-        setMessage(message);
+        setAlert((prev) => ({
+          ...prev,
+          message: message,
+          type: "warning",
+        }));
       }
 
       if (data) {
-        console.log("Data: ", data);
         setIsConfirmDialogOpen(false);
-        setMessage("");
+        setAlert((prev) => ({
+          ...prev,
+          message: "Customers deleted successfully",
+          type: "success",
+        }));
         triggerUpdate("customer");
       }
     } catch (error) {
       console.log("Error deleting customers: ", error);
-      setMessage("Failed to delete selected items. Please try again.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to delete customers",
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -289,8 +297,7 @@ export function CustomersTable({
               Delete Selected Data
             </h3>
             <p className="p-5">
-              {message ||
-                "Are you sure you want to delete all selected data? This action cannot be undone."}
+              Deleting all selected data? This action cannot be reversed
             </p>
           </div>
 
@@ -300,7 +307,10 @@ export function CustomersTable({
               variant="outline"
               onClick={() => {
                 setIsConfirmDialogOpen(false);
-                setMessage("");
+                setAlert((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
               }}
             >
               Cancel

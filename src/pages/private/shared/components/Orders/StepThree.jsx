@@ -31,16 +31,8 @@ const FlowTag = () => {
   );
 };
 
-const StepThree = ({
-  onBack,
-  onSubmit,
-  onClose,
-  messageType,
-  message,
-  loading,
-}) => {
+const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
   const { data } = useOrderForm();
-
   const { services } = useAppContext();
 
   const getServiceName = (serviceId) => {
@@ -79,16 +71,6 @@ const StepThree = ({
       )}
 
       <div className="p-4">
-        {message && (
-          <p
-            className={`${
-              messageType === "success" ? "bg-success" : "bg-danger"
-            } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-          >
-            {message}
-          </p>
-        )}
-
         <div>
           {data?.servicesRendered?.map((item, index) => {
             const branchId = data?.branch;
@@ -153,8 +135,6 @@ StepThree.propTypes = {
   onBack: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
-  messageType: PropTypes.string.isRequired,
-  message: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 

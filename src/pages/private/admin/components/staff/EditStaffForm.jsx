@@ -9,10 +9,14 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 const EditStaffForm = () => {
-  const { currentItem: staff } = useAppContext();
+  const {
+    currentItem: staff,
+    setAlert,
+    branches,
+    triggerUpdate,
+    closeViewModal,
+  } = useAppContext();
   const [branch, setStaffBranch] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
   const { clearStaffForm } = useStaffForm((state) => state);
   const {
@@ -44,8 +48,6 @@ const EditStaffForm = () => {
     }));
   };
 
-  const { branches, triggerUpdate } = useAppContext();
-
   const branchesList = [...new Set(branches?.map((branch) => branch))];
 
   const getBranchName = (branchId) => {
@@ -55,9 +57,7 @@ const EditStaffForm = () => {
 
   const UpdateStaff = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-    setMessage("");
 
     if (
       !formData?.staffName?.trim() ||
@@ -65,8 +65,11 @@ const EditStaffForm = () => {
       !formData?.password ||
       !branch
     ) {
-      setMessageType("error");
-      setMessage("All fields are required.");
+      setAlert((prev) => ({
+        ...prev,
+        message: "All fields are required",
+        type: "warning",
+      }));
       setLoading(false);
       return;
     }
@@ -87,21 +90,33 @@ const EditStaffForm = () => {
       );
 
       if (message) {
-        setMessageType(message.type);
-        setMessage(message.text);
+        setAlert((prev) => ({
+          ...prev,
+          message: message?.text,
+          type: message?.type,
+        }));
       }
 
       if (data) {
         console.log("Staff updated successfully:", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: "Staff updated successfully",
+          type: "success",
+        }));
         clearStaffForm();
+        closeViewModal();
         triggerUpdate("staff");
       }
     } catch (error) {
       console.error("Unexpected error during staff update:", error);
       const errorMessage =
         error?.response?.data?.message || "An unexpected error occurred.";
-      setMessageType("error");
-      setMessage(errorMessage);
+      setAlert((prev) => ({
+        ...prev,
+        message: errorMessage,
+        type: "error",
+      }));
     } finally {
       setLoading(false);
     }
@@ -109,15 +124,6 @@ const EditStaffForm = () => {
 
   return (
     <>
-      {message && (
-        <p
-          className={`${
-            messageType === "success" ? "bg-success" : "bg-danger"
-          } text-white px-5 py-3 rounded-md text-center w-[90%] mx-auto mt-2`}
-        >
-          {message}
-        </p>
-      )}
       <form className="p-4 my-5">
         {loading && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10 rounded-lg flex items-center justify-center">
