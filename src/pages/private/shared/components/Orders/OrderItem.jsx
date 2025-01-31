@@ -148,11 +148,15 @@ const OrderItem = ({ order, state }) => {
             key={index}
             className="w-10 h-10 rounded-full bg-ash_light flex items-center justify-center"
           >
-            <img
-              src={iconDictionary[item?.serviceItem?.name.toLowerCase()]}
-              alt={item?.serviceItem?.name}
-              width={25}
-            />
+            {iconDictionary[item?.serviceItem?.name.toLowerCase()] ? (
+              <img
+                src={iconDictionary[item?.serviceItem?.name.toLowerCase()]}
+                alt={item?.serviceItem?.name}
+                width={25}
+              />
+            ) : (
+              <p className="text-2xl">📦</p>
+            )}
           </div>
         ))}
       </div>

@@ -46,11 +46,15 @@ const OrderDetails = () => {
           <div className="flex items-center justify-between my-3">
             <p>Item Name</p>
             <div className="flex items-center space-x-2">
-              <img
-                src={iconDictionary[item?.serviceItem?.name.toLowerCase()]}
-                alt={item?.serviceItem?.name}
-                className="w-[26px] h-auto"
-              />
+              {iconDictionary[item?.serviceItem?.name.toLowerCase()] ? (
+                <img
+                  src={iconDictionary[item?.serviceItem?.name.toLowerCase()]}
+                  alt={item?.serviceItem?.name}
+                  width={25}
+                />
+              ) : (
+                <p className="text-2xl">📦</p>
+              )}
               <p className="font-semibold">{item?.serviceItem?.name}</p>
             </div>
           </div>
