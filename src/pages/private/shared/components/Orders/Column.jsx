@@ -48,7 +48,7 @@ const Column = ({ state }) => {
       main: "bg-blue-500",
       fade: "bg-blue-200",
     },
-    in_progress: {
+    onprogress: {
       main: "bg-custom_yellow_dark",
       fade: "bg-yellow-200/60",
     },
@@ -99,7 +99,7 @@ const Column = ({ state }) => {
         setDrop(false);
         // moveOrder(draggedOrder, state);
         updateOrderState(accessToken, draggedOrder?._id, state);
-        triggerUpdate("item");
+        triggerUpdate("order");
         // console.log(`${draggedOrder?.customer?.firstName} moved to ${state}`);
       }}
     >

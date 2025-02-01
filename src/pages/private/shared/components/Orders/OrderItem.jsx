@@ -23,8 +23,8 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
   };
 
   const toMappings = {
-    pending: "in_progress",
-    in_progress: "completed",
+    pending: "onprogress",
+    onprogress: "completed",
     completed: "delivered",
     delivered: "pending",
   };
@@ -47,7 +47,7 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
             onClick={() => {
               // updateOrderState(order, toMappings[state]);
               updateOrderState(accessToken, order?._id, toMappings[state]);
-              triggerUpdate("item");
+              triggerUpdate("order");
               // console.log(`${order?.customer?.firstName} moved to ${state}`);
               // console.log(`moving to: ${toMappings[state]}`);
             }}
@@ -55,7 +55,7 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
             To{" "}
             {state === "pending"
               ? "In Progress"
-              : state === "in_progress"
+              : state === "onprogress"
               ? "Completed"
               : state === "completed"
               ? "Delivered"
@@ -87,7 +87,7 @@ const OrderItem = ({ order, state }) => {
     pending: {
       color: "hover:border-blue-500",
     },
-    in_progress: {
+    onprogress: {
       color: "hover:border-custom_yellow_dark",
     },
     completed: {

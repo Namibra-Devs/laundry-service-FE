@@ -62,8 +62,8 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
     {
       accessorFn: (row) => {
         const firstName = row.firstName || "unavailable";
-        const middleName = row.middleName || "unavailable";
-        const lastName = row.lastName || "unavailable";
+        const middleName = row.middleName || "-";
+        const lastName = row.lastName || "-";
         return `${firstName} ${middleName} ${lastName}`;
       },
       id: "fullName",
@@ -113,11 +113,17 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
     {
       accessorKey: "addedBy",
       header: "Added By",
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue("addedBy") || "unavailable"}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const addedBy = row.getValue("addedBy");
+        return (
+          <div className="capitalize">{addedBy ? addedBy?.name : "admin"}</div>
+        );
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const addedBy = row.getValue(columnId);
+        return addedBy?.name === filterValue || addedBy === filterValue;
+      },
     },
     {
       id: "actions",
@@ -347,7 +353,7 @@ export function CustomersTable({
                     table.getColumn("branch")?.setFilterValue(branch?.name);
                   }}
                 >
-                  {branch?.name}
+                  {branch?.name || "Admin"}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
@@ -371,19 +377,19 @@ export function CustomersTable({
             <DropdownMenuContent align="end">
               {uniquePersons?.map((person) => (
                 <DropdownMenuItem
-                  key={person}
+                  key={person?._id}
                   onClick={() => {
-                    setSelectedAddedBy(person);
-                    table.getColumn("addedBy")?.setFilterValue(person);
+                    setSelectedAddedBy(person?.name);
+                    table.getColumn("addedBy")?.setFilterValue(person?.name);
                   }}
                 >
-                  {person}
+                  {person?.name}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedAddedBy("Added By");
-                  table.getColumn("addedBy")?.setFilterValue(""); // Clear the filter to show all staff
+                  table.getColumn("addedBy")?.setFilterValue(null);
                 }}
               >
                 Clear Filter

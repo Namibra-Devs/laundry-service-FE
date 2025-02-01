@@ -33,9 +33,15 @@ const EditItemForm = () => {
     e.preventDefault();
     setLoading(true);
 
+    const pricingList = pricing.map((item) => ({
+      branch: item.branch?._id,
+      ironingPrice: item.ironingPrice,
+      washingPrice: item.washingPrice,
+    }));
+
     const updatedItem = {
       name: itemName,
-      pricing,
+      pricing: pricingList,
     };
 
     if (!itemName) {
@@ -100,6 +106,7 @@ const EditItemForm = () => {
     }
 
     try {
+      // console.log(updatedItem);
       const { data, message } = await updateData(
         "item",
         item?._id,

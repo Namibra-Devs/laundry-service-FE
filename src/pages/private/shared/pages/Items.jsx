@@ -117,6 +117,7 @@ const Items = () => {
     }));
 
     try {
+      // console.log({ itemName, pricing });
       const { data, message } = await createData(
         "item",
         { name: itemName, pricing },

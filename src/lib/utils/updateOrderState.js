@@ -12,6 +12,9 @@ export const updateOrderState = async (accessToken, itemId, status) => {
   if (!isTokenValid(accessToken)) {
     message = "Token expired. Redirecting to login...";
     console.error(message);
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 2000);
     return { data: responseData, message };
   }
 
