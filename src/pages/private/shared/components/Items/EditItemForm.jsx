@@ -34,7 +34,7 @@ const EditItemForm = () => {
     setLoading(true);
 
     const pricingList = pricing.map((item) => ({
-      branch: item.branch?._id,
+      branch: typeof item.branch === "object" ? item.branch?._id : item.branch,
       ironingPrice: item.ironingPrice,
       washingPrice: item.washingPrice,
     }));
@@ -75,7 +75,7 @@ const EditItemForm = () => {
     }
 
     for (const priceItem of updatedItem.pricing) {
-      if (!priceItem.branch) {
+      if (!priceItem?.branch) {
         setAlert((prev) => ({
           ...prev,
           message: "Branch name is required",
@@ -106,14 +106,13 @@ const EditItemForm = () => {
     }
 
     try {
-      // console.log(updatedItem);
+      console.log(updatedItem);
       const { data, message } = await updateData(
         "item",
         item?._id,
         updatedItem,
         accessToken
       );
-
       if (message) {
         setAlert((prev) => ({
           ...prev,
@@ -121,7 +120,6 @@ const EditItemForm = () => {
           type: message?.type,
         }));
       }
-
       if (data) {
         console.log("Item updated successfully:", data);
         setAlert((prev) => ({
@@ -146,7 +144,7 @@ const EditItemForm = () => {
 
   const handlePriceChange = (id, field, value) => {
     setPricing((prevPricing) =>
-      prevPricing.map((price) =>
+      prevPricing?.map((price) =>
         price._id === id ? { ...price, [field]: value } : price
       )
     );
@@ -203,9 +201,9 @@ const EditItemForm = () => {
             <EditItemBox
               key={priceItem?._id}
               priceItem={priceItem}
-              onBranchChange={(value) =>
-                handlePriceChange(priceItem?._id, "branch", value)
-              }
+              onBranchChange={(value) => {
+                handlePriceChange(priceItem?._id, "branch", value);
+              }}
               onWashPriceChange={(value) =>
                 handlePriceChange(priceItem?._id, "washingPrice", value)
               }
