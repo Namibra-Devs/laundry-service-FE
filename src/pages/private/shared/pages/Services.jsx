@@ -17,7 +17,7 @@ const Services = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   const {
-    auth: { accessToken },
+    auth: { accessToken, user },
   } = useAuth();
 
   const { branches, services, triggerUpdate, setAlert } = useAppContext();
@@ -92,6 +92,14 @@ const Services = () => {
       );
 
       if (message) {
+        if (message.includes("not found")) {
+          setAlert((prev) => ({
+            ...prev,
+            message: "You can not perform this action",
+            type: "error",
+          }));
+          return;
+        }
         setAlert((prev) => ({
           ...prev,
           message: message?.text,
@@ -153,12 +161,14 @@ const Services = () => {
           </p>
         </div>
 
-        <CustomButton
-          label="Add Service"
-          icon={<Plus />}
-          variant="contained"
-          onClick={() => openModal("Service")}
-        />
+        {user?.role === "admin" && (
+          <CustomButton
+            label="Add Service"
+            icon={<Plus />}
+            variant="contained"
+            onClick={() => openModal("Service")}
+          />
+        )}
       </div>
 
       <div className="w-screen sm:w-full overflow-auto">

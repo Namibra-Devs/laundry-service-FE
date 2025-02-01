@@ -36,7 +36,7 @@ import { formatDate } from "@/lib/utils/formatDate";
 import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
 import useAuth from "@/hooks/useAuth";
 
-const generateColumns = ({ onEditClick, onDeleteClick }) => {
+const generateColumns = () => {
   return [
     {
       id: "select",
@@ -104,35 +104,6 @@ const generateColumns = ({ onEditClick, onDeleteClick }) => {
         );
       },
     },
-    {
-      id: "actions",
-      header: "Actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const service = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => onEditClick(service)}>
-                Edit Service
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onDeleteClick(service?._id)}>
-                Delete Service
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
-    },
   ];
 };
 
@@ -144,7 +115,7 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
 
   const { branches, triggerUpdate } = useAppContext();
   const {
-    auth: { accessToken },
+    auth: { accessToken, user },
   } = useAuth();
 
   const getBranchName = (branchId) => {
@@ -196,11 +167,39 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
       .values()
   );
 
-  const columns = generateColumns({
-    onEditClick,
-    onDeleteClick,
-    getBranchName,
-  });
+  const columns = generateColumns({ getBranchName });
+
+  if (user?.role === "admin") {
+    columns.push({
+      id: "actions",
+      header: "Actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const service = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => onEditClick(service)}>
+                Edit Service
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onDeleteClick(service?._id)}>
+                Delete Service
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    });
+  }
 
   const table = useReactTable({
     data: services,

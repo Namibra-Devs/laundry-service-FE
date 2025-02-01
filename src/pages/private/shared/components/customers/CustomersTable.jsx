@@ -377,7 +377,7 @@ export function CustomersTable({
             <DropdownMenuContent align="end">
               {uniquePersons?.map((person) => (
                 <DropdownMenuItem
-                  key={person?._id}
+                  key={`${person?._id}-${person?.name}`}
                   onClick={() => {
                     setSelectedAddedBy(person?.name);
                     table.getColumn("addedBy")?.setFilterValue(person?.name);
