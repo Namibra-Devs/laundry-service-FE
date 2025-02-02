@@ -108,7 +108,7 @@ const Column = ({ state }) => {
           className={`flex items-center space-x-3 ${fade} py-1 px-2 rounded-md`}
         >
           <small className="capitalize">
-            {state === "in_progress" ? "in progress" : state}
+            {state === "onprogress" ? "in progress" : state}
           </small>
           <div
             className={`w-6 h-6 rounded-full text-[12px] text-white flex items-center justify-center ${main}`}

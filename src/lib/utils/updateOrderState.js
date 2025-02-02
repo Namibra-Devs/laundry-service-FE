@@ -20,13 +20,17 @@ export const updateOrderState = async (accessToken, itemId, status) => {
 
   try {
     console.log(
-      `updating item ${itemId} to state ${status} on endpoint: /api/orders/${itemId}/${status}`
+      `updating item ${itemId} to state ${status} on endpoint: /api/orders/${itemId}/status`
     );
-    const response = await axios.put(`/api/orders/${itemId}/${status}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await axios.patch(
+      `/api/orders/${itemId}/status`,
+      { status: status },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
     responseData = response?.data;
     console.log("update successfully");

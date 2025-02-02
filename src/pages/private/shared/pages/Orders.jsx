@@ -117,7 +117,7 @@ const Orders = () => {
         console.log("Order created successfully:", responseData);
         setAlert((prev) => ({
           ...prev,
-          message: "Item Created",
+          message: "Order Created",
           type: "success",
         }));
         onClose();

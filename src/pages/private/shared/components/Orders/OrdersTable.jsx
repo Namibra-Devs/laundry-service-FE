@@ -40,6 +40,13 @@ import useAuth from "@/hooks/useAuth";
 import useAppContext from "@/hooks/useAppContext";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
+  const stateColors = {
+    pending: "bg-blue-500",
+    onprogress: "bg-yellow-200/60",
+    completed: "bg-green-600/30",
+    delivered: "bg-gray-200",
+  };
+
   return [
     {
       id: "select",
@@ -127,13 +134,9 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
         const value = row.getValue("status");
         return (
           <div
-            className={`capitalize w-fit py-2 px-3 rounded-md ${
-              value === "delivered"
-                ? "text-gray-600 bg-gray-400/40"
-                : "text-danger bg-danger/20"
-            }`}
+            className={`capitalize w-fit py-2 px-3 rounded-md ${stateColors[value]}`}
           >
-            {value}
+            {value === "onprogress" ? "in progress" : value}
           </div>
         );
       },
