@@ -93,7 +93,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
         return (
           <div className="flex items-center">
             {items?.map((item, index) =>
-              iconDictionary[item.toLowerCase()] ? (
+              iconDictionary[item?.toLowerCase()] ? (
                 <img
                   key={index}
                   src={iconDictionary[item.toLowerCase()]}

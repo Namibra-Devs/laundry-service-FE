@@ -3,14 +3,17 @@ import { isTokenValid } from "./validateToken";
 
 export const updateOrderState = async (accessToken, itemId, status) => {
   let responseData = null;
-  let message = "";
+  let message = null;
 
   if (!accessToken || !itemId || !status) {
     return { data: responseData, message: "Missing params." };
   }
 
   if (!isTokenValid(accessToken)) {
-    message = "Token expired. Redirecting to login...";
+    message = {
+      text: "Token expired. Redirecting to login...",
+      type: "error",
+    };
     console.error(message);
     setTimeout(() => {
       window.location.href = "/";
@@ -22,7 +25,7 @@ export const updateOrderState = async (accessToken, itemId, status) => {
     console.log(
       `updating item ${itemId} to state ${status} on endpoint: /api/orders/${itemId}/status`
     );
-    const response = await axios.patch(
+    const response = await axios.put(
       `/api/orders/${itemId}/status`,
       { status: status },
       {
@@ -34,11 +37,19 @@ export const updateOrderState = async (accessToken, itemId, status) => {
 
     responseData = response?.data;
     console.log("update successfully");
+    message = {
+      text: "Order updated",
+      type: "success",
+    };
   } catch (error) {
     console.error(
       "There was an error while trying to update order state",
       error
     );
+    message = {
+      text: "Couldn't update order ",
+      type: "error",
+    };
   }
 
   return { data: responseData, message };

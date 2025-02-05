@@ -26,7 +26,7 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
     pending: "onprogress",
     onprogress: "completed",
     completed: "delivered",
-    delivered: "pending",
+    delivered: "",
   };
 
   return (

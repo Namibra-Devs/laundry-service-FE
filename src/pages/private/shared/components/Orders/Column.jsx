@@ -8,6 +8,7 @@ import { useState } from "react";
 import useAppContext from "@/hooks/useAppContext";
 import { updateOrderState } from "@/lib/utils/updateOrderState";
 import useAuth from "@/hooks/useAuth";
+import { Check } from "lucide-react";
 
 const OptionsDropDown = ({ isOpen }) => {
   return (
@@ -64,7 +65,8 @@ const Column = ({ state }) => {
 
   // const orders = useOrders((store) => store.orders);
 
-  const { orders, triggerUpdate } = useAppContext();
+  const { orders, triggerUpdate, setAlert } = useAppContext();
+  const [loading, setLoading] = useState(false);
 
   const filteredOrders = useMemo(
     () => orders?.filter((order) => order.status === state),
@@ -81,6 +83,66 @@ const Column = ({ state }) => {
     auth: { accessToken },
   } = useAuth();
 
+  const toMappings = {
+    pending: "onprogress",
+    onprogress: "completed",
+    completed: "delivered",
+    delivered: "",
+  };
+
+  const canUpdateOrder = (currentState, toState) => {
+    return toMappings[currentState] === toState;
+  };
+
+  const handleDrop = async () => {
+    if (!draggedOrder) return;
+
+    // Validate state transition before making an API request
+    if (!canUpdateOrder(draggedOrder.state, state)) {
+      setAlert((prev) => ({
+        ...prev,
+        message:
+          "Invalid state transition. You cannot move an order backward or skip states.",
+        type: "error",
+      }));
+      return;
+    }
+
+    setDraggedOrder(null);
+    setDrop(false);
+    setLoading(true);
+
+    try {
+      const { data, message } = await updateOrderState(
+        accessToken,
+        draggedOrder?._id,
+        state
+      );
+
+      if (message || data) {
+        console.log("message:", message);
+        console.log("updated", data);
+
+        setAlert((prev) => ({
+          ...prev,
+          message: message.text,
+          type: message.type,
+        }));
+
+        triggerUpdate("order");
+      }
+    } catch (error) {
+      console.log(error);
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to update order. Please try again.",
+        type: "error",
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       className={`h-[75vh] bg-ash_light p-2 rounded-md relative ${
@@ -94,14 +156,7 @@ const Column = ({ state }) => {
         setDrop(false);
         e.preventDefault();
       }}
-      onDrop={() => {
-        setDraggedOrder(null);
-        setDrop(false);
-        // moveOrder(draggedOrder, state);
-        updateOrderState(accessToken, draggedOrder?._id, state);
-        triggerUpdate("order");
-        // console.log(`${draggedOrder?.customer?.firstName} moved to ${state}`);
-      }}
+      onDrop={handleDrop}
     >
       <div className="flex items-center justify-between">
         <div
