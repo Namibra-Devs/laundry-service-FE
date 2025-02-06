@@ -40,6 +40,7 @@ const StepOne = ({ onClose, onNext }) => {
   const { setAlert, customers } = useAppContext();
 
   const customersList = [...new Set(customers?.map((customer) => customer))];
+
   const getCustomerName = (customerId) => {
     const customer = customers.find((c) => c._id === customerId);
     return customer?.firstName + " " + customer?.lastName || customerId;
@@ -156,7 +157,7 @@ const StepOne = ({ onClose, onNext }) => {
             </div>
             {isOpen && (
               <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-fit">
-                {customersList?.map((option, index) => (
+                {[{}, ...customersList]?.map((option, index) => (
                   <li
                     key={index}
                     className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer w-[10rem]"
@@ -165,7 +166,7 @@ const StepOne = ({ onClose, onNext }) => {
                       setIsOpen(false);
                     }}
                   >
-                    {option?.firstName + " " + option?.lastName}
+                    {`${option?.firstName || ""} ${option?.lastName || ""}`}
                   </li>
                 ))}
               </ul>

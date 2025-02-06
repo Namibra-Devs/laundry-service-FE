@@ -26,7 +26,7 @@ const ItemPriceBox = ({ priceItem }) => {
         />
       </div>
       <Dropdown
-        options={branchesList}
+        options={branchesList.length > 0 ? branchesList : [{}]}
         item={getBranchName(priceItem?.branch)}
         setItem={(selectedBranch) =>
           setItemBranch(priceItem?.id, selectedBranch)

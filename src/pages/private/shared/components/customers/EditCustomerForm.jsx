@@ -192,7 +192,7 @@ const EditCustomerForm = () => {
         />
 
         <Dropdown
-          options={branchesList}
+          options={branchesList.length > 0 ? branchesList : [{}]}
           item={getBranchName(branch)}
           setItem={setStaffBranch}
           label="Branch"

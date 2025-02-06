@@ -70,7 +70,7 @@ const ItemBox = ({ item }) => {
           </div>
           {isOpen && (
             <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-fit">
-              {itemsList?.map((option, index) => (
+              {[{}, ...itemsList]?.map((option, index) => (
                 <li
                   key={index}
                   className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer w-[10rem]"
@@ -97,7 +97,7 @@ const ItemBox = ({ item }) => {
       /> */}
 
       <Dropdown
-        options={servicesList}
+        options={servicesList.length > 0 ? servicesList : [{}]}
         item={getServiceName(item?.service)}
         setItem={(selectedService) => setItemService(item?.id, selectedService)}
         label="Service"

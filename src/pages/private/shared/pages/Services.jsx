@@ -92,7 +92,7 @@ const Services = () => {
       );
 
       if (message) {
-        if (message.includes("not found")) {
+        if (message.text === "service not found") {
           setAlert((prev) => ({
             ...prev,
             message: "You can not perform this action",
@@ -102,8 +102,8 @@ const Services = () => {
         }
         setAlert((prev) => ({
           ...prev,
-          message: message?.text,
-          type: message?.type,
+          message: message.text,
+          type: message.type,
         }));
       }
 

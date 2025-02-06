@@ -37,6 +37,13 @@ import { deleteSelectedItems } from "@/lib/utils/deleteSelectedItems";
 import { iconDictionary } from "@/lib/data/IconsDictionary";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
+  function formatAmount(amount) {
+    return new Intl.NumberFormat("en-GH", {
+      style: "currency",
+      currency: "GHS",
+    }).format(amount);
+  }
+
   return [
     {
       id: "select",
@@ -83,7 +90,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
     },
     {
       accessorKey: "washingPrice",
-      header: "Wash Price (GHC)",
+      header: "Wash Price",
       cell: ({ row }) => {
         const prices = row.original.pricing;
         if (!prices || prices?.length === 0) return "N/A";
@@ -92,7 +99,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
           <ul>
             {prices?.map((price, index) => (
               <li key={index} className="mt-1">
-                {price?.branch?.name}: {price.washingPrice}
+                {formatAmount(price.washingPrice)}
               </li>
             ))}
           </ul>
@@ -101,7 +108,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
     },
     {
       accessorKey: "ironingPrice",
-      header: "Ironing Price (GHC)",
+      header: "Ironing Price",
       cell: ({ row }) => {
         const prices = row.original.pricing;
         if (!prices || prices?.length === 0) return "N/A";
@@ -110,7 +117,7 @@ const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
           <ul>
             {prices?.map((price, index) => (
               <li key={index} className="mt-1">
-                {price?.branch?.name}: {price.ironingPrice}
+                {formatAmount(price.ironingPrice)}
               </li>
             ))}
           </ul>

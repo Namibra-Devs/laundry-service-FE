@@ -278,13 +278,17 @@ export function ServicesTable({ onEditClick, onDeleteClick, services }) {
   return (
     <div className="w-[50rem] sm:w-full">
       <div className="flex items-center py-4 justify-between">
-        <Button
-          variant="destructive"
-          disabled={table.getSelectedRowModel().rows.length === 0}
-          onClick={handleDeleteAll}
-        >
-          Delete Selected
-        </Button>
+        {user?.role === "admin" ? (
+          <Button
+            variant="destructive"
+            disabled={table.getSelectedRowModel().rows.length === 0}
+            onClick={handleDeleteAll}
+          >
+            Delete Selected
+          </Button>
+        ) : (
+          <p></p>
+        )}
 
         {/* Confirmation Dialog */}
         <div

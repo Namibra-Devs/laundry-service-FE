@@ -90,7 +90,7 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
 
       <div className="sm:px-10 mt-3 mb-20">
         <Dropdown
-          options={branchesList}
+          options={branchesList.length > 0 ? branchesList : [{}]}
           item={getBranchName(data?.branch)}
           setItem={setBranch}
           label="Branch"

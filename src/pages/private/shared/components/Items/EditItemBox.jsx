@@ -39,7 +39,7 @@ const EditItemBox = ({
       </div>
 
       <Dropdown
-        options={branchesList}
+        options={branchesList.length > 0 ? branchesList : [{}]}
         item={getBranchName(itemBranch)}
         setItem={onBranchChange}
         label="Branch"

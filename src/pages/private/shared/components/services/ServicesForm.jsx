@@ -29,7 +29,7 @@ const ServicesForm = () => {
           type="text"
         />
         <Dropdown
-          options={branchesList}
+          options={branchesList.length > 0 ? branchesList : [{}]}
           item={getBranchName(branch)}
           setItem={setServiceBranch}
           label="Branch"

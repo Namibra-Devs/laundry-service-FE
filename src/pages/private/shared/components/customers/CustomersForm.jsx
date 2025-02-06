@@ -73,7 +73,7 @@ const CustomersForm = () => {
         />
 
         <Dropdown
-          options={branchesList}
+          options={branchesList.length > 0 ? branchesList : [{}]}
           item={getBranchName(customer?.branch)}
           setItem={customer?.setCustomerBranch}
           label="Branch"
