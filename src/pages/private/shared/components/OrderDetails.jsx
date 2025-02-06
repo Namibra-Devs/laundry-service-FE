@@ -75,7 +75,7 @@ const OrderDetails = () => {
 
       <div className="flex items-center justify-between mt-10 px-3">
         <p>Total</p>
-        <p className="font-semibold">GHC 180</p>
+        <p className="font-semibold">GHC {order?.totalAmount}</p>
       </div>
     </>
   );

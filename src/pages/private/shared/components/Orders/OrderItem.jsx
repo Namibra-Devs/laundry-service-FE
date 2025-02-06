@@ -9,17 +9,15 @@ import { updateOrderState } from "@/lib/utils/updateOrderState";
 import useAuth from "@/hooks/useAuth";
 
 const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
-  const { viewItem, setCurrentItemId, triggerUpdate } = useAppContext();
+  const { viewItem, setCurrentItem, triggerUpdate } = useAppContext();
 
   const {
     auth: { accessToken },
   } = useAuth();
 
-  // const { updateOrderState } = useOrders((state) => state);
-
-  const onViewClick = (id) => {
+  const onViewClick = (item) => {
     viewItem("Order");
-    setCurrentItemId(id);
+    setCurrentItem(item);
   };
 
   const toMappings = {
@@ -38,29 +36,29 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
         >
           <button
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => onViewClick(order?.id)}
+            onClick={() => onViewClick(order)}
           >
             View
           </button>
-          <button
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => {
-              // updateOrderState(order, toMappings[state]);
-              updateOrderState(accessToken, order?._id, toMappings[state]);
-              triggerUpdate("order");
-              // console.log(`${order?.customer?.firstName} moved to ${state}`);
-              // console.log(`moving to: ${toMappings[state]}`);
-            }}
-          >
-            To{" "}
-            {state === "pending"
-              ? "In Progress"
-              : state === "onprogress"
-              ? "Completed"
-              : state === "completed"
-              ? "Delivered"
-              : "Pending"}
-          </button>
+          {order?.status !== "delivered" && (
+            <button
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                // updateOrderState(order, toMappings[state]);
+                updateOrderState(accessToken, order?._id, toMappings[state]);
+                triggerUpdate("order");
+                // console.log(`${order?.customer?.firstName} moved to ${state}`);
+                // console.log(`moving to: ${toMappings[state]}`);
+              }}
+            >
+              To{" "}
+              {state === "pending"
+                ? "In Progress"
+                : state === "onprogress"
+                ? "Completed"
+                : state === "completed"}
+            </button>
+          )}
           <button
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             onClick={() => setIsOpen(false)}
@@ -108,8 +106,6 @@ const OrderItem = ({ order, state }) => {
     totalQuantity += i.quantity;
   }
 
-  // console.log(order);
-
   return (
     <div
       className={`bg-white p-3 rounded-[10px] my-2 border-2 border-transparent ${color} transition-all duration-300 cursor-move relative`}
@@ -118,7 +114,7 @@ const OrderItem = ({ order, state }) => {
     >
       {/* header */}
       <div className="flex items-center justify-between">
-        <small>{order?.customer?.firstName}</small>
+        <small>{`${order?.customer?.firstName} ${order?.customer?.lastName}`}</small>
         <Ellipsis
           className="cursor-pointer"
           onClick={() => setIsOpen((prev) => !prev)}
@@ -179,7 +175,7 @@ const OrderItem = ({ order, state }) => {
         <div className="flex items-center justify-between mt-2">
           <small className="text-gray-500">Price</small>
           <small className="font-semibold text-gray-700">
-            GHC {order?.price}
+            GHC {order?.totalAmount}
           </small>
         </div>
       </div>

@@ -41,7 +41,7 @@ import useAppContext from "@/hooks/useAppContext";
 
 const generateColumns = ({ onViewClick, onEditClick, onDeleteClick }) => {
   const stateColors = {
-    pending: "bg-blue-500",
+    pending: "bg-blue-200",
     onprogress: "bg-yellow-200/60",
     completed: "bg-green-600/30",
     delivered: "bg-gray-200",
@@ -340,7 +340,7 @@ export function OrdersTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {["pending", "in progress", "completed", "delivered"]?.map(
+              {["pending", "onprogress", "completed", "delivered"]?.map(
                 (status, index) => (
                   <DropdownMenuItem
                     key={index}

@@ -18,7 +18,6 @@ const EditOrder = () => {
   } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const { updateField, resetCustomerForm } = useOrderForm();
 
   const {
     auth: { accessToken },
@@ -109,9 +108,19 @@ const EditOrder = () => {
       return;
     }
 
+    if (order?.status !== "pending") {
+      setAlert((prev) => ({
+        ...prev,
+        message: "You can only update orders in pending state",
+        type: "warning",
+      }));
+      setLoading(false);
+      return;
+    }
+
     const orderData = {
       branch,
-      customer,
+      // customer,
       servicesRendered: servicesRendered.map(
         ({ serviceItem, service, quantity, isIroned }) => ({
           serviceItem: serviceItem?._id,
@@ -123,7 +132,7 @@ const EditOrder = () => {
     };
 
     try {
-      console.log(orderData);
+      // console.log(orderData);
       const { data, message } = await updateData(
         "order",
         order?._id,
@@ -212,8 +221,7 @@ const EditOrder = () => {
         </div>
 
         <Dropdown
-          options={branchesList}
-          // item={getBranchName(order?.branch?._id)}
+          options={branchesList.length > 0 ? branchesList : [{}]}
           item={getBranchName(branch)}
           setItem={setBranch}
           label="Branch"
@@ -260,7 +268,7 @@ const EditOrder = () => {
 
         <div className="mt-10">
           <CustomButton
-            label="Update Staff"
+            label="Update Order"
             variant="contained"
             onClick={updateOrder}
           />

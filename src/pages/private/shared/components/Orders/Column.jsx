@@ -8,7 +8,6 @@ import { useState } from "react";
 import useAppContext from "@/hooks/useAppContext";
 import { updateOrderState } from "@/lib/utils/updateOrderState";
 import useAuth from "@/hooks/useAuth";
-import { Check } from "lucide-react";
 
 const OptionsDropDown = ({ isOpen }) => {
   return (
@@ -99,8 +98,7 @@ const Column = ({ state }) => {
     if (!canUpdateOrder(draggedOrder?.status, state)) {
       setAlert((prev) => ({
         ...prev,
-        message:
-          "Invalid state transition. You cannot move an order backward or skip states.",
+        message: "Invalid state transition. You cannot move an order backward",
         type: "error",
       }));
       return;

@@ -38,7 +38,7 @@ const EditItemBox = ({ item, onUpdateItem, onDeleteItem }) => {
           >
             {item?.serviceItem
               ? getItemName(item?.serviceItem?._id)
-              : "-- customer --"}
+              : "-- item --"}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
