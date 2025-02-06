@@ -83,22 +83,20 @@ const Column = ({ state }) => {
     auth: { accessToken },
   } = useAuth();
 
-  const toMappings = {
-    pending: "onprogress",
-    onprogress: "completed",
-    completed: "delivered",
-    delivered: "",
-  };
+  const stateOrder = ["pending", "onprogress", "completed", "delivered"];
 
   const canUpdateOrder = (currentState, toState) => {
-    return toMappings[currentState] === toState;
+    const currentIndex = stateOrder.indexOf(currentState);
+    const toIndex = stateOrder.indexOf(toState);
+
+    return toIndex > currentIndex;
   };
 
   const handleDrop = async () => {
     if (!draggedOrder) return;
 
     // Validate state transition before making an API request
-    if (!canUpdateOrder(draggedOrder.state, state)) {
+    if (!canUpdateOrder(draggedOrder?.status, state)) {
       setAlert((prev) => ({
         ...prev,
         message:
@@ -118,17 +116,14 @@ const Column = ({ state }) => {
         draggedOrder?._id,
         state
       );
-
       if (message || data) {
         console.log("message:", message);
         console.log("updated", data);
-
         setAlert((prev) => ({
           ...prev,
           message: message.text,
           type: message.type,
         }));
-
         triggerUpdate("order");
       }
     } catch (error) {
