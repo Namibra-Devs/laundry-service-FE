@@ -20,6 +20,7 @@ const OptionsDropDown = ({ isOpen }) => {
           <button
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
+            // onClick={() => }
           >
             Collapse Group
           </button>
@@ -133,6 +134,7 @@ const Column = ({ state }) => {
       }));
     } finally {
       setLoading(false);
+      console.log(loading);
     }
   };
 
@@ -181,7 +183,12 @@ const Column = ({ state }) => {
 
       <div className="order_column h-[70vh] overflow-y-auto">
         {filteredOrders?.map((order) => (
-          <OrderItem key={order?._id} order={order} state={state} />
+          <OrderItem
+            key={order?._id}
+            order={order}
+            state={state}
+            isLoading={loading}
+          />
         ))}
       </div>
     </div>

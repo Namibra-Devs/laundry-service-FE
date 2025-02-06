@@ -9,7 +9,7 @@ import { updateOrderState } from "@/lib/utils/updateOrderState";
 import useAuth from "@/hooks/useAuth";
 
 const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
-  const { viewItem, setCurrentItem, triggerUpdate } = useAppContext();
+  const { viewItem, setCurrentItem, triggerUpdate, setAlert } = useAppContext();
 
   const {
     auth: { accessToken },
@@ -25,6 +25,34 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
     onprogress: "completed",
     completed: "delivered",
     delivered: "",
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const { data, message } = await updateOrderState(
+        accessToken,
+        order?._id,
+        toMappings[state]
+      );
+
+      if (message || data) {
+        console.log("message:", message);
+        console.log("updated", data);
+        setAlert((prev) => ({
+          ...prev,
+          message: message.text,
+          type: message.type,
+        }));
+        triggerUpdate("order");
+      }
+    } catch (error) {
+      console.log(error);
+      setAlert((prev) => ({
+        ...prev,
+        message: "Failed to update order. Please try again.",
+        type: "error",
+      }));
+    }
   };
 
   return (
@@ -44,9 +72,8 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
             <button
               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               onClick={() => {
+                handleUpdate();
                 // updateOrderState(order, toMappings[state]);
-                updateOrderState(accessToken, order?._id, toMappings[state]);
-                triggerUpdate("order");
                 // console.log(`${order?.customer?.firstName} moved to ${state}`);
                 // console.log(`moving to: ${toMappings[state]}`);
               }}
@@ -56,7 +83,9 @@ const OptionsDropDown = ({ isOpen, setIsOpen, state, order }) => {
                 ? "In Progress"
                 : state === "onprogress"
                 ? "Completed"
-                : state === "completed"}
+                : state === "completed"
+                ? "delivered"
+                : ""}
             </button>
           )}
           <button
@@ -79,7 +108,7 @@ OptionsDropDown.propTypes = {
   order: PropTypes.object.isRequired,
 };
 
-const OrderItem = ({ order, state }) => {
+const OrderItem = ({ order, state, isLoading }) => {
   const [isOpen, setIsOpen] = useState(false);
   const stateColors = {
     pending: {
@@ -105,7 +134,6 @@ const OrderItem = ({ order, state }) => {
   for (let i of items) {
     totalQuantity += i.quantity;
   }
-
   return (
     <div
       className={`bg-white p-3 rounded-[10px] my-2 border-2 border-transparent ${color} transition-all duration-300 cursor-move relative`}
@@ -179,6 +207,12 @@ const OrderItem = ({ order, state }) => {
           </small>
         </div>
       </div>
+
+      <div
+        className={`absolute top-0 left-0 w-full h-full rounded-md bg-black/20 ${
+          isLoading ? "block" : "hidden"
+        }`}
+      ></div>
     </div>
   );
 };
@@ -186,6 +220,7 @@ const OrderItem = ({ order, state }) => {
 OrderItem.propTypes = {
   order: PropTypes.object.isRequired,
   state: PropTypes.string.isRequired,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 export default OrderItem;
