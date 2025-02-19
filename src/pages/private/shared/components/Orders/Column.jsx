@@ -9,23 +9,29 @@ import useAppContext from "@/hooks/useAppContext";
 import { updateOrderState } from "@/lib/utils/updateOrderState";
 import useAuth from "@/hooks/useAuth";
 
-const OptionsDropDown = ({ isOpen }) => {
+const OptionsDropDown = ({ isOpen, isCollapsed, setIsCollapsed, state }) => {
+  const handleCollapse = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+
   return (
     <div className="relative inline-block text-left">
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+          className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-[100]"
           role="menu"
         >
           <button
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
-            // onClick={() => }
+            onClick={handleCollapse}
           >
-            Collapse Group
+            {isCollapsed ? "Expand" : "Collapse"}
           </button>
           <button
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className={`${
+              state === "delivered" ? "hidden" : "block"
+            } w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100`}
             role="menuitem"
           >
             Move All To Next
@@ -38,11 +44,15 @@ const OptionsDropDown = ({ isOpen }) => {
 
 OptionsDropDown.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  isCollapsed: PropTypes.bool.isRequired,
+  setIsCollapsed: PropTypes.bool.isRequired,
+  state: PropTypes.string.isRequired,
 };
 
 const Column = ({ state }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [drop, setDrop] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const stateColors = {
     pending: {
@@ -140,7 +150,9 @@ const Column = ({ state }) => {
 
   return (
     <div
-      className={`h-[75vh] bg-ash_light p-2 rounded-md relative ${
+      className={`${
+        isCollapsed ? "h-[7vh]" : "h-[70vh]"
+      } bg-ash_light p-2 rounded-md relative overflow-hidden ${
         drop && "border-dashed border-2 border-gray-400"
       }`}
       onDragOver={(e) => {
@@ -178,7 +190,12 @@ const Column = ({ state }) => {
       </div>
 
       <div className="absolute top-2 right-0">
-        <OptionsDropDown isOpen={isOpen} />
+        <OptionsDropDown
+          isOpen={isOpen}
+          setIsCollapsed={setIsCollapsed}
+          isCollapsed={isCollapsed}
+          state={state}
+        />
       </div>
 
       <div className="order_column h-[70vh] overflow-y-auto">
