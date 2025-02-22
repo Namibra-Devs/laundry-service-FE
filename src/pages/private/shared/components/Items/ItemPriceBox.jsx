@@ -6,6 +6,7 @@ import useAppContext from "@/hooks/useAppContext";
 
 const ItemPriceBox = ({ priceItem }) => {
   const { branches } = useAppContext();
+  const { prices } = useItemsForm((state) => state);
 
   const branchesList = [
     ...new Map(
@@ -14,6 +15,12 @@ const ItemPriceBox = ({ priceItem }) => {
         .map((branch) => [branch?._id, branch])
     ).values(),
   ];
+
+  const usedBranches = prices.map((price) => price?.branch);
+
+  const availableBranches = branchesList.filter(
+    (branch) => !usedBranches.includes(branch._id)
+  );
 
   const getBranchName = (branchId) => {
     const branch = branches.find((b) => b._id === branchId);
@@ -32,7 +39,7 @@ const ItemPriceBox = ({ priceItem }) => {
         />
       </div>
       <Dropdown
-        options={branchesList.length > 0 ? branchesList : [{}]}
+        options={availableBranches.length > 0 ? availableBranches : [{}]}
         item={getBranchName(priceItem?.branch)}
         setItem={(selectedBranch) =>
           setItemBranch(priceItem?.id, selectedBranch)
