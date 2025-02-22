@@ -59,7 +59,7 @@ const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
     return pricesWithServices;
   };
 
-  let totalCost;
+  let totalCost = 0;
 
   return (
     <>
@@ -78,17 +78,16 @@ const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
             const itemName = item?.orderItem?.name;
             const allPrices = getServicePrices(item, branchId);
 
-            let costForItem;
-
             const getCost = () => {
               if (allPrices[itemName] && allPrices[itemName][service]) {
-                costForItem = item?.quantity * allPrices[itemName][service];
-                totalCost += costForItem;
+                return item?.quantity * allPrices[itemName][service];
               }
-              return costForItem;
+              return 0;
             };
 
-            getCost();
+            totalCost += getCost();
+
+            console.log(totalCost);
 
             return (
               <div key={index} className="flex flex-col space-y-2 mb-5">
@@ -113,7 +112,7 @@ const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
           })}
         </div>
         <div className="mt-5">
-          <h2>Total Cost: {totalCost}</h2>
+          <h2>Total Cost: GHC {totalCost}</h2>
         </div>
       </div>
 
