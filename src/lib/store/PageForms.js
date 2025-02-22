@@ -232,7 +232,7 @@ export const useOrderForm = create((set) => ({
             id: newId,
             orderItem: {},
             service: "",
-            quantity: 0,
+            quantity: 1,
             isIroned: false,
           },
         ],

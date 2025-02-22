@@ -39,7 +39,13 @@ const StepTwo = ({ onClose, onNext, onBack }) => {
   const { data, setBranch, addOrderItem } = useOrderForm();
   const { branches, setAlert } = useAppContext();
 
-  const branchesList = [...new Set(branches?.map((branch) => branch))];
+  const branchesList = [
+    ...new Map(
+      branches
+        ?.filter((branch) => branch?.status === "active")
+        .map((branch) => [branch?._id, branch])
+    ).values(),
+  ];
   const getBranchName = (branchId) => {
     const branch = branches.find((b) => b._id === branchId);
     return branch?.name || branchId;
