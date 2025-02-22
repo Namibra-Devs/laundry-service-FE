@@ -19,8 +19,8 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
     try {
       const { data, message } = await handleDelete(accessToken, page, itemId);
 
-      if (message) {
-        setAlert((prev) => ({ ...prev, message }));
+      if (message && !data) {
+        setAlert((prev) => ({ ...prev, message, type: "error" }));
       }
 
       if (data) {
@@ -30,7 +30,15 @@ const DeleteAlert = ({ page, setDeleteModal, deleteModal, itemId }) => {
           type: "success",
         }));
         setDeleteModal(false);
-        triggerUpdate(page);
+        if (page === "branch") {
+          triggerUpdate("branch");
+          triggerUpdate("service");
+          triggerUpdate("customer");
+          triggerUpdate("item");
+          triggerUpdate("order");
+        } else {
+          triggerUpdate(page);
+        }
       }
     } catch (error) {
       console.error("Error during deletion:", error.message || error);

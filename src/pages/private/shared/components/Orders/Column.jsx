@@ -45,7 +45,7 @@ const OptionsDropDown = ({ isOpen, isCollapsed, setIsCollapsed, state }) => {
 OptionsDropDown.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   isCollapsed: PropTypes.bool.isRequired,
-  setIsCollapsed: PropTypes.bool.isRequired,
+  setIsCollapsed: PropTypes.func.isRequired,
   state: PropTypes.string.isRequired,
 };
 
@@ -85,9 +85,7 @@ const Column = ({ state }) => {
 
   const { main, fade } = stateColors[state] || "";
 
-  const { draggedOrder, setDraggedOrder, moveOrder } = useOrders(
-    (state) => state
-  );
+  const { draggedOrder, setDraggedOrder } = useOrders((state) => state);
 
   const {
     auth: { accessToken },

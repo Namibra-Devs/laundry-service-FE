@@ -237,6 +237,10 @@ export function BranchTable({
           type: "success",
         }));
         triggerUpdate("branch");
+        triggerUpdate("service");
+        triggerUpdate("customer");
+        triggerUpdate("items");
+        triggerUpdate("orders");
       }
     } catch (error) {
       console.log("Error deleting branches: ", error);
