@@ -209,13 +209,23 @@ export const useOrderForm = create((set) => ({
     })),
 
   setBranch: (branch) =>
-    set((state) => ({
-      ...state,
-      data: {
-        ...state.data,
-        branch,
-      },
-    })),
+    set((state) => {
+      // Reset order items and services when branch is changed
+      const updatedState = {
+        ...state,
+        data: {
+          ...state.data,
+          branch,
+          servicesRendered: state.data.servicesRendered.map((item) => ({
+            ...item,
+            orderItem: {}, // Reset orderItem
+            service: null, // Reset service
+          })),
+        },
+      };
+
+      return updatedState;
+    }),
 
   updateField: (field, value) =>
     set((state) => ({

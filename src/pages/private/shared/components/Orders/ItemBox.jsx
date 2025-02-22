@@ -21,7 +21,11 @@ const ItemBox = ({ item }) => {
   } = useOrderForm();
 
   const servicesList = Array.from(
-    new Map(services?.map((service) => [service._id, service])).values()
+    new Map(
+      services
+        ?.filter((service) => service.branch?._id === branch) // Filter services by branch
+        .map((service) => [service._id, service]) // Ensure uniqueness using _id
+    ).values()
   );
 
   const itemsList = items.filter((item) =>

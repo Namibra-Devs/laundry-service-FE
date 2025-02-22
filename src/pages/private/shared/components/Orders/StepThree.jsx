@@ -79,15 +79,28 @@ const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
             const allPrices = getServicePrices(item, branchId);
 
             const getCost = () => {
-              if (allPrices[itemName] && allPrices[itemName][service]) {
-                return item?.quantity * allPrices[itemName][service];
+              if (!allPrices[itemName]) return 0; // If item price data doesn't exist, return 0
+
+              let total = 0;
+
+              // Add the cost of the selected service
+              if (allPrices[itemName][service]) {
+                total += item?.quantity * allPrices[itemName][service];
               }
-              return 0;
+
+              // If item is ironed and the selected service is NOT ironing, add the ironing price
+              if (
+                item?.isIroned &&
+                service !== "Ironing" &&
+                allPrices[itemName]["Ironing"]
+              ) {
+                total += item?.quantity * allPrices[itemName]["Ironing"];
+              }
+
+              return total;
             };
 
-            totalCost += getCost();
-
-            console.log(totalCost);
+            totalCost = getCost();
 
             return (
               <div key={index} className="flex flex-col space-y-2 mb-5">
@@ -97,7 +110,7 @@ const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
                     <h1>Quantity</h1>
                     <p>{item?.quantity}</p>
                   </div>
-                  <div className="flex items-center justify-between w-full mt-5">
+                  <div className="flex items-center justify-between w-full my-4">
                     <h1>{service}</h1>
                     <p>
                       GHC{" "}
@@ -105,6 +118,10 @@ const StepThree = ({ onBack, onSubmit, onClose, loading }) => {
                         ? allPrices[itemName][service]
                         : "N/A"}
                     </p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <h1>Iron</h1>
+                    <p>{item?.isIroned ? "Yes" : "No"}</p>
                   </div>
                 </div>
               </div>
