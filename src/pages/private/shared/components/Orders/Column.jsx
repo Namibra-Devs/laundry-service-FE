@@ -196,7 +196,7 @@ const Column = ({ state }) => {
         />
       </div>
 
-      <div className="order_column h-[70vh] overflow-y-auto">
+      <div className="order_column h-[65vh] overflow-y-auto">
         {filteredOrders?.map((order) => (
           <OrderItem
             key={order?._id}

@@ -132,7 +132,7 @@ const OrderItem = ({ order, state, isLoading }) => {
   const items = order?.servicesRendered || [];
   let totalQuantity = 0;
   for (let i of items) {
-    totalQuantity += i.quantity;
+    totalQuantity += i?.quantity;
   }
   return (
     <div
