@@ -16,14 +16,19 @@ const ItemBox = ({ item }) => {
   } = useOrderForm();
 
   const { services, items } = useAppContext();
+  const {
+    data: { branch },
+  } = useOrderForm();
+
   const servicesList = Array.from(
     new Map(services?.map((service) => [service._id, service])).values()
   );
-  const itemsList = Array.from(
-    new Map(items?.map((item) => [item._id, item])).values()
+
+  const itemsList = items.filter((item) =>
+    item.pricing.some((price) => price.branch?._id === branch)
   );
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // for dropdown
 
   const getServiceName = (serviceId) => {
     const service = services.find((s) => s._id === serviceId);
